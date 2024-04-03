@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:memo_places_mobile/home.dart';
+import 'package:memo_places_mobile/profile.dart';
 
 void main(){
-  runApp(Home());
+  runApp(Main());
 }
 
-class Home extends StatefulWidget {
+class Main extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
-class _HomeState extends State<Home> {
+class _HomeState extends State<Main> {
   int currentIndex = 0;
+  final screens= [
+    Home(),
+    Profile()
+  ];
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 72, 135, 242),
-          title: const Text('Hello World'),
-        ),
-        body: const Text( "Google maps"),
+        body: screens[currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(
