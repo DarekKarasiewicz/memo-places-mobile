@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memo_places_mobile/home.dart';
 import 'package:memo_places_mobile/profile.dart';
+import 'package:memo_places_mobile/login.dart';
 
 void main(){
   runApp(Main());
@@ -15,7 +16,8 @@ class _HomeState extends State<Main> {
   int currentIndex = 0;
   final screens= [
     Home(),
-    Profile()
+    Profile(),
+    Login()
   ];
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,11 @@ class _HomeState extends State<Main> {
               ),
             BottomNavigationBarItem(
               label: 'Profile',
+              icon: Icon(Icons.account_box_outlined,
+                         size:27)
+              ),
+            BottomNavigationBarItem(
+              label: 'Login',
               icon: Icon(Icons.account_box_outlined,
                          size:27)
               )
