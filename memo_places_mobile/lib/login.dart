@@ -25,7 +25,7 @@ class Login extends StatelessWidget {
 
         if (response.statusCode == 200) {
           // Handle successful response
-          print(response.body)
+          print(response.body);
         } else {
           // Handle error response
           print('Failed to login. Status code: ${response.statusCode}');
