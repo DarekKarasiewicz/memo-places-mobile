@@ -17,7 +17,6 @@ class _HomeState extends State<Main> {
   final screens= [
     Home(),
     Profile(),
-    Login()
   ];
   @override
   Widget build(BuildContext context) {
@@ -37,11 +36,6 @@ class _HomeState extends State<Main> {
               icon: Icon(Icons.account_box_outlined,
                          size:27)
               ),
-            BottomNavigationBarItem(
-              label: 'Login',
-              icon: Icon(Icons.account_box_outlined,
-                         size:27)
-              )
           ],
           currentIndex: currentIndex,
           onTap: (int index){
