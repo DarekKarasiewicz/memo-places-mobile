@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:memo_places_mobile/home.dart';
 import 'package:memo_places_mobile/profile.dart';
 import 'package:memo_places_mobile/login.dart';
+import 'package:memo_places_mobile/place_form.dart';
 
 void main(){
   runApp(Main());
@@ -17,6 +18,7 @@ class _HomeState extends State<Main> {
   final screens= [
     Home(),
     Profile(),
+    PlaceForm(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -33,6 +35,11 @@ class _HomeState extends State<Main> {
               ),
             BottomNavigationBarItem(
               label: 'Profile',
+              icon: Icon(Icons.account_box_outlined,
+                         size:27)
+              ),
+            BottomNavigationBarItem(
+              label: 'Form',
               icon: Icon(Icons.account_box_outlined,
                          size:27)
               ),
