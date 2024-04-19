@@ -232,6 +232,10 @@ Widget build(BuildContext context) {
                     onPressed: _getLocationAndFillFields, 
                     child: Text('Get Location'),
                   ),
+                  ElevatedButton(
+                    onPressed: _getLocationAndFillFields, // Wywołaj funkcję do pobierania lokalizacji
+                    child: Text('Pobierz lokalizację'),
+                  ),
                   DropdownButtonFormField(
                     items: types.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
