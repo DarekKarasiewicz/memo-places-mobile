@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PlaceForm extends StatefulWidget {
   const PlaceForm({Key? key});
@@ -39,9 +40,9 @@ class _PlaceFormState extends State<PlaceForm> {
     _futureTypes = _fetchTypes();
     _futurePeriods = _fetchPeriods();
     _futureSortof = _fetchSortof();
-    _dropdownSortof = '1'; // Initialize dropdown value
-    _dropdownPeriod = '1'; // Initialize dropdown value
-    _dropdownType = '1'; // Initialize dropdown value
+    _dropdownSortof = '1'; 
+    _dropdownPeriod = '1'; 
+    _dropdownType = '1'; 
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -49,8 +50,31 @@ class _PlaceFormState extends State<PlaceForm> {
     return prefs.getString(key);
   }
 
+  Future<void> _getLocationAndFillFields() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if(permission ==LocationPermission.denied){
+      LocationPermission permission = await Geolocator.checkPermission();
+      if(permission ==LocationPermission.denied){
+        return Future.error("Location permission are denied");
+      }
+    }
+    if(permission == LocationPermission.deniedForever){
+        return Future.error("Location permission are denied permanently");
+    }
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      setState(() {
+        _lengthController.text = position.latitude.toString();
+        _widthController.text = position.longitude.toString();
+      });
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
   Future<List<String>> _fetchTypes() async {
-    // Fetch types from endpoint
     try {
       var response = await http.get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
       if (response.statusCode == 200) {
@@ -70,7 +94,6 @@ class _PlaceFormState extends State<PlaceForm> {
     }
   }
   Future<List<String>> _fetchPeriods() async {
-    // Fetch types from endpoint
     try {
       var response = await http.get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
       if (response.statusCode == 200) {
@@ -90,7 +113,6 @@ class _PlaceFormState extends State<PlaceForm> {
     }
   }
   Future<List<String>> _fetchSortof() async {
-    // Fetch types from endpoint
     try {
       var response = await http.get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
       if (response.statusCode == 200) {
@@ -112,7 +134,7 @@ class _PlaceFormState extends State<PlaceForm> {
 
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String? token = await _futureAccess; // Await the result of _futureAccess
+      String? token = await _futureAccess; 
       if (token != null) {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         Map<String, String> formData = {
@@ -120,7 +142,7 @@ class _PlaceFormState extends State<PlaceForm> {
           'found_date': _dateController.text,
           'lat': _lengthController.text,
           'lng': _widthController.text,
-          'type': _categoryController.text, // Change here if needed
+          'type': _categoryController.text, 
           'sortof': _categoryController.text,
           'period': _periodController.text,
           'description': _descriptionController.text,
@@ -129,23 +151,18 @@ class _PlaceFormState extends State<PlaceForm> {
           'user': decodedToken['pk'].toString(),
         };
 
-        // Send data to endpoint
         try {
           var response = await http.post(
             Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
             body: formData,
           );
 
-          // Handle response
           if (response.statusCode == 200) {
-            // Handle success
             print('Form sent successfully');
           } else {
-            // Handle error
             print('Error sending form: ${response.statusCode}');
           }
         } catch (e) {
-          // Handle error
           print('Error sending form: $e');
         }
       } else {
@@ -158,7 +175,7 @@ class _PlaceFormState extends State<PlaceForm> {
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Formularz'),
+      title: Text('Place Form'),
     ),
     body: Padding(
       padding: EdgeInsets.all(16.0),
@@ -185,31 +202,35 @@ Widget build(BuildContext context) {
                 children: [
                   TextFormField(
                     controller: _nameController,
-                    decoration: InputDecoration(labelText: 'Nazwa'),
+                    decoration: InputDecoration(labelText: 'Name'),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Pole nazwa jest wymagane';
+                        return 'Field is required';
                       }
                       return null;
                     },
                   ),
                   TextFormField(
                     controller: _dateController,
-                    decoration: InputDecoration(labelText: 'Data'),
+                    decoration: InputDecoration(labelText: 'Date'),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Pole data jest wymagane';
+                        return 'Field is required';
                       }
                       return null;
                     },
                   ),
                   TextFormField(
                     controller: _lengthController,
-                    decoration: InputDecoration(labelText: 'Długość'),
+                    decoration: InputDecoration(labelText: 'lng'),
                   ),
                   TextFormField(
                     controller: _widthController,
-                    decoration: InputDecoration(labelText: 'Szerokość'),
+                    decoration: InputDecoration(labelText: 'lat'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _getLocationAndFillFields, 
+                    child: Text('Get Location'),
                   ),
                   DropdownButtonFormField(
                     items: types.map<DropdownMenuItem<String>>((String value) {
@@ -270,7 +291,7 @@ Widget build(BuildContext context) {
                   ),
                   TextFormField(
                     controller: _descriptionController,
-                    decoration: InputDecoration(labelText: 'Opis'),
+                    decoration: InputDecoration(labelText: 'Description'),
                   ),
                   TextFormField(
                     controller: _link1Controller,
@@ -283,7 +304,7 @@ Widget build(BuildContext context) {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => _submitForm(context),
-                    child: Text('Zapisz'),
+                    child: Text('Save'),
                   ),
                 ],
               );
