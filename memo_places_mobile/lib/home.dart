@@ -1,7 +1,13 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
+import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -17,13 +23,20 @@ class _GoogleMapsState extends State {
   String? _access;
   late LatLng _position;
   bool isLoading = true;
+  Set<Marker> _markers = {};
+  List<Place> places = [];
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation().then((location) => setState(() {
-          _position = LatLng(location.latitude, location.longitude);
-        }));
+    _getCurrentLocation().then((location) => {
+          setState(() {
+            _position = LatLng(location.latitude, location.longitude);
+            isLoading = false;
+          }),
+          _startLocationUpdates(),
+          fetchPlaces()
+        });
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -34,6 +47,12 @@ class _GoogleMapsState extends State {
   void _incrementCounter(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Geolocator.getPositionStream().listen((position) {}).cancel();
   }
 
   Future<Position> _getCurrentLocation() async {
@@ -49,9 +68,57 @@ class _GoogleMapsState extends State {
       return Future.error('Location permissions are permanently denied');
     }
 
-    isLoading = false;
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+  }
+
+  void _startLocationUpdates() {
+    Geolocator.getPositionStream().listen((Position position) {
+      setState(() {
+        _position = LatLng(position.latitude, position.longitude);
+        _updateUserMarker();
+      });
+    });
+  }
+
+  void _updateUserMarker() {
+    Set<Marker> updatedMarkers = _markers.union({
+      Marker(
+        markerId: const MarkerId("user_location"),
+        position: _position,
+        icon: BitmapDescriptor.defaultMarker,
+      ),
+    });
+
+    setState(() {
+      _markers = updatedMarkers;
+    });
+  }
+
+  Future<void> fetchPlaces() async {
+    final response =
+        await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      setState(() {
+        places = jsonData.map((data) => Place.fromJson(data)).toList();
+        _markers.addAll(places.map((place) {
+          return Marker(
+            markerId: MarkerId(place.id.toString()),
+            position: LatLng(place.lat, place.lng),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+            infoWindow: InfoWindow(
+              title: place.placeName,
+              snippet: place.description,
+            ),
+          );
+        }).toSet());
+      });
+    } else {
+      throw Exception('Failed to load places');
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -67,11 +134,21 @@ class _GoogleMapsState extends State {
             backgroundColor: Colors.lightBlue, title: const Text("Home")),
         body: Center(
           child: isLoading
-              ? Text("Loading", style: TextStyle(fontSize: 60))
-              : GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition:
-                      CameraPosition(target: _position, zoom: 12.0),
+              ? const CupertinoActivityIndicator(
+                  radius: 50,
+                )
+              : Stack(
+                  children: [
+                    GoogleMap(
+                      onMapCreated: _onMapCreated,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      initialCameraPosition:
+                          CameraPosition(target: _position, zoom: 12.0),
+                      markers: _markers,
+                    ),
+                    const AddingButton(),
+                  ],
                 ),
         ),
       ),
