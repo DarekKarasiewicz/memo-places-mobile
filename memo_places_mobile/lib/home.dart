@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,9 @@ class _GoogleMapsState extends State {
   late LatLng _position;
   bool isLoading = true;
   Set<Marker> _markers = {};
-  List<Place> places = [];
+  Set<Polyline> _polylines = {};
+  List<Place> _places = [];
+  List<Trail> _trails = [];
 
   @override
   void initState() {
@@ -35,7 +38,8 @@ class _GoogleMapsState extends State {
             isLoading = false;
           }),
           _startLocationUpdates(),
-          fetchPlaces()
+          _fetchPlaces(),
+          _fetchTrails()
         });
   }
 
@@ -95,15 +99,15 @@ class _GoogleMapsState extends State {
     });
   }
 
-  Future<void> fetchPlaces() async {
+  Future<void> _fetchPlaces() async {
     final response =
         await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
-        places = jsonData.map((data) => Place.fromJson(data)).toList();
-        _markers.addAll(places.map((place) {
+        _places = jsonData.map((data) => Place.fromJson(data)).toList();
+        _markers.addAll(_places.map((place) {
           return Marker(
             markerId: MarkerId(place.id.toString()),
             position: LatLng(place.lat, place.lng),
@@ -118,6 +122,31 @@ class _GoogleMapsState extends State {
       });
     } else {
       throw Exception('Failed to load places');
+    }
+  }
+
+  Future<void> _fetchTrails() async {
+    final response =
+        await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/path/'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      setState(() {
+        _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
+        print(_trails);
+        _polylines.addAll(_trails.map((trail) {
+          return Polyline(
+              polylineId: PolylineId(trail.id.toString()),
+              visible: true,
+              points: trail.coordinates,
+              width: 4,
+              color: const Color.fromARGB(137, 33, 75, 243),
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap);
+        }).toSet());
+      });
+    } else {
+      throw Exception('Failed to load trails');
     }
   }
 
@@ -146,6 +175,7 @@ class _GoogleMapsState extends State {
                       initialCameraPosition:
                           CameraPosition(target: _position, zoom: 12.0),
                       markers: _markers,
+                      polylines: _polylines,
                     ),
                     const AddingButton(),
                   ],
