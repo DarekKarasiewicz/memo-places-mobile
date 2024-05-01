@@ -9,8 +9,11 @@ class Place {
   final int user;
   final String username;
   final int sortof;
+  final String sortofValue;
   final int type;
+  final String typeValue;
   final int period;
+  final String periodValue;
   final String topicLink;
   final String wikiLink;
   final String img;
@@ -26,8 +29,11 @@ class Place {
       required this.user,
       required this.username,
       required this.sortof,
+      required this.sortofValue,
       required this.type,
+      required this.typeValue,
       required this.period,
+      required this.periodValue,
       this.topicLink = '',
       this.wikiLink = '',
       this.img = ''});
@@ -44,8 +50,11 @@ class Place {
       user: json['user'] as int,
       username: json['username'] as String,
       sortof: json['sortof'] as int,
+      sortofValue: json['sortof_value'] as String,
       type: json['type'] as int,
+      typeValue: json['type_value'] as String,
       period: json['period'] as int,
+      periodValue: json['period_value'] as String,
       topicLink: json['topic_link'] as String? ?? '',
       wikiLink: json['wiki_link'] as String? ?? '',
       img: json['img'] as String? ?? '',

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
+import 'package:memo_places_mobile/MainPageWidgets/previewObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,10 +25,12 @@ class _GoogleMapsState extends State {
   String? _access;
   late LatLng _position;
   bool isLoading = true;
+  bool isSelectedPlace = false;
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
   List<Place> _places = [];
   List<Trail> _trails = [];
+  late Place selectedPlace;
 
   @override
   void initState() {
@@ -99,6 +102,19 @@ class _GoogleMapsState extends State {
     });
   }
 
+  void _setObject(Place place) {
+    setState(() {
+      isSelectedPlace = true;
+      selectedPlace = place;
+    });
+  }
+
+  void closePreview() {
+    setState(() {
+      isSelectedPlace = false;
+    });
+  }
+
   Future<void> _fetchPlaces() async {
     final response =
         await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
@@ -113,10 +129,7 @@ class _GoogleMapsState extends State {
             position: LatLng(place.lat, place.lng),
             icon:
                 BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            infoWindow: InfoWindow(
-              title: place.placeName,
-              snippet: place.description,
-            ),
+            onTap: () => _setObject(place),
           );
         }).toSet());
       });
@@ -133,7 +146,6 @@ class _GoogleMapsState extends State {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
-        print(_trails);
         _polylines.addAll(_trails.map((trail) {
           return Polyline(
               polylineId: PolylineId(trail.id.toString()),
@@ -177,7 +189,13 @@ class _GoogleMapsState extends State {
                       markers: _markers,
                       polylines: _polylines,
                     ),
-                    const AddingButton(),
+                    isSelectedPlace
+                        ? Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: PreviewObject(closePreview, selectedPlace))
+                        : const AddingButton(),
                   ],
                 ),
         ),
