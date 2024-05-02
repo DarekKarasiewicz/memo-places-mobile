@@ -195,7 +195,7 @@ class _GoogleMapsState extends State {
                             left: 0,
                             right: 0,
                             child: PreviewObject(closePreview, selectedPlace))
-                        : const AddingButton(),
+                        : AddingButton(_position),
                   ],
                 ),
         ),

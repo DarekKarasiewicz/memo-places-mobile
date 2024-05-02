@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memo_places_mobile/place_form.dart';
 
 class AddingButton extends StatefulWidget {
-  const AddingButton({super.key});
+  const AddingButton(this.position, {super.key});
+  final LatLng position;
 
   @override
   _AddingButtonState createState() => _AddingButtonState();
@@ -23,11 +25,15 @@ class _AddingButtonState extends State<AddingButton> {
             Row(
               children: [
                 FloatingActionButton(
+                  heroTag: 'addPlace',
                   onPressed: () {
+                    setState(() {
+                      _expanded = false;
+                    });
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const PlaceForm()),
+                          builder: (context) => PlaceForm(widget.position)),
                     );
                   },
                   backgroundColor: Colors.blue,
@@ -40,6 +46,7 @@ class _AddingButtonState extends State<AddingButton> {
               ],
             ),
           FloatingActionButton(
+            heroTag: 'openClose',
             onPressed: () {
               setState(() {
                 _expanded = !_expanded;
@@ -56,6 +63,7 @@ class _AddingButtonState extends State<AddingButton> {
               children: [
                 const SizedBox(width: 16),
                 FloatingActionButton(
+                  heroTag: 'addTrail',
                   onPressed: () {
                     // TODO add logic for redirecting to trail form
                   },
