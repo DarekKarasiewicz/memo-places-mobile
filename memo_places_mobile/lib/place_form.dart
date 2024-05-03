@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -114,12 +115,29 @@ class _PlaceFormState extends State<PlaceForm> {
           );
 
           if (response.statusCode == 200) {
+            Fluttertoast.showToast(
+              msg: "Place added successfully",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: const Color.fromARGB(200, 76, 175, 79),
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const Home()),
             );
           } else {
-            print('Error sending form: ${response.statusCode}');
+            Fluttertoast.showToast(
+              msg: "Something went wrong, try again later",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: const Color.fromARGB(197, 230, 45, 31),
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
           }
         } catch (e) {
           print('Error sending form: $e');

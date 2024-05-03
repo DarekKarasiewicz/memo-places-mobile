@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memo_places_mobile/home.dart';
 import 'package:memo_places_mobile/profile.dart';
-import 'package:memo_places_mobile/login.dart';
-import 'package:memo_places_mobile/place_form.dart';
 
 void main() {
   runApp(Main());
@@ -16,6 +14,7 @@ class Main extends StatefulWidget {
 
 class _HomeState extends State<Main> {
   int currentIndex = 0;
+  final bool isLogged = false;
   final screens = [
     Home(),
     Profile(),

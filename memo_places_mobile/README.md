@@ -72,6 +72,14 @@ PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add carousel_slider
 PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add intl
 ```
 
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add fluttertoast
+```
+
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add google_sign_in
+```
+
 ## Authors
 
 - Sebastian Mackiewicz

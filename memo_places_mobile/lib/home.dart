@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -31,6 +32,7 @@ class _GoogleMapsState extends State {
   List<Place> _places = [];
   List<Trail> _trails = [];
   late Place selectedPlace;
+  late StreamSubscription<Position> _positionStreamSubscription;
 
   @override
   void initState() {
@@ -38,11 +40,13 @@ class _GoogleMapsState extends State {
     _getCurrentLocation().then((location) => {
           setState(() {
             _position = LatLng(location.latitude, location.longitude);
-            isLoading = false;
           }),
           _startLocationUpdates(),
           _fetchPlaces(),
-          _fetchTrails()
+          _fetchTrails(),
+          setState(() {
+            isLoading = false;
+          })
         });
   }
 
@@ -58,8 +62,8 @@ class _GoogleMapsState extends State {
 
   @override
   void dispose() {
+    _positionStreamSubscription.cancel();
     super.dispose();
-    Geolocator.getPositionStream().listen((position) {}).cancel();
   }
 
   Future<Position> _getCurrentLocation() async {
@@ -80,7 +84,8 @@ class _GoogleMapsState extends State {
   }
 
   void _startLocationUpdates() {
-    Geolocator.getPositionStream().listen((Position position) {
+    _positionStreamSubscription =
+        Geolocator.getPositionStream().listen((Position position) {
       setState(() {
         _position = LatLng(position.latitude, position.longitude);
         _updateUserMarker();
@@ -175,9 +180,7 @@ class _GoogleMapsState extends State {
             backgroundColor: Colors.lightBlue, title: const Text("Home")),
         body: Center(
           child: isLoading
-              ? const CupertinoActivityIndicator(
-                  radius: 50,
-                )
+              ? const CircularProgressIndicator()
               : Stack(
                   children: [
                     GoogleMap(
