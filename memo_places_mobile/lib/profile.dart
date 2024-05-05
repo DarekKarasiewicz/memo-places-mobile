@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:memo_places_mobile/Objects/buttonData.dart';
+import 'package:memo_places_mobile/ProfileWidgets/profileButton.dart';
+import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
+import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/profile_my_places.dart';
-import 'package:memo_places_mobile/signInOrSignUpPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key});
+  const Profile({super.key});
 
   @override
-  _ProfileState createState() => _ProfileState();
+  State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
   late Future<String?> _futureAccess = _loadCounter("access");
+  List<ButtonData> buttonsData = [];
 
   @override
   void initState() {
     super.initState();
     _futureAccess = _loadCounter("access");
+    _initializeButtonsData();
+  }
+
+  void _initializeButtonsData() {
+    buttonsData = [
+      ButtonData(text: "Edit profile", onTap: onTap),
+      ButtonData(text: "My Places", onTap: _redirectToMyPlaces),
+      ButtonData(text: "My Trails", onTap: onTap),
+      ButtonData(text: "Contact us", onTap: onTap),
+    ];
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -34,100 +47,55 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  void _redirectToMyPlaces() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyPlaces()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
           backgroundColor: Colors.amber,
           title: const Text("Profile"),
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              CircleAvatar(
-                  radius: 65,
-                  backgroundColor: Colors.transparent,
-                  child: ClipOval(
-                      child: Image.network(
-                    'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg',
-                    loadingBuilder: (context, child, loadingProgress) {
-                      return loadingProgress == null
-                          ? child
-                          : LinearProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null);
-                    },
-                  ))),
-              FutureBuilder(
-                future: _futureAccess,
-                builder: (context, AsyncSnapshot<String?> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasData) {
-                    Map<String, dynamic> decodedToken =
-                        JwtDecoder.decode(snapshot.data!);
-                    return Text(
-                      decodedToken["email"],
-                      style: TextStyle(fontSize: 16),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text(
-                      "Error loading data",
-                      style: TextStyle(fontSize: 16),
-                    );
-                  } else {
-                    return Text(
-                      "Login to see data",
-                      style: TextStyle(fontSize: 16),
-                    );
-                  }
-                },
+              const ProfileInfoBox(
+                username: "Test Value",
+                email: "test.wp.pl",
               ),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SignInOrSingUpPage()),
-                  );
-                },
-                child: Text('Edit profile'),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: buttonsData
+                      .map((buttonData) => ProfileButton(
+                          onTap: buttonData.onTap, text: buttonData.text))
+                      .toList(),
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SignInOrSingUpPage()),
-                  );
-                },
-                child: Text('Login'),
+              const SizedBox(
+                height: 120,
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyPlaces()),
-                  );
-                },
-                child: Text('My places'),
-              ),
-              TextButton(
-                onPressed: () {
-                  _clearAccessKeyAndRefresh();
-                },
-                child: Text('Logout'),
-              ),
+              SignInSignUpButton(
+                  buttonText: "Sign Out", onTap: _clearAccessKeyAndRefresh),
+              const SizedBox(
+                height: 20,
+              )
             ],
           ),
         ),
       ),
     );
   }
+
+  void onTap() {}
 }
