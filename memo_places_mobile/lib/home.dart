@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
@@ -156,7 +155,7 @@ class _GoogleMapsState extends State {
               polylineId: PolylineId(trail.id.toString()),
               visible: true,
               points: trail.coordinates,
-              width: 4,
+              width: 40,
               color: const Color.fromARGB(137, 33, 75, 243),
               startCap: Cap.roundCap,
               endCap: Cap.roundCap);

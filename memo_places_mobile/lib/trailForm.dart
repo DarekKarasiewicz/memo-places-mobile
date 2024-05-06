@@ -7,31 +7,35 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
-import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PlaceForm extends StatefulWidget {
-  const PlaceForm(this.position, {super.key});
-  final LatLng position;
+class TrailForm extends StatefulWidget {
+  final List<LatLng> trailCoordinates;
+  final String distance;
+  final String time;
+
+  const TrailForm(
+      {super.key,
+      required this.trailCoordinates,
+      required this.distance,
+      required this.time});
 
   @override
-  _PlaceFormState createState() => _PlaceFormState();
+  State<StatefulWidget> createState() => _TrailFormState();
 }
 
-class _PlaceFormState extends State<PlaceForm> {
+class _TrailFormState extends State<TrailForm> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _link1Controller = TextEditingController();
-  TextEditingController _link2Controller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _link1Controller = TextEditingController();
+  final TextEditingController _link2Controller = TextEditingController();
 
   late Future<String?> _futureAccess;
   List<Type> _types = [];
   List<Period> _periods = [];
-  List<Sortof> _sortofs = [];
-  late String _selectedSortof;
   late String _selectedPeriod;
   late String _selectedType;
 
@@ -41,7 +45,8 @@ class _PlaceFormState extends State<PlaceForm> {
     _futureAccess = _loadCounter("access");
     _fetchTypes();
     _fetchPeriods();
-    _fetchSortof();
+    _descriptionController.text =
+        "Time: ${widget.time}\nDistance: ${widget.distance} Km";
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -75,17 +80,25 @@ class _PlaceFormState extends State<PlaceForm> {
     }
   }
 
-  Future<void> _fetchSortof() async {
-    var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _sortofs = jsonData.map((data) => Sortof.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception('Failed to fetch types');
+  List<LatLng> removeDuplicates(List<LatLng> latLngList) {
+    Set<LatLng> uniqueLatLngSet = {};
+
+    for (LatLng latLng in latLngList) {
+      uniqueLatLngSet.add(latLng);
     }
+
+    return uniqueLatLngSet.toList();
+  }
+
+  String convertLatLngToJson(List<LatLng> latLngList) {
+    List<Map<String, String>> listOfMaps = latLngList.map((latLng) {
+      return {
+        'lat': latLng.latitude.toString(),
+        'lng': latLng.longitude.toString(),
+      };
+    }).toList();
+
+    return jsonEncode(listOfMaps);
   }
 
   void _submitForm(BuildContext context) async {
@@ -94,12 +107,11 @@ class _PlaceFormState extends State<PlaceForm> {
       if (token != null) {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         Map<String, String> formData = {
-          'place_name': _nameController.text,
+          'path_name': _nameController.text,
           'found_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-          'lat': widget.position.latitude.toString(),
-          'lng': widget.position.longitude.toString(),
+          'coordinates':
+              convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
           'type': _selectedType,
-          'sortof': _selectedSortof,
           'period': _selectedPeriod,
           'description': _descriptionController.text,
           'wiki_link': _link1Controller.text,
@@ -109,13 +121,13 @@ class _PlaceFormState extends State<PlaceForm> {
 
         try {
           var response = await http.post(
-            Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
+            Uri.parse('http://10.0.2.2:8000/memo_places/path/'),
             body: formData,
           );
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: "Place added successfully",
+              msg: "Trail added successfully",
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -150,12 +162,11 @@ class _PlaceFormState extends State<PlaceForm> {
   @override
   Widget build(BuildContext context) {
     _types.sort((a, b) => a.order.compareTo(b.order));
-    _sortofs.sort((a, b) => a.order.compareTo(b.order));
     _periods.sort((a, b) => a.order.compareTo(b.order));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Place Form'),
+        title: const Text('Trail Form'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -196,27 +207,6 @@ class _PlaceFormState extends State<PlaceForm> {
                   return DropdownMenuItem<Type>(
                     value: type,
                     child: Text(type.name),
-                  );
-                }).toList(),
-              ),
-              DropdownButtonFormField<Sortof>(
-                hint: const Text('Select Sortof'),
-                value: null,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a sortof';
-                  }
-                  return null;
-                },
-                onChanged: (Sortof? newValue) {
-                  setState(() {
-                    _selectedSortof = newValue!.id.toString();
-                  });
-                },
-                items: _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
-                  return DropdownMenuItem<Sortof>(
-                    value: sortof,
-                    child: Text(sortof.name),
                   );
                 }).toList(),
               ),

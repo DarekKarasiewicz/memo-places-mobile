@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memo_places_mobile/place_form.dart';
+import 'package:memo_places_mobile/trailRecordPage.dart';
 
 class AddingButton extends StatefulWidget {
   const AddingButton(this.position, {super.key});
@@ -65,7 +66,12 @@ class _AddingButtonState extends State<AddingButton> {
                 FloatingActionButton(
                   heroTag: 'addTrail',
                   onPressed: () {
-                    // TODO add logic for redirecting to trail form
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              TrailRecordPage(startLocation: widget.position)),
+                    );
                   },
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
