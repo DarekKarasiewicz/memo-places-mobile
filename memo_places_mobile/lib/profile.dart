@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/buttonData.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileButton.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +20,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   late Future<String?> _futureAccess = _loadCounter("access");
   List<ButtonData> buttonsData = [];
+  late User _user;
 
   @override
   void initState() {
@@ -30,13 +34,20 @@ class _ProfileState extends State<Profile> {
       ButtonData(text: "Edit profile", onTap: onTap),
       ButtonData(text: "My Places", onTap: _redirectToMyPlaces),
       ButtonData(text: "My Trails", onTap: _redirectToMyTrails),
-      ButtonData(text: "Contact us", onTap: onTap),
+      ButtonData(text: "Contact us", onTap: _redirectToContactUs),
     ];
   }
 
   Future<String?> _loadCounter(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
+  }
+
+  void _loadUserData() async {
+    String? token = await _futureAccess;
+    setState(() {
+      _user = User.fromJson(JwtDecoder.decode(token!));
+    });
   }
 
   Future<void> _clearAccessKeyAndRefresh() async {
@@ -59,6 +70,13 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MyTrails()),
+    );
+  }
+
+  void _redirectToContactUs() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ContactUsForm()),
     );
   }
 

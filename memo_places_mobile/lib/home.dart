@@ -213,6 +213,18 @@ class _GoogleMapsState extends State {
                       markers: _markers,
                       polylines: _polylines,
                     ),
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          mapController.animateCamera(
+                            CameraUpdate.newLatLng(_position),
+                          );
+                        },
+                        child: const Icon(Icons.location_searching),
+                      ),
+                    ),
                     isSelectedPlace
                         ? Positioned(
                             bottom: 0,
