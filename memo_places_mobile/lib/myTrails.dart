@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myTrailBox.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/trailDetails.dart';
+import 'package:memo_places_mobile/trailEditForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyTrails extends StatefulWidget {
@@ -83,6 +85,43 @@ class _MyTrailsState extends State<MyTrails> {
     );
   }
 
+  void _showEditDialog(int index) {
+    BuildContext dialogContext;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        dialogContext = context;
+
+        return AlertDialog(
+          title: const Text("Confirm"),
+          content: const Text(
+              "You will be able only to edit basic information, for more editing options please visit our website."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TrailEditForm(_trails[index]),
+                  ),
+                );
+              },
+              child: const Text("Ok"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _deleteTrail(int index) async {
     final response = await http.delete(Uri.parse(
         'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}'));
@@ -150,8 +189,13 @@ class _MyTrailsState extends State<MyTrails> {
                         extentRatio: 0.25,
                         children: [
                           SlidableAction(
-                            //TODO add trails details page
-                            onPressed: (context) {},
+                            onPressed: (context) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TrailDetails(trail)),
+                              );
+                            },
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
                             icon: Icons.arrow_forward,
@@ -163,8 +207,9 @@ class _MyTrailsState extends State<MyTrails> {
                         motion: const ScrollMotion(),
                         children: [
                           SlidableAction(
-                            //TODO editing page
-                            onPressed: onPressed,
+                            onPressed: (context) {
+                              _showEditDialog(index);
+                            },
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             icon: Icons.edit_location_alt_outlined,

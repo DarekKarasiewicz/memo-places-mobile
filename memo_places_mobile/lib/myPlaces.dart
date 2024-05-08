@@ -7,6 +7,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/placeEditForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPlaces extends StatefulWidget {
@@ -77,6 +78,43 @@ class _MyPlacesState extends State<MyPlaces> {
                 Navigator.pop(dialogContext);
               },
               child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditDialog(int index) {
+    BuildContext dialogContext;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        dialogContext = context;
+
+        return AlertDialog(
+          title: const Text("Confirm"),
+          content: const Text(
+              "You will be able only to edit basic information, for more editing options please visit our website."),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceEditForm(_places[index]),
+                  ),
+                );
+              },
+              child: const Text("Ok"),
             ),
           ],
         );
@@ -170,8 +208,9 @@ class _MyPlacesState extends State<MyPlaces> {
                           motion: const ScrollMotion(),
                           children: [
                             SlidableAction(
-                              //TODO editing page
-                              onPressed: onPressed,
+                              onPressed: (context) {
+                                _showEditDialog(index);
+                              },
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
                               icon: Icons.edit_location_alt_outlined,
