@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
-import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final List<String> demoImages = [
@@ -9,13 +9,13 @@ final List<String> demoImages = [
   'https://picsum.photos/250?image=9'
 ];
 
-class PlaceDetails extends StatelessWidget {
-  const PlaceDetails(this.place, {super.key});
-  final Place place;
+class TrailDetails extends StatelessWidget {
+  const TrailDetails(this.trail, {super.key});
+  final Trail trail;
 
   _launchMaps() async {
     final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}');
+        'https://www.google.com/maps/search/?api=1&query=${trail.coordinates[0].latitude},${trail.coordinates[0].longitude}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
@@ -34,7 +34,7 @@ class PlaceDetails extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
           ),
           backgroundColor: Colors.white,
-          title: Text(place.placeName),
+          title: Text(trail.trailName),
         ),
         body: Center(
           child: Column(
@@ -56,11 +56,10 @@ class PlaceDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text("Info:"),
-                      Text("\u2022 Type - ${place.typeValue}"),
-                      Text("\u2022 Period - ${place.periodValue}"),
-                      Text("\u2022 Sortof - ${place.sortofValue}"),
-                      Text("\u2022 found - ${place.foundDate}")
+                      const Text("Info:"),
+                      Text("\u2022 Type - ${trail.typeValue}"),
+                      Text("\u2022 Period - ${trail.periodValue}"),
+                      Text("\u2022 found - ${trail.foundDate}")
                     ],
                   ),
                 ),
@@ -82,8 +81,8 @@ class PlaceDetails extends StatelessWidget {
                   child: Center(
                     child: Column(
                       children: [
-                        Text("Description:"),
-                        Text("${place.description}"),
+                        const Text("Description:"),
+                        Text(trail.description),
                       ],
                     ),
                   ),
@@ -92,7 +91,7 @@ class PlaceDetails extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                   onPressed: _launchMaps,
-                  child: const Text("Show on Google Maps"),
+                  child: const Text("Navigate to trail"),
                 ),
               ),
               const SizedBox(

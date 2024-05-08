@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memo_places_mobile/placeDetails.dart';
-import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/trailDetails.dart';
 
-class PreviewObject extends StatelessWidget {
-  const PreviewObject(this.closePreview, this.selectedPlace, {super.key});
+class PreviewTrail extends StatelessWidget {
   final void Function() closePreview;
-  final Place selectedPlace;
+  final Trail trail;
+
+  const PreviewTrail(this.closePreview, this.trail, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,8 @@ class PreviewObject extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => PlaceDetails(selectedPlace)),
+              builder: (context) => TrailDetails(trail),
+            ),
           );
         }
       },
@@ -78,7 +80,7 @@ class PreviewObject extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  selectedPlace.placeName,
+                                  trail.trailName,
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
@@ -89,7 +91,7 @@ class PreviewObject extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  selectedPlace.foundDate,
+                                  trail.foundDate,
                                 ),
                               ),
                               const SizedBox(
@@ -112,6 +114,4 @@ class PreviewObject extends StatelessWidget {
       ),
     );
   }
-
-  void onPressed() {}
 }

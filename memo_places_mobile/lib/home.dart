@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
-import 'package:memo_places_mobile/MainPageWidgets/previewObject.dart';
+import 'package:memo_places_mobile/MainPageWidgets/previewPlace.dart';
+import 'package:memo_places_mobile/MainPageWidgets/prewiewTrail.dart';
+import 'package:memo_places_mobile/Objects/currnetObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,7 +32,7 @@ class _GoogleMapsState extends State {
   Set<Polyline> _polylines = {};
   List<Place> _places = [];
   List<Trail> _trails = [];
-  late Place selectedPlace;
+  late CurrentObject selectedObject;
   late StreamSubscription<Position> _positionStreamSubscription;
 
   @override
@@ -106,10 +108,14 @@ class _GoogleMapsState extends State {
     });
   }
 
-  void _setObject(Place place) {
+  void _setObject(Place? place, Trail? trail) {
     setState(() {
       isSelectedPlace = true;
-      selectedPlace = place;
+      if (place == null) {
+        selectedObject = CurrentObject(null, trail);
+      } else {
+        selectedObject = CurrentObject(place, null);
+      }
     });
   }
 
@@ -133,7 +139,8 @@ class _GoogleMapsState extends State {
             position: LatLng(place.lat, place.lng),
             icon:
                 BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            onTap: () => _setObject(place),
+            consumeTapEvents: true,
+            onTap: () => _setObject(place, null),
           );
         }).toSet());
       });
@@ -152,13 +159,16 @@ class _GoogleMapsState extends State {
         _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
         _polylines.addAll(_trails.map((trail) {
           return Polyline(
-              polylineId: PolylineId(trail.id.toString()),
-              visible: true,
-              points: trail.coordinates,
-              width: 10,
-              color: const Color.fromARGB(137, 33, 75, 243),
-              startCap: Cap.roundCap,
-              endCap: Cap.roundCap);
+            polylineId: PolylineId(trail.id.toString()),
+            visible: true,
+            points: trail.coordinates,
+            width: 10,
+            color: const Color.fromARGB(137, 33, 75, 243),
+            startCap: Cap.roundCap,
+            endCap: Cap.roundCap,
+            consumeTapEvents: true,
+            onTap: () => _setObject(null, trail),
+          );
         }).toSet());
       });
     } else {
@@ -182,6 +192,18 @@ class _GoogleMapsState extends State {
               ? const CircularProgressIndicator()
               : Stack(
                   children: [
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          mapController.animateCamera(
+                            CameraUpdate.newLatLng(_position),
+                          );
+                        },
+                        child: const Icon(Icons.location_searching),
+                      ),
+                    ),
                     GoogleMap(
                       onMapCreated: _onMapCreated,
                       myLocationButtonEnabled: false,
@@ -196,7 +218,11 @@ class _GoogleMapsState extends State {
                             bottom: 0,
                             left: 0,
                             right: 0,
-                            child: PreviewObject(closePreview, selectedPlace))
+                            child: selectedObject.place == null
+                                ? PreviewTrail(
+                                    closePreview, selectedObject.trail!)
+                                : PreviewPlace(
+                                    closePreview, selectedObject.place!))
                         : AddingButton(_position),
                   ],
                 ),
