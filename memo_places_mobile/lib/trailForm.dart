@@ -46,7 +46,7 @@ class _TrailFormState extends State<TrailForm> {
     _fetchTypes();
     _fetchPeriods();
     _descriptionController.text =
-        "Time: ${widget.time}\nDistance: ${widget.distance} Km";
+        "Time: ${widget.time}\nDistance: ${widget.distance} Km\n";
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -91,10 +91,10 @@ class _TrailFormState extends State<TrailForm> {
   }
 
   String convertLatLngToJson(List<LatLng> latLngList) {
-    List<Map<String, String>> listOfMaps = latLngList.map((latLng) {
+    List<Map<String, double>> listOfMaps = latLngList.map((latLng) {
       return {
-        'lat': latLng.latitude.toString(),
-        'lng': latLng.longitude.toString(),
+        'lat': latLng.latitude,
+        'lng': latLng.longitude,
       };
     }).toList();
 

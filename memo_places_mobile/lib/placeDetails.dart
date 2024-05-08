@@ -10,8 +10,8 @@ final List<String> demoImages = [
   'https://picsum.photos/250?image=9'
 ];
 
-class ObjectDetails extends StatelessWidget {
-  const ObjectDetails(this.place, {super.key});
+class PlaceDetails extends StatelessWidget {
+  const PlaceDetails(this.place, {super.key});
   final Place place;
 
   _launchMaps() async {

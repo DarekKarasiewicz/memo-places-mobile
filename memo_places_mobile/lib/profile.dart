@@ -3,7 +3,8 @@ import 'package:memo_places_mobile/Objects/buttonData.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileButton.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
-import 'package:memo_places_mobile/profile_my_places.dart';
+import 'package:memo_places_mobile/myPlaces.dart';
+import 'package:memo_places_mobile/myTrails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
@@ -28,7 +29,7 @@ class _ProfileState extends State<Profile> {
     buttonsData = [
       ButtonData(text: "Edit profile", onTap: onTap),
       ButtonData(text: "My Places", onTap: _redirectToMyPlaces),
-      ButtonData(text: "My Trails", onTap: onTap),
+      ButtonData(text: "My Trails", onTap: _redirectToMyTrails),
       ButtonData(text: "Contact us", onTap: onTap),
     ];
   }
@@ -51,6 +52,13 @@ class _ProfileState extends State<Profile> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const MyPlaces()),
+    );
+  }
+
+  void _redirectToMyTrails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MyTrails()),
     );
   }
 

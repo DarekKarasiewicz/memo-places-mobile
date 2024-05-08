@@ -155,7 +155,7 @@ class _GoogleMapsState extends State {
               polylineId: PolylineId(trail.id.toString()),
               visible: true,
               points: trail.coordinates,
-              width: 40,
+              width: 10,
               color: const Color.fromARGB(137, 33, 75, 243),
               startCap: Cap.roundCap,
               endCap: Cap.roundCap);

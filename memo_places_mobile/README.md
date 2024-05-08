@@ -80,6 +80,10 @@ PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add fluttertoast
 PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add google_sign_in
 ```
 
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add flutter_slidable
+```
+
 ## Authors
 
 - Sebastian Mackiewicz

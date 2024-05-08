@@ -8,20 +8,23 @@ class ProfileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.symmetric(
-            horizontal: BorderSide(width: 2, color: Colors.grey.shade500),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.symmetric(
+              horizontal: BorderSide(width: 2, color: Colors.grey.shade500),
+            ),
+            color: Colors.grey.shade400),
+        padding: const EdgeInsets.all(20),
+        child: Center(
+            child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
           ),
-          color: Colors.grey.shade400),
-      padding: const EdgeInsets.all(20),
-      child: Center(
-          child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-        ),
-      )),
+        )),
+      ),
     );
   }
 }

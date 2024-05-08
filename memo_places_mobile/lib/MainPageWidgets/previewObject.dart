@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memo_places_mobile/ObjectDetails.dart';
+import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 
 class PreviewObject extends StatelessWidget {
@@ -17,7 +17,7 @@ class PreviewObject extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ObjectDetails(selectedPlace)),
+                builder: (context) => PlaceDetails(selectedPlace)),
           );
         }
       },

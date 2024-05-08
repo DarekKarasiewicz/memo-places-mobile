@@ -35,8 +35,8 @@ class Trail {
   factory Trail.fromJson(Map<String, dynamic> json) {
     List<dynamic> coordinatesJson = jsonDecode(json['coordinates']);
     List<LatLng> coordinates = coordinatesJson.map((coord) {
-      double lat = coord['lat'];
-      double lng = coord['lng'];
+      double lat = coord['lat'] as double;
+      double lng = coord['lng'] as double;
       return LatLng(lat, lng);
     }).toList();
 
