@@ -9,7 +9,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
-import 'package:memo_places_mobile/home.dart';
+import 'package:memo_places_mobile/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlaceForm extends StatefulWidget {
@@ -125,7 +125,7 @@ class _PlaceFormState extends State<PlaceForm> {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const Home()),
+              MaterialPageRoute(builder: (context) => const Main()),
             );
           } else {
             Fluttertoast.showToast(

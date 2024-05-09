@@ -84,6 +84,14 @@ PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add google_sign_in
 PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add flutter_slidable
 ```
 
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add cross_file
+```
+
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add image_picker
+```
+
 ## Authors
 
 - Sebastian Mackiewicz

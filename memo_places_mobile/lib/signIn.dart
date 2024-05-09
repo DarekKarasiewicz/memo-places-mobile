@@ -7,6 +7,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
+import 'package:memo_places_mobile/main.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +56,7 @@ class _SignInState extends State<SignIn> {
     String url = 'http://10.0.2.2:8000/memo_places/token/';
     String email = emailController.text;
     String password = passwordController.text;
+
     showDialog(
         context: context,
         builder: (context) {
@@ -76,6 +78,10 @@ class _SignInState extends State<SignIn> {
           _access = responseDecoded["access"];
           _incrementCounter("access", _access!);
           Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Main()),
+          );
           Fluttertoast.showToast(
             msg: "Successfully signed in!",
             toastLength: Toast.LENGTH_LONG,

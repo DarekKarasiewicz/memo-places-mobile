@@ -21,18 +21,21 @@ class _HomeState extends State<Main> {
   late String? token;
   int currentIndex = 0;
   bool isLogged = false;
-  final screens = [
-    const Home(),
-    const Profile(),
-  ];
+  late List<Widget> screens = [];
 
   @override
   void initState() {
     super.initState();
+    screens = [
+      const Home(),
+      Profile(_clearAccessKeyAndRefresh),
+    ];
     _loadCounter("access").then((value) {
       token = value;
       if (token != null) {
         isLogged = true;
+      } else {
+        isLogged = false;
       }
     });
   }
@@ -40,6 +43,14 @@ class _HomeState extends State<Main> {
   Future<String?> _loadCounter(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
+  }
+
+  Future<void> _clearAccessKeyAndRefresh() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("access");
+    setState(() {
+      token = null;
+    });
   }
 
   @override

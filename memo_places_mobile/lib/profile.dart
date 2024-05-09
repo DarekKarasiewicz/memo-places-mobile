@@ -6,12 +6,14 @@ import 'package:memo_places_mobile/ProfileWidgets/profileButton.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/contactUsForm.dart';
+import 'package:memo_places_mobile/editProfile.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  final Future<void> Function() clearAccessKeyAndRefresh;
+  const Profile(this.clearAccessKeyAndRefresh, {super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -27,11 +29,12 @@ class _ProfileState extends State<Profile> {
     super.initState();
     _futureAccess = _loadCounter("access");
     _initializeButtonsData();
+    _loadUserData();
   }
 
   void _initializeButtonsData() {
     buttonsData = [
-      ButtonData(text: "Edit profile", onTap: onTap),
+      ButtonData(text: "Edit profile", onTap: _redirectToEditProfile),
       ButtonData(text: "My Places", onTap: _redirectToMyPlaces),
       ButtonData(text: "My Trails", onTap: _redirectToMyTrails),
       ButtonData(text: "Contact us", onTap: _redirectToContactUs),
@@ -47,15 +50,6 @@ class _ProfileState extends State<Profile> {
     String? token = await _futureAccess;
     setState(() {
       _user = User.fromJson(JwtDecoder.decode(token!));
-    });
-  }
-
-  Future<void> _clearAccessKeyAndRefresh() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("access");
-    setState(() {
-      // Refresh the page by resetting the future to reload the data
-      _futureAccess = _loadCounter("access");
     });
   }
 
@@ -80,6 +74,13 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  void _redirectToEditProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditProfile(_user)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -94,9 +95,9 @@ class _ProfileState extends State<Profile> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const ProfileInfoBox(
-                username: "Test Value",
-                email: "test.wp.pl",
+              ProfileInfoBox(
+                username: _user.username,
+                email: _user.email,
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -112,7 +113,8 @@ class _ProfileState extends State<Profile> {
                 height: 120,
               ),
               SignInSignUpButton(
-                  buttonText: "Sign Out", onTap: _clearAccessKeyAndRefresh),
+                  buttonText: "Sign Out",
+                  onTap: widget.clearAccessKeyAndRefresh),
               const SizedBox(
                 height: 20,
               )

@@ -192,18 +192,6 @@ class _GoogleMapsState extends State {
               ? const CircularProgressIndicator()
               : Stack(
                   children: [
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          mapController.animateCamera(
-                            CameraUpdate.newLatLng(_position),
-                          );
-                        },
-                        child: const Icon(Icons.location_searching),
-                      ),
-                    ),
                     GoogleMap(
                       onMapCreated: _onMapCreated,
                       myLocationButtonEnabled: false,
@@ -217,6 +205,7 @@ class _GoogleMapsState extends State {
                       top: 16,
                       right: 16,
                       child: FloatingActionButton(
+                        heroTag: 'locateMe',
                         onPressed: () {
                           mapController.animateCamera(
                             CameraUpdate.newLatLng(_position),

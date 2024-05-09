@@ -124,8 +124,8 @@ class _MyPlacesState extends State<MyPlaces> {
 
   Future<void> _deletePlace(int index) async {
     final response = await http.delete(Uri.parse(
-        'http://10.0.2.2:8000/memo_places/places/${_places[index].id}'));
-    if (response.statusCode == 201) {
+        'http://10.0.2.2:8000/memo_places/places/${_places[index].id}/'));
+    if (response.statusCode == 200) {
       Fluttertoast.showToast(
         msg: "Place deleted",
         toastLength: Toast.LENGTH_LONG,

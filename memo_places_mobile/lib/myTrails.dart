@@ -124,8 +124,8 @@ class _MyTrailsState extends State<MyTrails> {
 
   Future<void> _deleteTrail(int index) async {
     final response = await http.delete(Uri.parse(
-        'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}'));
-    if (response.statusCode == 301) {
+        'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}/'));
+    if (response.statusCode == 200) {
       Fluttertoast.showToast(
         msg: "Trail deleted",
         toastLength: Toast.LENGTH_LONG,
