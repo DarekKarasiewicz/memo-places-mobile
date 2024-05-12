@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/buttonData.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
@@ -7,13 +8,14 @@ import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/editProfile.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Profile extends StatefulWidget {
-  final Future<void> Function() clearAccessKeyAndRefresh;
-  const Profile(this.clearAccessKeyAndRefresh, {super.key});
+  const Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -23,21 +25,43 @@ class _ProfileState extends State<Profile> {
   late Future<String?> _futureAccess = _loadCounter("access");
   List<ButtonData> buttonsData = [];
   late User _user;
+  late String? token;
+
+  Future<void> _clearAccessKeyAndRefresh() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("access");
+    setState(() {
+      token = null;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _futureAccess = _loadCounter("access");
-    _initializeButtonsData();
     _loadUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeButtonsData();
   }
 
   void _initializeButtonsData() {
     buttonsData = [
-      ButtonData(text: "Edit profile", onTap: _redirectToEditProfile),
-      ButtonData(text: "My Places", onTap: _redirectToMyPlaces),
-      ButtonData(text: "My Trails", onTap: _redirectToMyTrails),
-      ButtonData(text: "Contact us", onTap: _redirectToContactUs),
+      ButtonData(
+          text: AppLocalizations.of(context)!.editProfile,
+          onTap: _redirectToEditProfile),
+      ButtonData(
+          text: AppLocalizations.of(context)!.myPlaces,
+          onTap: _redirectToMyPlaces),
+      ButtonData(
+          text: AppLocalizations.of(context)!.myTrails,
+          onTap: _redirectToMyTrails),
+      ButtonData(
+          text: AppLocalizations.of(context)!.contactUs,
+          onTap: _redirectToContactUs),
     ];
   }
 
@@ -84,12 +108,19 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
           backgroundColor: Colors.amber,
-          title: const Text("Profile"),
+          title: Text(AppLocalizations.of(context)!.profile),
         ),
         body: Center(
           child: Column(
@@ -113,8 +144,8 @@ class _ProfileState extends State<Profile> {
                 height: 120,
               ),
               SignInSignUpButton(
-                  buttonText: "Sign Out",
-                  onTap: widget.clearAccessKeyAndRefresh),
+                  buttonText: AppLocalizations.of(context)!.signOut,
+                  onTap: _clearAccessKeyAndRefresh),
               const SizedBox(
                 height: 20,
               )
@@ -124,6 +155,4 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
-
-  void onTap() {}
 }

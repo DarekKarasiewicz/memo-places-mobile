@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ContactUsForm extends StatefulWidget {
   const ContactUsForm({super.key});
@@ -50,13 +53,13 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/memo_places/contact_us/'),
+        Uri.parse('http://localhost:8000/memo_places/contact_us/'),
         body: formData,
       );
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: 'Message successfully sent',
+          msg: AppLocalizations.of(context)!.messageSentSucces,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -67,7 +70,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
         Navigator.pop(context);
       } else {
         Fluttertoast.showToast(
-          msg: 'Something went wrong, try again later',
+          msg: AppLocalizations.of(context)!.alertError,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -84,6 +87,13 @@ class _ContactUsFormState extends State<ContactUsForm> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
@@ -94,7 +104,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
           ),
           centerTitle: true,
           title: Text(
-            'Contact Us',
+            AppLocalizations.of(context)!.contactUs,
             style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -122,10 +132,11 @@ class _ContactUsFormState extends State<ContactUsForm> {
                     labelStyle: TextStyle(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.bold),
-                    labelText: 'Title',
-                    hintText: 'Enter a title',
-                    errorText:
-                        _isTitleEmpty ? 'This field can\'t be empty!' : null,
+                    labelText: AppLocalizations.of(context)!.title,
+                    hintText: AppLocalizations.of(context)!.enterTitle,
+                    errorText: _isTitleEmpty
+                        ? AppLocalizations.of(context)!.fieldInfo
+                        : null,
                   ),
                 ),
                 const SizedBox(
@@ -148,10 +159,11 @@ class _ContactUsFormState extends State<ContactUsForm> {
                     labelStyle: TextStyle(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.bold),
-                    labelText: 'Message',
-                    hintText: 'Enter your message here ...',
-                    errorText:
-                        _isMessageEmpty ? 'This field can\'t be empty!' : null,
+                    labelText: AppLocalizations.of(context)!.message,
+                    hintText: AppLocalizations.of(context)!.enterMessage,
+                    errorText: _isMessageEmpty
+                        ? AppLocalizations.of(context)!.fieldInfo
+                        : null,
                   ),
                 ),
                 const SizedBox(
@@ -177,9 +189,9 @@ class _ContactUsFormState extends State<ContactUsForm> {
                       _sendMessage();
                     }
                   },
-                  child: const Text(
-                    "Send message",
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.sendMessage,
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),

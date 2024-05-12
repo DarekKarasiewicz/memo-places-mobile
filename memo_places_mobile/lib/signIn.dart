@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpSwitchButton.dart';
@@ -7,10 +8,12 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/main.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignIn extends StatefulWidget {
   final void Function() togglePages;
@@ -53,7 +56,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> _login() async {
-    String url = 'http://10.0.2.2:8000/memo_places/token/';
+    String url = 'http://localhost:8000/memo_places/token/';
     String email = emailController.text;
     String password = passwordController.text;
 
@@ -83,7 +86,7 @@ class _SignInState extends State<SignIn> {
             MaterialPageRoute(builder: (context) => const Main()),
           );
           Fluttertoast.showToast(
-            msg: "Successfully signed in!",
+            msg: AppLocalizations.of(context)!.succesSignedIn,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -95,7 +98,7 @@ class _SignInState extends State<SignIn> {
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: "Bad credentials!",
+          msg: AppLocalizations.of(context)!.badCredentials,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -105,7 +108,7 @@ class _SignInState extends State<SignIn> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: "Something went wrong, try again later.",
+          msg: AppLocalizations.of(context)!.alertError,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -122,12 +125,19 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
-          title: const Text("Login"),
+          title: Text(AppLocalizations.of(context)!.signIn),
         ),
         body: SafeArea(
           child: Center(
@@ -146,13 +156,13 @@ class _SignInState extends State<SignIn> {
                     const SizedBox(height: 20),
                     SignInAndSignUpTextField(
                         controller: emailController,
-                        hintText: "Enter email",
+                        hintText: AppLocalizations.of(context)!.enterEmail,
                         obscureText: false,
                         icon: const Icon(Icons.email)),
                     const SizedBox(height: 20),
                     SignInAndSignUpTextField(
                       controller: passwordController,
-                      hintText: "Enter password",
+                      hintText: AppLocalizations.of(context)!.enterPass,
                       obscureText: _isPaswordHidden,
                       icon: const Icon(Icons.lock),
                     ),
@@ -175,14 +185,16 @@ class _SignInState extends State<SignIn> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "Forgot password ?",
+                                AppLocalizations.of(context)!.forgotPass,
                                 style: TextStyle(color: Colors.grey.shade700),
                               ),
                             ))
                       ],
                     ),
                     const SizedBox(height: 20),
-                    SignInSignUpButton(onTap: _login, buttonText: "Sign In"),
+                    SignInSignUpButton(
+                        onTap: _login,
+                        buttonText: AppLocalizations.of(context)!.signIn),
                     const SizedBox(height: 40),
                     Row(
                       children: [
@@ -195,7 +207,7 @@ class _SignInState extends State<SignIn> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            "Or continue with",
+                            AppLocalizations.of(context)!.or,
                             style: TextStyle(color: Colors.grey.shade700),
                           ),
                         ),
@@ -230,6 +242,4 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
-  void onPressed() {}
 }

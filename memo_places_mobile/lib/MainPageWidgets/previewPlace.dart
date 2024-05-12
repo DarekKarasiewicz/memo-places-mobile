@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 
@@ -92,7 +91,7 @@ class PreviewPlace extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  place.foundDate,
+                                  place.creationDate,
                                 ),
                               ),
                               const SizedBox(

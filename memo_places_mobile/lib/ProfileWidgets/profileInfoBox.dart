@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileInfoBox extends StatelessWidget {
   final String username;
@@ -34,7 +34,7 @@ class ProfileInfoBox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Welcome $username",
+                    AppLocalizations.of(context)!.welcome(username),
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,

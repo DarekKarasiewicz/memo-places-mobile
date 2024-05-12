@@ -3,7 +3,6 @@ class Place {
   final String placeName;
   final String description;
   final String creationDate;
-  final String foundDate;
   final double lng;
   final double lat;
   final int user;
@@ -24,7 +23,6 @@ class Place {
       required this.placeName,
       required this.description,
       this.creationDate = '',
-      required this.foundDate,
       required this.lng,
       required this.lat,
       required this.user,
@@ -46,7 +44,6 @@ class Place {
         placeName: json['place_name'] as String,
         description: json['description'] as String,
         creationDate: json['creation_date'] as String? ?? '',
-        foundDate: json['found_date'] as String,
         lng: json['lng'] as double,
         lat: json['lat'] as double,
         user: json['user'] as int,

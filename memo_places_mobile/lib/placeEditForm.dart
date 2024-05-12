@@ -10,6 +10,7 @@ import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaceEditForm extends StatefulWidget {
   final Place place;
@@ -58,40 +59,40 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
 
   Future<void> _fetchTypes() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
     }
   }
 
   Future<void> _fetchPeriods() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
     }
   }
 
   Future<void> _fetchSortof() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/sortofs/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _sortofs = jsonData.map((data) => Sortof.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadSortof);
     }
   }
 
@@ -115,13 +116,13 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
         try {
           var response = await http.put(
             Uri.parse(
-                'http://10.0.2.2:8000/memo_places/places/${widget.place.id}/'),
+                'http://localhost:8000/memo_places/places/${widget.place.id}/'),
             body: formData,
           );
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: "Place edited successfully",
+              msg: AppLocalizations.of(context)!.succesPlaceEdited,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -135,7 +136,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: "Something went wrong, try again later",
+              msg: AppLocalizations.of(context)!.alertError,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -190,7 +191,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Edit your place',
+          AppLocalizations.of(context)!.editPlace,
           style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -205,25 +206,26 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.name),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldRequired;
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return 'Invalid name format';
+                    return AppLocalizations.of(context)!.invalidName;
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: const Text('Select Type'),
+                hint: Text(AppLocalizations.of(context)!.selectType),
                 value: _getTypeById(_selectedType),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a type';
+                    return AppLocalizations.of(context)!.plsSelectType;
                   }
                   return null;
                 },
@@ -240,11 +242,11 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Sortof>(
-                hint: const Text('Select Sortof'),
+                hint: Text(AppLocalizations.of(context)!.selectSortof),
                 value: _getSortofById(_selectedSortof),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a sortof';
+                    return AppLocalizations.of(context)!.plsSelectSortof;
                   }
                   return null;
                 },
@@ -261,11 +263,11 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: const Text('Select Period'),
+                hint: Text(AppLocalizations.of(context)!.selectPeriod),
                 value: _getPeriodById(_selectedPeriod),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a period';
+                    return AppLocalizations.of(context)!.plsSelectPeriod;
                   }
                   return null;
                 },
@@ -286,27 +288,29 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: 'Description',
+                    labelText: AppLocalizations.of(context)!.description,
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: const InputDecoration(labelText: 'Link 1'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.wikiLink),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: const InputDecoration(labelText: 'Link 2'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.topicLink),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: const Text('Save'),
+                child: Text(AppLocalizations.of(context)!.save),
               ),
             ],
           ),

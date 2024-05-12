@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HidePassword extends StatelessWidget {
   final bool isPasswordHidden;
@@ -21,7 +22,9 @@ class HidePassword extends StatelessWidget {
             color: Colors.grey.shade700,
           ),
           Text(
-            isPasswordHidden ? "Show password" : "Hide password",
+            isPasswordHidden
+                ? AppLocalizations.of(context)!.showPass
+                : AppLocalizations.of(context)!.hidePass,
             style: TextStyle(
               color: Colors.grey.shade700,
             ),

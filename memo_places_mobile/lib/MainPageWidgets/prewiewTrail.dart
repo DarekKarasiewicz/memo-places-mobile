@@ -91,7 +91,7 @@ class PreviewTrail extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  trail.foundDate,
+                                  trail.creationDate,
                                 ),
                               ),
                               const SizedBox(

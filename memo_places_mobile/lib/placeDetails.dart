@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final List<String> demoImages = [
   'https://picsum.photos/250?image=3',
@@ -13,19 +16,26 @@ class PlaceDetails extends StatelessWidget {
   const PlaceDetails(this.place, {super.key});
   final Place place;
 
-  _launchMaps() async {
+  _launchMaps(BuildContext context) async {
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw 'Could not launch Google Maps';
+      throw AppLocalizations.of(context)!.googleMapsError;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
@@ -56,11 +66,15 @@ class PlaceDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text("Info:"),
-                      Text("\u2022 Type - ${place.typeValue}"),
-                      Text("\u2022 Period - ${place.periodValue}"),
-                      Text("\u2022 Sortof - ${place.sortofValue}"),
-                      Text("\u2022 found - ${place.foundDate}")
+                      Text(AppLocalizations.of(context)!.info),
+                      Text(AppLocalizations.of(context)!
+                          .typeInfo(place.typeValue)),
+                      Text(AppLocalizations.of(context)!
+                          .periodInfo(place.periodValue)),
+                      Text(AppLocalizations.of(context)!
+                          .sortofInfo(place.sortofValue)),
+                      Text(AppLocalizations.of(context)!
+                          .dateInfo(place.creationDate))
                     ],
                   ),
                 ),
@@ -82,8 +96,8 @@ class PlaceDetails extends StatelessWidget {
                   child: Center(
                     child: Column(
                       children: [
-                        Text("Description:"),
-                        Text("${place.description}"),
+                        Text(AppLocalizations.of(context)!.description),
+                        Text(place.description),
                       ],
                     ),
                   ),
@@ -91,8 +105,8 @@ class PlaceDetails extends StatelessWidget {
               ),
               Center(
                 child: ElevatedButton(
-                  onPressed: _launchMaps,
-                  child: const Text("Show on Google Maps"),
+                  onPressed: () => _launchMaps,
+                  child: Text(AppLocalizations.of(context)!.showGoogleMaps),
                 ),
               ),
               const SizedBox(

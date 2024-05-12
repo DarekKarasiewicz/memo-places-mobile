@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/home.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/profile.dart';
 import 'package:memo_places_mobile/signInOrSignUpPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: Main(),
+  runApp(MaterialApp(
+    supportedLocales: L10n.all,
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ],
+    home: const Main(),
   ));
 }
 
@@ -28,7 +38,7 @@ class _HomeState extends State<Main> {
     super.initState();
     screens = [
       const Home(),
-      Profile(_clearAccessKeyAndRefresh),
+      const Profile(),
     ];
     _loadCounter("access").then((value) {
       token = value;
@@ -45,29 +55,27 @@ class _HomeState extends State<Main> {
     return prefs.getString(key);
   }
 
-  Future<void> _clearAccessKeyAndRefresh() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("access");
-    setState(() {
-      token = null;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       home: Scaffold(
         body: isLogged ? screens[currentIndex] : const Home(),
         bottomNavigationBar: BottomNavigationBar(
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              label: 'Home',
-              icon: Icon(Icons.home, size: 27),
+              label: AppLocalizations.of(context)!.home,
+              icon: const Icon(Icons.home, size: 27),
             ),
             BottomNavigationBarItem(
-              label: 'Profile',
-              icon: Icon(Icons.account_box_outlined, size: 27),
+              label: AppLocalizations.of(context)!.profile,
+              icon: const Icon(Icons.account_box_outlined, size: 27),
             ),
           ],
           currentIndex: currentIndex,

@@ -11,6 +11,7 @@ import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PlaceForm extends StatefulWidget {
   const PlaceForm(this.position, {super.key});
@@ -51,40 +52,40 @@ class _PlaceFormState extends State<PlaceForm> {
 
   Future<void> _fetchTypes() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
     }
   }
 
   Future<void> _fetchPeriods() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
     }
   }
 
   Future<void> _fetchSortof() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/sortofs/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _sortofs = jsonData.map((data) => Sortof.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadSortof);
     }
   }
 
@@ -95,7 +96,7 @@ class _PlaceFormState extends State<PlaceForm> {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         Map<String, String> formData = {
           'place_name': _nameController.text,
-          'found_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          'verified_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
           'lat': widget.position.latitude.toString(),
           'lng': widget.position.longitude.toString(),
           'type': _selectedType,
@@ -109,13 +110,13 @@ class _PlaceFormState extends State<PlaceForm> {
 
         try {
           var response = await http.post(
-            Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
+            Uri.parse('http://localhost:8000/memo_places/places/'),
             body: formData,
           );
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: "Place added successfully",
+              msg: AppLocalizations.of(context)!.placeAddedSucces,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -129,7 +130,7 @@ class _PlaceFormState extends State<PlaceForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: "Something went wrong, try again later",
+              msg: AppLocalizations.of(context)!.alertError,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -153,122 +154,130 @@ class _PlaceFormState extends State<PlaceForm> {
     _sortofs.sort((a, b) => a.order.compareTo(b.order));
     _periods.sort((a, b) => a.order.compareTo(b.order));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Place Form'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Field is required';
-                  }
-                  final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.placeForm),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.name),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return AppLocalizations.of(context)!.fieldRequired;
+                    }
+                    final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
-                  if (!nameRegex.hasMatch(value)) {
-                    return 'Invalid name format';
-                  }
-                  return null;
-                },
-              ),
-              DropdownButtonFormField<Type>(
-                hint: const Text('Select Type'),
-                value: null,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a type';
-                  }
-                  return null;
-                },
-                onChanged: (Type? newValue) {
-                  setState(() {
-                    _selectedType = newValue!.id.toString();
-                  });
-                },
-                items: _types.map<DropdownMenuItem<Type>>((Type type) {
-                  return DropdownMenuItem<Type>(
-                    value: type,
-                    child: Text(type.name),
-                  );
-                }).toList(),
-              ),
-              DropdownButtonFormField<Sortof>(
-                hint: const Text('Select Sortof'),
-                value: null,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a sortof';
-                  }
-                  return null;
-                },
-                onChanged: (Sortof? newValue) {
-                  setState(() {
-                    _selectedSortof = newValue!.id.toString();
-                  });
-                },
-                items: _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
-                  return DropdownMenuItem<Sortof>(
-                    value: sortof,
-                    child: Text(sortof.name),
-                  );
-                }).toList(),
-              ),
-              DropdownButtonFormField<Period>(
-                hint: const Text('Select Period'),
-                value: null,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a period';
-                  }
-                  return null;
-                },
-                onChanged: (Period? newValue) {
-                  setState(() {
-                    _selectedPeriod = newValue!.id.toString();
-                  });
-                },
-                items: _periods.map<DropdownMenuItem<Period>>((Period period) {
-                  return DropdownMenuItem<Period>(
-                    value: period,
-                    child: Text(period.name),
-                  );
-                }).toList(),
-              ),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 5,
-                maxLength: 1000,
-                decoration: InputDecoration(
-                    labelText: 'Description',
-                    counterText: '${_descriptionController.text.length}/1000'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _link1Controller,
-                decoration: const InputDecoration(labelText: 'Link 1'),
-              ),
-              TextFormField(
-                controller: _link2Controller,
-                decoration: const InputDecoration(labelText: 'Link 2'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _submitForm(context),
-                child: const Text('Save'),
-              ),
-            ],
+                    if (!nameRegex.hasMatch(value)) {
+                      return AppLocalizations.of(context)!.invalidName;
+                    }
+                    return null;
+                  },
+                ),
+                DropdownButtonFormField<Type>(
+                  hint: Text(AppLocalizations.of(context)!.selectType),
+                  value: null,
+                  validator: (value) {
+                    if (value == null) {
+                      return AppLocalizations.of(context)!.plsSelectType;
+                    }
+                    return null;
+                  },
+                  onChanged: (Type? newValue) {
+                    setState(() {
+                      _selectedType = newValue!.id.toString();
+                    });
+                  },
+                  items: _types.map<DropdownMenuItem<Type>>((Type type) {
+                    return DropdownMenuItem<Type>(
+                      value: type,
+                      child: Text(type.name),
+                    );
+                  }).toList(),
+                ),
+                DropdownButtonFormField<Sortof>(
+                  hint: Text(AppLocalizations.of(context)!.selectSortof),
+                  value: null,
+                  validator: (value) {
+                    if (value == null) {
+                      return AppLocalizations.of(context)!.plsSelectSortof;
+                    }
+                    return null;
+                  },
+                  onChanged: (Sortof? newValue) {
+                    setState(() {
+                      _selectedSortof = newValue!.id.toString();
+                    });
+                  },
+                  items:
+                      _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
+                    return DropdownMenuItem<Sortof>(
+                      value: sortof,
+                      child: Text(sortof.name),
+                    );
+                  }).toList(),
+                ),
+                DropdownButtonFormField<Period>(
+                  hint: Text(AppLocalizations.of(context)!.selectPeriod),
+                  value: null,
+                  validator: (value) {
+                    if (value == null) {
+                      return AppLocalizations.of(context)!.plsSelectPeriod;
+                    }
+                    return null;
+                  },
+                  onChanged: (Period? newValue) {
+                    setState(() {
+                      _selectedPeriod = newValue!.id.toString();
+                    });
+                  },
+                  items:
+                      _periods.map<DropdownMenuItem<Period>>((Period period) {
+                    return DropdownMenuItem<Period>(
+                      value: period,
+                      child: Text(period.name),
+                    );
+                  }).toList(),
+                ),
+                TextFormField(
+                  controller: _descriptionController,
+                  maxLines: 5,
+                  maxLength: 1000,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.description,
+                      counterText:
+                          '${_descriptionController.text.length}/1000'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return AppLocalizations.of(context)!.fieldRequired;
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _link1Controller,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.wikiLink),
+                ),
+                TextFormField(
+                  controller: _link2Controller,
+                  decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.topicLink),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _submitForm(context),
+                  child: Text(AppLocalizations.of(context)!.save),
+                ),
+              ],
+            ),
           ),
         ),
       ),

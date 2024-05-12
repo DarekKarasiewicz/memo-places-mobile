@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
 import 'package:memo_places_mobile/MainPageWidgets/previewPlace.dart';
@@ -9,9 +10,11 @@ import 'package:memo_places_mobile/MainPageWidgets/prewiewTrail.dart';
 import 'package:memo_places_mobile/Objects/currnetObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -127,7 +130,7 @@ class _GoogleMapsState extends State {
 
   Future<void> _fetchPlaces() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
+        await http.get(Uri.parse('http://localhost:8000/memo_places/places/'));
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
@@ -145,13 +148,13 @@ class _GoogleMapsState extends State {
         }).toSet());
       });
     } else {
-      throw Exception('Failed to load places');
+      throw Exception(AppLocalizations.of(context)!.failedLoadPlaces);
     }
   }
 
   Future<void> _fetchTrails() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/path/'));
+        await http.get(Uri.parse('http://localhost:8000/memo_places/path/'));
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
@@ -172,7 +175,7 @@ class _GoogleMapsState extends State {
         }).toSet());
       });
     } else {
-      throw Exception('Failed to load trails');
+      throw Exception(AppLocalizations.of(context)!.failedLoadTrails);
     }
   }
 
@@ -183,10 +186,18 @@ class _GoogleMapsState extends State {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.lightBlue, title: const Text("Home")),
+            backgroundColor: Colors.lightBlue,
+            title: Text(AppLocalizations.of(context)!.home)),
         body: Center(
           child: isLoading
               ? const CircularProgressIndicator()

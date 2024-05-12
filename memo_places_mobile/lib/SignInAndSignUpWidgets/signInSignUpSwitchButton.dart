@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignInSignUpSwitchButton extends StatelessWidget {
   final bool isAccountCreated;
@@ -15,7 +16,9 @@ class SignInSignUpSwitchButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          isAccountCreated ? "Not a member?" : "Already have account?",
+          isAccountCreated
+              ? AppLocalizations.of(context)!.notMember
+              : AppLocalizations.of(context)!.questionAccount,
           style: TextStyle(color: Colors.grey.shade700),
         ),
         const SizedBox(
@@ -24,7 +27,9 @@ class SignInSignUpSwitchButton extends StatelessWidget {
         GestureDetector(
           onTap: loginRegisterSwitch,
           child: Text(
-            isAccountCreated ? "Create account now" : "Sign In now",
+            isAccountCreated
+                ? AppLocalizations.of(context)!.createAccount
+                : AppLocalizations.of(context)!.signAccount,
             style: const TextStyle(
                 color: Colors.blue, fontWeight: FontWeight.bold),
           ),

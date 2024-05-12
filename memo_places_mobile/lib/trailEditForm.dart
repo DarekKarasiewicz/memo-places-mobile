@@ -9,6 +9,7 @@ import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailEditForm extends StatefulWidget {
   final Trail trail;
@@ -53,27 +54,27 @@ class _TrailEditFormState extends State<TrailEditForm> {
 
   Future<void> _fetchTypes() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
     }
   }
 
   Future<void> _fetchPeriods() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
     }
   }
 
@@ -96,13 +97,13 @@ class _TrailEditFormState extends State<TrailEditForm> {
         try {
           var response = await http.put(
             Uri.parse(
-                'http://10.0.2.2:8000/memo_places/path/${widget.trail.id}/'),
+                'http://localhost:8000/memo_places/path/${widget.trail.id}/'),
             body: formData,
           );
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: "Trail edited successfully",
+              msg: AppLocalizations.of(context)!.succesAddedTrail,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -116,7 +117,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: "Something went wrong, try again later",
+              msg: AppLocalizations.of(context)!.alertError,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -161,7 +162,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Edit your trail',
+          AppLocalizations.of(context)!.editTrail,
           style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -176,25 +177,26 @@ class _TrailEditFormState extends State<TrailEditForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.name),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldInfo;
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return 'Invalid name format';
+                    return AppLocalizations.of(context)!.invalidName;
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: const Text('Select Type'),
+                hint: Text(AppLocalizations.of(context)!.selectType),
                 value: _getTypeById(_selectedType),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a type';
+                    return AppLocalizations.of(context)!.plsSelectType;
                   }
                   return null;
                 },
@@ -211,11 +213,11 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: const Text('Select Period'),
+                hint: Text(AppLocalizations.of(context)!.selectPeriod),
                 value: _getPeriodById(_selectedPeriod),
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a period';
+                    return AppLocalizations.of(context)!.plsSelectPeriod;
                   }
                   return null;
                 },
@@ -236,27 +238,29 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: 'Description',
+                    labelText: AppLocalizations.of(context)!.description,
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldInfo;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: const InputDecoration(labelText: 'Link 1'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.wikiLink),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: const InputDecoration(labelText: 'Link 2'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.topicLink),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: const Text('Save'),
+                child: Text(AppLocalizations.of(context)!.save),
               ),
             ],
           ),

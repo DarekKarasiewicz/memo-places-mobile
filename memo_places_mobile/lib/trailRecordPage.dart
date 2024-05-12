@@ -3,10 +3,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memo_places_mobile/TrailRecordPageWidgets/recordMenu.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/trailForm.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailRecordPage extends StatefulWidget {
   final LatLng startLocation;
@@ -173,6 +176,13 @@ class _TrailRecordState extends State<TrailRecordPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       home: Scaffold(
         body: SafeArea(
           child: Center(

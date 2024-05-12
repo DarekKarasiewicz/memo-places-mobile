@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RecordMenu extends StatefulWidget {
   final String distance;
@@ -50,7 +49,7 @@ class _RecordMenuState extends State<RecordMenu> {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Distance ${widget.distance} Km",
+                  AppLocalizations.of(context)!.distance(widget.distance),
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -61,10 +60,10 @@ class _RecordMenuState extends State<RecordMenu> {
             widget.isRecording
                 ? ElevatedButton(
                     onPressed: widget.endRecording,
-                    child: const Text("Stop and Save"))
+                    child: Text(AppLocalizations.of(context)!.stopSave))
                 : ElevatedButton(
                     onPressed: widget.startRecording,
-                    child: const Text("Start"))
+                    child: Text(AppLocalizations.of(context)!.save))
           ],
         ),
       ),

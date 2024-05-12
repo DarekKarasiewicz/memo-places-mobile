@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myTrailBox.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/trailDetails.dart';
 import 'package:memo_places_mobile/trailEditForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyTrails extends StatefulWidget {
   const MyTrails({super.key});
@@ -39,14 +42,14 @@ class _MyTrailsState extends State<MyTrails> {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(access);
       String id = decodedToken["user_id"].toString();
       final response = await http
-          .get(Uri.parse('http://10.0.2.2:8000/memo_places/path/user=$id'));
+          .get(Uri.parse('http://localhost:8000/memo_places/path/user=$id'));
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
         setState(() {
           _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
         });
       } else {
-        throw Exception('Failed to load trails data');
+        throw Exception(AppLocalizations.of(context)!.failedLoadTrails);
       }
     } else {
       throw Exception('Access token is null');
@@ -62,22 +65,24 @@ class _MyTrailsState extends State<MyTrails> {
         dialogContext = context;
 
         return AlertDialog(
-          title: const Text("Confirm"),
+          title: Text(AppLocalizations.of(context)!.confirm),
           content: Text(
-              "Are you sure you want to delete ${_trails[index].trailName}?"),
+            AppLocalizations.of(context)!
+                .deleteWarning(_trails[index].trailName),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
                 _deleteTrail(index);
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Delete"),
+              child: Text(AppLocalizations.of(context)!.delete),
             ),
           ],
         );
@@ -94,15 +99,14 @@ class _MyTrailsState extends State<MyTrails> {
         dialogContext = context;
 
         return AlertDialog(
-          title: const Text("Confirm"),
-          content: const Text(
-              "You will be able only to edit basic information, for more editing options please visit our website."),
+          title: Text(AppLocalizations.of(context)!.confirm),
+          content: Text(AppLocalizations.of(context)!.editInfo),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
@@ -114,7 +118,7 @@ class _MyTrailsState extends State<MyTrails> {
                   ),
                 );
               },
-              child: const Text("Ok"),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         );
@@ -124,10 +128,10 @@ class _MyTrailsState extends State<MyTrails> {
 
   Future<void> _deleteTrail(int index) async {
     final response = await http.delete(Uri.parse(
-        'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}/'));
+        'http://localhost:8000/memo_places/path/${_trails[index].id}/'));
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
-        msg: "Trail deleted",
+        msg: AppLocalizations.of(context)!.trailDeleted,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -140,7 +144,7 @@ class _MyTrailsState extends State<MyTrails> {
       });
     } else {
       Fluttertoast.showToast(
-        msg: "Something went wrong, try again later.",
+        msg: AppLocalizations.of(context)!.alertError,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -154,6 +158,13 @@ class _MyTrailsState extends State<MyTrails> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
@@ -165,7 +176,7 @@ class _MyTrailsState extends State<MyTrails> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           title: Text(
-            "Your Trails",
+            AppLocalizations.of(context)!.yourTrails,
             style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -175,7 +186,7 @@ class _MyTrailsState extends State<MyTrails> {
         body: _trails.isEmpty
             ? Center(
                 child: Text(
-                  "No trails added",
+                  AppLocalizations.of(context)!.noTrailsAdded,
                   style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
                 ),
               )
@@ -199,7 +210,7 @@ class _MyTrailsState extends State<MyTrails> {
                             backgroundColor: Colors.blue,
                             foregroundColor: Colors.white,
                             icon: Icons.arrow_forward,
-                            label: "Preview",
+                            label: AppLocalizations.of(context)!.preview,
                           )
                         ],
                       ),
@@ -213,7 +224,7 @@ class _MyTrailsState extends State<MyTrails> {
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             icon: Icons.edit_location_alt_outlined,
-                            label: "Edit",
+                            label: AppLocalizations.of(context)!.edit,
                           ),
                           SlidableAction(
                             onPressed: (context) {
@@ -222,7 +233,7 @@ class _MyTrailsState extends State<MyTrails> {
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             icon: Icons.delete_outlined,
-                            label: "Delete",
+                            label: AppLocalizations.of(context)!.delete,
                           )
                         ],
                       ),
@@ -232,6 +243,4 @@ class _MyTrailsState extends State<MyTrails> {
       ),
     );
   }
-
-  void onPressed(BuildContext context) {}
 }

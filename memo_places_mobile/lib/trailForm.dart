@@ -10,6 +10,7 @@ import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailForm extends StatefulWidget {
   final List<LatLng> trailCoordinates;
@@ -45,8 +46,13 @@ class _TrailFormState extends State<TrailForm> {
     _futureAccess = _loadCounter("access");
     _fetchTypes();
     _fetchPeriods();
-    _descriptionController.text =
-        "Time: ${widget.time}\nDistance: ${widget.distance} Km\n";
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _descriptionController.text = AppLocalizations.of(context)!
+        .timeAndDistance(widget.time, widget.distance);
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -56,27 +62,27 @@ class _TrailFormState extends State<TrailForm> {
 
   Future<void> _fetchTypes() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
     }
   }
 
   Future<void> _fetchPeriods() async {
     var response = await http
-        .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
+        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
       setState(() {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception('Failed to fetch types');
+      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
     }
   }
 
@@ -108,7 +114,6 @@ class _TrailFormState extends State<TrailForm> {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
         Map<String, String> formData = {
           'path_name': _nameController.text,
-          'found_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
           'coordinates':
               convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
           'type': _selectedType,
@@ -121,13 +126,13 @@ class _TrailFormState extends State<TrailForm> {
 
         try {
           var response = await http.post(
-            Uri.parse('http://10.0.2.2:8000/memo_places/path/'),
+            Uri.parse('http://localhost:8000/memo_places/path/'),
             body: formData,
           );
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: "Trail added successfully",
+              msg: AppLocalizations.of(context)!.succesTrailAdded,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -141,7 +146,7 @@ class _TrailFormState extends State<TrailForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: "Something went wrong, try again later",
+              msg: AppLocalizations.of(context)!.alertError,
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -166,7 +171,7 @@ class _TrailFormState extends State<TrailForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trail Form'),
+        title: Text(AppLocalizations.of(context)!.trailForm),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -176,25 +181,26 @@ class _TrailFormState extends State<TrailForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.name),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldInfo;
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return 'Invalid name format';
+                    return AppLocalizations.of(context)!.invalidName;
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: const Text('Select Type'),
+                hint: Text(AppLocalizations.of(context)!.selectType),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a type';
+                    return AppLocalizations.of(context)!.plsSelectType;
                   }
                   return null;
                 },
@@ -211,11 +217,11 @@ class _TrailFormState extends State<TrailForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: const Text('Select Period'),
+                hint: Text(AppLocalizations.of(context)!.selectPeriod),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return 'Please select a period';
+                    return AppLocalizations.of(context)!.plsSelectPeriod;
                   }
                   return null;
                 },
@@ -236,27 +242,29 @@ class _TrailFormState extends State<TrailForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: 'Description',
+                    labelText: AppLocalizations.of(context)!.description,
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Field is required';
+                    return AppLocalizations.of(context)!.fieldInfo;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: const InputDecoration(labelText: 'Link 1'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.wikiLink),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: const InputDecoration(labelText: 'Link 2'),
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.topicLink),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: const Text('Save'),
+                child: Text(AppLocalizations.of(context)!.save),
               ),
             ],
           ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final List<String> demoImages = [
   'https://picsum.photos/250?image=3',
@@ -13,19 +16,26 @@ class TrailDetails extends StatelessWidget {
   const TrailDetails(this.trail, {super.key});
   final Trail trail;
 
-  _launchMaps() async {
+  _launchMaps(BuildContext context) async {
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=${trail.coordinates[0].latitude},${trail.coordinates[0].longitude}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw 'Could not launch Google Maps';
+      throw AppLocalizations.of(context)!.googleMapsError;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
@@ -56,10 +66,13 @@ class TrailDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      const Text("Info:"),
-                      Text("\u2022 Type - ${trail.typeValue}"),
-                      Text("\u2022 Period - ${trail.periodValue}"),
-                      Text("\u2022 found - ${trail.foundDate}")
+                      Text(AppLocalizations.of(context)!.info),
+                      Text(AppLocalizations.of(context)!
+                          .typeInfo(trail.typeValue)),
+                      Text(AppLocalizations.of(context)!
+                          .periodInfo(trail.periodValue)),
+                      Text(AppLocalizations.of(context)!
+                          .dateInfo(trail.creationDate))
                     ],
                   ),
                 ),
@@ -81,7 +94,7 @@ class TrailDetails extends StatelessWidget {
                   child: Center(
                     child: Column(
                       children: [
-                        const Text("Description:"),
+                        Text(AppLocalizations.of(context)!.description),
                         Text(trail.description),
                       ],
                     ),
@@ -90,8 +103,8 @@ class TrailDetails extends StatelessWidget {
               ),
               Center(
                 child: ElevatedButton(
-                  onPressed: _launchMaps,
-                  child: const Text("Navigate to trail"),
+                  onPressed: () => _launchMaps,
+                  child: Text(AppLocalizations.of(context)!.navigateTrail),
                 ),
               ),
               const SizedBox(

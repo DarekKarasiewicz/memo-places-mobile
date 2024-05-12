@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/signInOrSignUpPage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InfoAfterSignUpPage extends StatelessWidget {
   const InfoAfterSignUpPage({super.key});
@@ -8,6 +11,13 @@ class InfoAfterSignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
@@ -30,7 +40,7 @@ class InfoAfterSignUpPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "You will receive an email with link to activate your account.",
+                      AppLocalizations.of(context)!.linkToActiveInfo,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.grey.shade700,
@@ -47,7 +57,7 @@ class InfoAfterSignUpPage extends StatelessWidget {
                             ),
                           );
                         },
-                        buttonText: "Go Back"),
+                        buttonText: AppLocalizations.of(context)!.back),
                   ],
                 ),
               ),

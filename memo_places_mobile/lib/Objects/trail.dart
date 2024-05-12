@@ -7,7 +7,6 @@ class Trail {
   final String trailName;
   final String description;
   final String creationDate;
-  final String foundDate;
   final List<LatLng> coordinates;
   final int user;
   final String username;
@@ -24,7 +23,6 @@ class Trail {
       required this.trailName,
       required this.description,
       required this.creationDate,
-      required this.foundDate,
       required this.coordinates,
       required this.user,
       required this.username,
@@ -49,7 +47,6 @@ class Trail {
       trailName: json['path_name'] as String,
       description: json['description'] as String,
       creationDate: json['creation_date'] as String? ?? '',
-      foundDate: json['found_date'] as String,
       coordinates: coordinates,
       user: json['user'] as int,
       username: json['username'] as String,

@@ -1,14 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/placeEditForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyPlaces extends StatefulWidget {
   const MyPlaces({super.key});
@@ -39,14 +42,14 @@ class _MyPlacesState extends State<MyPlaces> {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(access);
       String id = decodedToken["user_id"].toString();
       final response = await http
-          .get(Uri.parse('http://10.0.2.2:8000/memo_places/places/user=$id'));
+          .get(Uri.parse('http://localhost:8000/memo_places/places/user=$id'));
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
         setState(() {
           _places = jsonData.map((data) => Place.fromJson(data)).toList();
         });
       } else {
-        throw Exception('Failed to load places data');
+        throw Exception(AppLocalizations.of(context)!.failedLoadPlaces);
       }
     } else {
       throw Exception('Access token is null');
@@ -62,22 +65,24 @@ class _MyPlacesState extends State<MyPlaces> {
         dialogContext = context;
 
         return AlertDialog(
-          title: const Text("Confirm"),
+          title: Text(AppLocalizations.of(context)!.confirm),
           content: Text(
-              "Are you sure you want to delete ${_places[index].placeName}?"),
+            AppLocalizations.of(context)!
+                .deleteWarning(_places[index].placeName),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
                 _deletePlace(index);
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Delete"),
+              child: Text(AppLocalizations.of(context)!.delete),
             ),
           ],
         );
@@ -94,15 +99,14 @@ class _MyPlacesState extends State<MyPlaces> {
         dialogContext = context;
 
         return AlertDialog(
-          title: const Text("Confirm"),
-          content: const Text(
-              "You will be able only to edit basic information, for more editing options please visit our website."),
+          title: Text(AppLocalizations.of(context)!.confirm),
+          content: Text(AppLocalizations.of(context)!.editInfo),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text("Cancel"),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
@@ -114,7 +118,7 @@ class _MyPlacesState extends State<MyPlaces> {
                   ),
                 );
               },
-              child: const Text("Ok"),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         );
@@ -124,10 +128,10 @@ class _MyPlacesState extends State<MyPlaces> {
 
   Future<void> _deletePlace(int index) async {
     final response = await http.delete(Uri.parse(
-        'http://10.0.2.2:8000/memo_places/places/${_places[index].id}/'));
+        'http://localhost:8000/memo_places/places/${_places[index].id}/'));
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
-        msg: "Place deleted",
+        msg: AppLocalizations.of(context)!.placeDeleted,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -140,7 +144,7 @@ class _MyPlacesState extends State<MyPlaces> {
       });
     } else {
       Fluttertoast.showToast(
-        msg: "Something went wrong, try again later.",
+        msg: AppLocalizations.of(context)!.alertError,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -154,6 +158,13 @@ class _MyPlacesState extends State<MyPlaces> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
           backgroundColor: Colors.grey.shade300,
@@ -165,7 +176,7 @@ class _MyPlacesState extends State<MyPlaces> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             title: Text(
-              "Your Places",
+              AppLocalizations.of(context)!.yourPlaces,
               style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -175,7 +186,7 @@ class _MyPlacesState extends State<MyPlaces> {
           body: _places.isEmpty
               ? Center(
                   child: Text(
-                    "No place added",
+                    AppLocalizations.of(context)!.noPlaceAdded,
                     style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
                   ),
                 )
@@ -200,7 +211,7 @@ class _MyPlacesState extends State<MyPlaces> {
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                               icon: Icons.arrow_forward,
-                              label: "Preview",
+                              label: AppLocalizations.of(context)!.preview,
                             )
                           ],
                         ),
@@ -214,7 +225,7 @@ class _MyPlacesState extends State<MyPlaces> {
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
                               icon: Icons.edit_location_alt_outlined,
-                              label: "Edit",
+                              label: AppLocalizations.of(context)!.edit,
                             ),
                             SlidableAction(
                               onPressed: (context) {
@@ -223,7 +234,7 @@ class _MyPlacesState extends State<MyPlaces> {
                               backgroundColor: Colors.red,
                               foregroundColor: Colors.white,
                               icon: Icons.delete_outlined,
-                              label: "Delete",
+                              label: AppLocalizations.of(context)!.delete,
                             )
                           ],
                         ),
@@ -232,6 +243,4 @@ class _MyPlacesState extends State<MyPlaces> {
                 )),
     );
   }
-
-  void onPressed(BuildContext context) {}
 }

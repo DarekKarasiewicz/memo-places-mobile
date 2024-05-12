@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,7 +7,9 @@ import 'package:memo_places_mobile/Objects/user.dart';
 import 'dart:io';
 
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/main.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;
@@ -52,18 +55,12 @@ class _EditProfileState extends State<EditProfile> {
         RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$');
     if (!passwordRegex.hasMatch(password)) {
       setState(() {
-        _passwordErrorMsg = """
-        Password must contains:
-        - At least one digit
-        - At least one uppercase letter
-        - At least one special character
-        - Minimum length of 8 characters
-        """;
+        _passwordErrorMsg = AppLocalizations.of(context)!.passwordValidation;
         _isPasswordValid = false;
       });
     } else if (password != confPassword) {
       setState(() {
-        _passwordErrorMsg = "Password is not the same!";
+        _passwordErrorMsg = AppLocalizations.of(context)!.samePassword;
         _isPasswordValid = false;
       });
     } else {
@@ -87,13 +84,13 @@ class _EditProfileState extends State<EditProfile> {
     try {
       var response = await http.post(
         //Need changes but waiting for Sebastian
-        Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
+        Uri.parse('http://localhost:8000/memo_places/places/'),
         body: formData,
       );
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: "Changes successfully sent",
+          msg: AppLocalizations.of(context)!.changesSuccesSent,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -107,7 +104,7 @@ class _EditProfileState extends State<EditProfile> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: "Something went wrong, try again later",
+          msg: AppLocalizations.of(context)!.alertError,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -124,6 +121,13 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
@@ -134,7 +138,7 @@ class _EditProfileState extends State<EditProfile> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           title: Text(
-            "Edit your profile",
+            AppLocalizations.of(context)!.editProfile,
             style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -169,9 +173,9 @@ class _EditProfileState extends State<EditProfile> {
                             horizontal: 30, vertical: 15)),
                   ),
                   onPressed: _getImageFromGallery,
-                  child: const Text(
-                    "Change avatar",
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.changeAvatar,
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
@@ -185,7 +189,7 @@ class _EditProfileState extends State<EditProfile> {
                   height: 20,
                 ),
                 Text(
-                  "Change username",
+                  AppLocalizations.of(context)!.changeUsername,
                   style: TextStyle(
                       color: Colors.grey.shade700,
                       fontSize: 20,
@@ -211,9 +215,9 @@ class _EditProfileState extends State<EditProfile> {
                       labelStyle: TextStyle(
                           color: Colors.grey.shade700,
                           fontWeight: FontWeight.bold),
-                      labelText: 'Username',
+                      labelText: AppLocalizations.of(context)!.username,
                       errorText: _isUsernameEmpty
-                          ? 'This field can\'t be empty!'
+                          ? AppLocalizations.of(context)!.fieldInfo
                           : null,
                     ),
                   ),
@@ -226,7 +230,7 @@ class _EditProfileState extends State<EditProfile> {
                   height: 20,
                 ),
                 Text(
-                  "Change password",
+                  AppLocalizations.of(context)!.changePass,
                   style: TextStyle(
                       color: Colors.grey.shade700,
                       fontSize: 20,
@@ -255,7 +259,7 @@ class _EditProfileState extends State<EditProfile> {
                             labelStyle: TextStyle(
                                 color: Colors.grey.shade700,
                                 fontWeight: FontWeight.bold),
-                            labelText: 'Password',
+                            labelText: AppLocalizations.of(context)!.pass,
                             errorText: _passwordErrorMsg),
                       ),
                       const SizedBox(
@@ -277,7 +281,7 @@ class _EditProfileState extends State<EditProfile> {
                           labelStyle: TextStyle(
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.bold),
-                          labelText: 'Confirm password',
+                          labelText: AppLocalizations.of(context)!.confirmPass,
                         ),
                       ),
                       Row(
@@ -325,9 +329,9 @@ class _EditProfileState extends State<EditProfile> {
                       _saveUserData();
                     }
                   },
-                  child: const Text(
-                    "Save",
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.save,
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),

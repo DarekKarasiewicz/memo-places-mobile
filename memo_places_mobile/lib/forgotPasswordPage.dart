@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/l10n/l10n.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -16,7 +19,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   TextEditingController emailController = TextEditingController();
 
   Future<void> _resetPassword() async {
-    String url = 'http://10.0.2.2:8000/admin_dashboard/reset_password/';
+    String url = 'http://localhost:8000/admin_dashboard/reset_password/';
     String email = emailController.text;
     showDialog(
         context: context,
@@ -39,7 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         var responseDecoded = json.decode(response.body);
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: "Link sent",
+          msg: AppLocalizations.of(context)!.linkSent,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -50,7 +53,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: "You don\'t have account!",
+          msg: AppLocalizations.of(context)!.dontHaveAccount,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -60,7 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: "Something went wrong, try again later.",
+          msg: AppLocalizations.of(context)!.alertError,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -77,12 +80,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Colors.grey.shade300,
         appBar: AppBar(
           backgroundColor: Colors.lightBlue,
-          title: const Text("Login"),
+          title: Text(AppLocalizations.of(context)!.signIn),
         ),
         body: SafeArea(
           child: Center(
@@ -100,7 +110,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      "You will receive an email with link to restart your password.",
+                      AppLocalizations.of(context)!.linkToActiveInfo,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.grey.shade700,
@@ -110,12 +120,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     const SizedBox(height: 20),
                     SignInAndSignUpTextField(
                         controller: emailController,
-                        hintText: "Enter email",
+                        hintText: AppLocalizations.of(context)!.enterEmail,
                         obscureText: false,
                         icon: const Icon(Icons.email)),
                     const SizedBox(height: 20),
                     SignInSignUpButton(
-                        onTap: _resetPassword, buttonText: "Restart Password"),
+                        onTap: _resetPassword,
+                        buttonText:
+                            AppLocalizations.of(context)!.restartPassword),
                   ],
                 ),
               ),
