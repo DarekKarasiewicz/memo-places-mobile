@@ -441,6 +441,14 @@
     "@placeAddedSucces":{
         "description": "Succes info toast after place added"
     },
+    "storedPlacesUploadSucces":"Stored places uploaded successfully",
+    "@storedPlacesAddedSucces":{
+        "description": "Succes info toast after stored place uploaded"
+    },
+    "noInternet":"Oops! It seems like you're not connected to the internet right now.\nPlease check your connection and try again.",
+    "@noInternet":{
+        "description": "No internet connection message"
+    },
     "delete": "Delete",
     "@delete":{
         "description": "delete"

@@ -192,10 +192,6 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
         centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.editPlace,
-          style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade700),
         ),
       ),
       body: Padding(

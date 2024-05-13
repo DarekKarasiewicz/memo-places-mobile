@@ -160,13 +160,8 @@ class _TrailEditFormState extends State<TrailEditForm> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: Text(
           AppLocalizations.of(context)!.editTrail,
-          style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade700),
         ),
       ),
       body: Padding(

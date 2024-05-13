@@ -10,6 +10,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/main.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/mainPage.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;
@@ -120,155 +121,113 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey.shade700),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          title: Text(
-            AppLocalizations.of(context)!.editProfile,
-            style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          AppLocalizations.of(context)!.editProfile,
         ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 58,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: imgXFile == null
-                      ? const NetworkImage(
-                              'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg')
-                          as ImageProvider
-                      : FileImage(File(imgXFile!.path)),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 58,
+                backgroundColor: Colors.transparent,
+                backgroundImage: imgXFile == null
+                    ? const NetworkImage(
+                            'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg')
+                        as ImageProvider
+                    : FileImage(File(imgXFile!.path)),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.grey.shade800),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.grey.shade700),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    overlayColor:
-                        MaterialStateProperty.all(Colors.grey.shade800),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.grey.shade700),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15)),
-                  ),
-                  onPressed: _getImageFromGallery,
-                  child: Text(
-                    AppLocalizations.of(context)!.changeAvatar,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  AppLocalizations.of(context)!.changeUsername,
-                  style: TextStyle(
-                      color: Colors.grey.shade700,
+                onPressed: _getImageFromGallery,
+                child: Text(
+                  AppLocalizations.of(context)!.changeAvatar,
+                  style: const TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: TextField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade700,
-                          width: 1.5,
-                        ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                AppLocalizations.of(context)!.changeUsername,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey.shade700,
+                        width: 1.5,
                       ),
-                      border: const OutlineInputBorder(),
-                      labelStyle: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.bold),
-                      labelText: AppLocalizations.of(context)!.username,
-                      errorText: _isUsernameEmpty
-                          ? AppLocalizations.of(context)!.fieldInfo
-                          : null,
                     ),
+                    border: const OutlineInputBorder(),
+                    labelStyle: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold),
+                    labelText: AppLocalizations.of(context)!.username,
+                    errorText: _isUsernameEmpty
+                        ? AppLocalizations.of(context)!.fieldInfo
+                        : null,
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  AppLocalizations.of(context)!.changePass,
-                  style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _isPaswordHidden,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade700,
-                                width: 1.5,
-                              ),
-                            ),
-                            border: const OutlineInputBorder(),
-                            labelStyle: TextStyle(
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.bold),
-                            labelText: AppLocalizations.of(context)!.pass,
-                            errorText: _passwordErrorMsg),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextField(
-                        controller: _confPasswordController,
-                        obscureText: _isPaswordHidden,
-                        decoration: InputDecoration(
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                AppLocalizations.of(context)!.changePass,
+                style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: _isPaswordHidden,
+                      decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
                           focusedBorder: OutlineInputBorder(
@@ -281,67 +240,86 @@ class _EditProfileState extends State<EditProfile> {
                           labelStyle: TextStyle(
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.bold),
-                          labelText: AppLocalizations.of(context)!.confirmPass,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          HidePassword(
-                            isPasswordHidden: _isPaswordHidden,
-                            onHiddenChange: changeHidden,
+                          labelText: AppLocalizations.of(context)!.pass,
+                          errorText: _passwordErrorMsg),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextField(
+                      controller: _confPasswordController,
+                      obscureText: _isPaswordHidden,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade700,
+                            width: 1.5,
                           ),
-                        ],
+                        ),
+                        border: const OutlineInputBorder(),
+                        labelStyle: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.bold),
+                        labelText: AppLocalizations.of(context)!.confirmPass,
                       ),
-                    ],
-                  ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        HidePassword(
+                          isPasswordHidden: _isPaswordHidden,
+                          onHiddenChange: changeHidden,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  height: 20,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.grey.shade800),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.grey.shade700),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    overlayColor:
-                        MaterialStateProperty.all(Colors.grey.shade800),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.grey.shade700),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15)),
-                  ),
-                  onPressed: () {
-                    if (_passwordController.text.isNotEmpty ||
-                        _confPasswordController.text.isNotEmpty) {
-                      _passwordValidator(_passwordController.text,
-                          _confPasswordController.text);
-                    }
+                onPressed: () {
+                  if (_passwordController.text.isNotEmpty ||
+                      _confPasswordController.text.isNotEmpty) {
+                    _passwordValidator(
+                        _passwordController.text, _confPasswordController.text);
+                  }
 
-                    setState(() {
-                      _isUsernameEmpty = _usernameController.text.isEmpty;
-                      if (_passwordController.text.isEmpty &&
-                          _confPasswordController.text.isEmpty) {
-                        _passwordErrorMsg = null;
-                        _isPasswordValid = true;
-                      }
-                    });
-
-                    if (!_isUsernameEmpty && _isPasswordValid) {
-                      _saveUserData();
+                  setState(() {
+                    _isUsernameEmpty = _usernameController.text.isEmpty;
+                    if (_passwordController.text.isEmpty &&
+                        _confPasswordController.text.isEmpty) {
+                      _passwordErrorMsg = null;
+                      _isPasswordValid = true;
                     }
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.save,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
+                  });
+
+                  if (!_isUsernameEmpty && _isPasswordValid) {
+                    _saveUserData();
+                  }
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
-                const SizedBox(
-                  height: 20,
-                )
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 20,
+              )
+            ],
           ),
         ),
       ),

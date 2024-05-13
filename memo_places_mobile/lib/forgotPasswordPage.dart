@@ -79,57 +79,42 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          backgroundColor: Colors.lightBlue,
-          title: Text(AppLocalizations.of(context)!.signIn),
-        ),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Center(
-                      child: Text(
-                        "Logo",
-                        style: TextStyle(fontSize: 24),
-                      ),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Center(
+                    child: Text(
+                      "Logo",
+                      style: TextStyle(fontSize: 24),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      AppLocalizations.of(context)!.linkToActiveInfo,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    const SizedBox(height: 20),
-                    SignInAndSignUpTextField(
-                        controller: emailController,
-                        hintText: AppLocalizations.of(context)!.enterEmail,
-                        obscureText: false,
-                        icon: const Icon(Icons.email)),
-                    const SizedBox(height: 20),
-                    SignInSignUpButton(
-                        onTap: _resetPassword,
-                        buttonText:
-                            AppLocalizations.of(context)!.restartPassword),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.of(context)!.linkToActiveInfo,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+                  SignInAndSignUpTextField(
+                      controller: emailController,
+                      hintText: AppLocalizations.of(context)!.enterEmail,
+                      obscureText: false,
+                      icon: const Icon(Icons.email)),
+                  const SizedBox(height: 20),
+                  SignInSignUpButton(
+                      onTap: _resetPassword,
+                      buttonText:
+                          AppLocalizations.of(context)!.restartPassword),
+                ],
               ),
             ),
           ),

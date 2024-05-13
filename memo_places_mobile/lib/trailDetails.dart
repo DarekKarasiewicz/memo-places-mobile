@@ -28,30 +28,48 @@ class TrailDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey.shade700),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(trail.trailName),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              SliderWithDots(images: demoImages),
-              Container(
-                margin: const EdgeInsets.all(20),
+        title: Text(trail.trailName),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            SliderWithDots(images: demoImages),
+            Container(
+              margin: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5.0,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(AppLocalizations.of(context)!.info),
+                    Text(AppLocalizations.of(context)!
+                        .typeInfo(trail.typeValue)),
+                    Text(AppLocalizations.of(context)!
+                        .periodInfo(trail.periodValue)),
+                    Text(AppLocalizations.of(context)!
+                        .dateInfo(trail.creationDate))
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10.0),
@@ -66,52 +84,23 @@ class TrailDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.info),
-                      Text(AppLocalizations.of(context)!
-                          .typeInfo(trail.typeValue)),
-                      Text(AppLocalizations.of(context)!
-                          .periodInfo(trail.periodValue)),
-                      Text(AppLocalizations.of(context)!
-                          .dateInfo(trail.creationDate))
+                      Text(AppLocalizations.of(context)!.description),
+                      Text(trail.description),
                     ],
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 5.0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.description),
-                        Text(trail.description),
-                      ],
-                    ),
-                  ),
-                ),
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _launchMaps,
+                child: Text(AppLocalizations.of(context)!.navigateTrail),
               ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () => _launchMaps,
-                  child: Text(AppLocalizations.of(context)!.navigateTrail),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
         ),
       ),
     );

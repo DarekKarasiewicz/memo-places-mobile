@@ -86,119 +86,96 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          backgroundColor: Colors.grey.shade300,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey.shade700),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: true,
-          title: Text(
-            AppLocalizations.of(context)!.contactUs,
-            style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          AppLocalizations.of(context)!.contactUs,
         ),
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade700,
-                        width: 1.5,
-                      ),
+      ),
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade700,
+                      width: 1.5,
                     ),
-                    border: const OutlineInputBorder(),
-                    labelStyle: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.bold),
-                    labelText: AppLocalizations.of(context)!.title,
-                    hintText: AppLocalizations.of(context)!.enterTitle,
-                    errorText: _isTitleEmpty
-                        ? AppLocalizations.of(context)!.fieldInfo
-                        : null,
                   ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                      color: Colors.grey.shade700, fontWeight: FontWeight.bold),
+                  labelText: AppLocalizations.of(context)!.title,
+                  hintText: AppLocalizations.of(context)!.enterTitle,
+                  errorText: _isTitleEmpty
+                      ? AppLocalizations.of(context)!.fieldInfo
+                      : null,
                 ),
-                const SizedBox(
-                  height: 40,
-                ),
-                TextField(
-                  controller: _messageController,
-                  maxLines: 5,
-                  maxLength: 200,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade700,
-                        width: 1.5,
-                      ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              TextField(
+                controller: _messageController,
+                maxLines: 5,
+                maxLength: 200,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade700,
+                      width: 1.5,
                     ),
-                    border: const OutlineInputBorder(),
-                    labelStyle: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.bold),
-                    labelText: AppLocalizations.of(context)!.message,
-                    hintText: AppLocalizations.of(context)!.enterMessage,
-                    errorText: _isMessageEmpty
-                        ? AppLocalizations.of(context)!.fieldInfo
-                        : null,
                   ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                      color: Colors.grey.shade700, fontWeight: FontWeight.bold),
+                  labelText: AppLocalizations.of(context)!.message,
+                  hintText: AppLocalizations.of(context)!.enterMessage,
+                  errorText: _isMessageEmpty
+                      ? AppLocalizations.of(context)!.fieldInfo
+                      : null,
                 ),
-                const SizedBox(
-                  height: 40,
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.grey.shade800),
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.grey.shade700),
+                  padding: MaterialStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    overlayColor:
-                        MaterialStateProperty.all(Colors.grey.shade800),
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.grey.shade700),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15)),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isTitleEmpty = _titleController.text.isEmpty;
-                      _isMessageEmpty = _messageController.text.isEmpty;
-                    });
+                onPressed: () {
+                  setState(() {
+                    _isTitleEmpty = _titleController.text.isEmpty;
+                    _isMessageEmpty = _messageController.text.isEmpty;
+                  });
 
-                    if (!_isTitleEmpty && !_isMessageEmpty) {
-                      _sendMessage();
-                    }
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.sendMessage,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                )
-              ],
-            ),
+                  if (!_isTitleEmpty && !_isMessageEmpty) {
+                    _sendMessage();
+                  }
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.sendMessage,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              )
+            ],
           ),
         ),
       ),

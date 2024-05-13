@@ -28,30 +28,50 @@ class PlaceDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey.shade700),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          backgroundColor: Colors.white,
-          title: Text(place.placeName),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              SliderWithDots(images: demoImages),
-              Container(
-                margin: const EdgeInsets.all(20),
+        title: Text(place.placeName),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            SliderWithDots(images: demoImages),
+            Container(
+              margin: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 5.0,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    Text(AppLocalizations.of(context)!.info),
+                    Text(AppLocalizations.of(context)!
+                        .typeInfo(place.typeValue)),
+                    Text(AppLocalizations.of(context)!
+                        .periodInfo(place.periodValue)),
+                    Text(AppLocalizations.of(context)!
+                        .sortofInfo(place.sortofValue)),
+                    Text(AppLocalizations.of(context)!
+                        .dateInfo(place.creationDate))
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10.0),
@@ -66,54 +86,23 @@ class PlaceDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.info),
-                      Text(AppLocalizations.of(context)!
-                          .typeInfo(place.typeValue)),
-                      Text(AppLocalizations.of(context)!
-                          .periodInfo(place.periodValue)),
-                      Text(AppLocalizations.of(context)!
-                          .sortofInfo(place.sortofValue)),
-                      Text(AppLocalizations.of(context)!
-                          .dateInfo(place.creationDate))
+                      Text(AppLocalizations.of(context)!.description),
+                      Text(place.description),
                     ],
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 5.0,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.description),
-                        Text(place.description),
-                      ],
-                    ),
-                  ),
-                ),
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _launchMaps,
+                child: Text(AppLocalizations.of(context)!.showGoogleMaps),
               ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () => _launchMaps,
-                  child: Text(AppLocalizations.of(context)!.showGoogleMaps),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
         ),
       ),
     );

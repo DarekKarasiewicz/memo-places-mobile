@@ -156,123 +156,111 @@ class _SignInState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          backgroundColor: Colors.lightBlue,
-          title: Text(AppLocalizations.of(context)!.signUp),
-        ),
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Center(
-                      child: Text(
-                        "Logo",
-                        style: TextStyle(fontSize: 24),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.signUp),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Center(
+                    child: Text(
+                      "Logo",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SignInAndSignUpTextField(
+                      controller: usernameController,
+                      hintText: AppLocalizations.of(context)!.enterUsername,
+                      obscureText: false,
+                      icon: const Icon(Icons.account_circle)),
+                  const SizedBox(height: 20),
+                  SignInAndSignUpTextField(
+                      errorText: _emailErrorMsg,
+                      controller: emailController,
+                      hintText: AppLocalizations.of(context)!.enterEmail,
+                      obscureText: false,
+                      icon: const Icon(Icons.email)),
+                  const SizedBox(height: 20),
+                  SignInAndSignUpTextField(
+                    errorText: _passwordErrorMsg,
+                    controller: passwordController,
+                    hintText: AppLocalizations.of(context)!.enterPass,
+                    obscureText: _isPaswordHidden,
+                    icon: const Icon(Icons.lock),
+                  ),
+                  const SizedBox(height: 20),
+                  SignInAndSignUpTextField(
+                    controller: confirmPasswordController,
+                    hintText: AppLocalizations.of(context)!.confirmPass,
+                    obscureText: _isPaswordHidden,
+                    icon: const Icon(Icons.lock),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      HidePassword(
+                        isPasswordHidden: _isPaswordHidden,
+                        onHiddenChange: changeHidden,
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    SignInAndSignUpTextField(
-                        controller: usernameController,
-                        hintText: AppLocalizations.of(context)!.enterUsername,
-                        obscureText: false,
-                        icon: const Icon(Icons.account_circle)),
-                    const SizedBox(height: 20),
-                    SignInAndSignUpTextField(
-                        errorText: _emailErrorMsg,
-                        controller: emailController,
-                        hintText: AppLocalizations.of(context)!.enterEmail,
-                        obscureText: false,
-                        icon: const Icon(Icons.email)),
-                    const SizedBox(height: 20),
-                    SignInAndSignUpTextField(
-                      errorText: _passwordErrorMsg,
-                      controller: passwordController,
-                      hintText: AppLocalizations.of(context)!.enterPass,
-                      obscureText: _isPaswordHidden,
-                      icon: const Icon(Icons.lock),
-                    ),
-                    const SizedBox(height: 20),
-                    SignInAndSignUpTextField(
-                      controller: confirmPasswordController,
-                      hintText: AppLocalizations.of(context)!.confirmPass,
-                      obscureText: _isPaswordHidden,
-                      icon: const Icon(Icons.lock),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        HidePassword(
-                          isPasswordHidden: _isPaswordHidden,
-                          onHiddenChange: changeHidden,
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  SignInSignUpButton(
+                      onTap: () {
+                        passwordValidator(passwordController.text,
+                            confirmPasswordController.text);
+                        emailValidator(emailController.text);
+                        if (_isEmailValid && _isPasswordValid) {
+                          _signUp();
+                        }
+                      },
+                      buttonText: AppLocalizations.of(context)!.signUp),
+                  const SizedBox(height: 40),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Colors.grey.shade400,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    SignInSignUpButton(
-                        onTap: () {
-                          passwordValidator(passwordController.text,
-                              confirmPasswordController.text);
-                          emailValidator(emailController.text);
-                          if (_isEmailValid && _isPasswordValid) {
-                            _signUp();
-                          }
-                        },
-                        buttonText: AppLocalizations.of(context)!.signUp),
-                    const SizedBox(height: 40),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Colors.grey.shade400,
-                          ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          AppLocalizations.of(context)!.or,
+                          style: TextStyle(color: Colors.grey.shade700),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            AppLocalizations.of(context)!.or,
-                            style: TextStyle(color: Colors.grey.shade700),
-                          ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Colors.grey.shade400,
                         ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Center(
-                        child: AuthTile(
-                      imagePath: "lib/assets/images/googleIcon.png",
-                      onTap: onPressed,
-                    )),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    SignInSignUpSwitchButton(
-                        isAccountCreated: false,
-                        loginRegisterSwitch: widget.togglePages),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Center(
+                      child: AuthTile(
+                    imagePath: "lib/assets/images/googleIcon.png",
+                    onTap: onPressed,
+                  )),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  SignInSignUpSwitchButton(
+                      isAccountCreated: false,
+                      loginRegisterSwitch: widget.togglePages),
+                ],
               ),
             ),
           ),

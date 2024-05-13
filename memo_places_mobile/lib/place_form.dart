@@ -9,7 +9,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/main.dart';
+import 'package:memo_places_mobile/mainPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -94,9 +96,10 @@ class _PlaceFormState extends State<PlaceForm> {
       String? token = await _futureAccess;
       if (token != null) {
         Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+        String userId = decodedToken["user_id"].toString();
+
         Map<String, String> formData = {
           'place_name': _nameController.text,
-          'verified_date': DateFormat('yyyy-MM-dd').format(DateTime.now()),
           'lat': widget.position.latitude.toString(),
           'lng': widget.position.longitude.toString(),
           'type': _selectedType,
@@ -105,7 +108,7 @@ class _PlaceFormState extends State<PlaceForm> {
           'description': _descriptionController.text,
           'wiki_link': _link1Controller.text,
           'topic_link': _link2Controller.text,
-          'user': "1",
+          'user': userId,
         };
 
         try {
@@ -126,7 +129,7 @@ class _PlaceFormState extends State<PlaceForm> {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const Main()),
+              MaterialPageRoute(builder: (context) => const InternetChecker()),
             );
           } else {
             Fluttertoast.showToast(
@@ -154,130 +157,125 @@ class _PlaceFormState extends State<PlaceForm> {
     _sortofs.sort((a, b) => a.order.compareTo(b.order));
     _periods.sort((a, b) => a.order.compareTo(b.order));
 
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.placeForm),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.name),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppLocalizations.of(context)!.fieldRequired;
-                    }
-                    final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.placeForm),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.name),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return AppLocalizations.of(context)!.fieldRequired;
+                  }
+                  final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
-                    if (!nameRegex.hasMatch(value)) {
-                      return AppLocalizations.of(context)!.invalidName;
-                    }
-                    return null;
-                  },
-                ),
-                DropdownButtonFormField<Type>(
-                  hint: Text(AppLocalizations.of(context)!.selectType),
-                  value: null,
-                  validator: (value) {
-                    if (value == null) {
-                      return AppLocalizations.of(context)!.plsSelectType;
-                    }
-                    return null;
-                  },
-                  onChanged: (Type? newValue) {
-                    setState(() {
-                      _selectedType = newValue!.id.toString();
-                    });
-                  },
-                  items: _types.map<DropdownMenuItem<Type>>((Type type) {
-                    return DropdownMenuItem<Type>(
-                      value: type,
-                      child: Text(type.name),
-                    );
-                  }).toList(),
-                ),
-                DropdownButtonFormField<Sortof>(
-                  hint: Text(AppLocalizations.of(context)!.selectSortof),
-                  value: null,
-                  validator: (value) {
-                    if (value == null) {
-                      return AppLocalizations.of(context)!.plsSelectSortof;
-                    }
-                    return null;
-                  },
-                  onChanged: (Sortof? newValue) {
-                    setState(() {
-                      _selectedSortof = newValue!.id.toString();
-                    });
-                  },
-                  items:
-                      _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
-                    return DropdownMenuItem<Sortof>(
-                      value: sortof,
-                      child: Text(sortof.name),
-                    );
-                  }).toList(),
-                ),
-                DropdownButtonFormField<Period>(
-                  hint: Text(AppLocalizations.of(context)!.selectPeriod),
-                  value: null,
-                  validator: (value) {
-                    if (value == null) {
-                      return AppLocalizations.of(context)!.plsSelectPeriod;
-                    }
-                    return null;
-                  },
-                  onChanged: (Period? newValue) {
-                    setState(() {
-                      _selectedPeriod = newValue!.id.toString();
-                    });
-                  },
-                  items:
-                      _periods.map<DropdownMenuItem<Period>>((Period period) {
-                    return DropdownMenuItem<Period>(
-                      value: period,
-                      child: Text(period.name),
-                    );
-                  }).toList(),
-                ),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 5,
-                  maxLength: 1000,
-                  decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.description,
-                      counterText:
-                          '${_descriptionController.text.length}/1000'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return AppLocalizations.of(context)!.fieldRequired;
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _link1Controller,
-                  decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.wikiLink),
-                ),
-                TextFormField(
-                  controller: _link2Controller,
-                  decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.topicLink),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => _submitForm(context),
-                  child: Text(AppLocalizations.of(context)!.save),
-                ),
-              ],
-            ),
+                  if (!nameRegex.hasMatch(value)) {
+                    return AppLocalizations.of(context)!.invalidName;
+                  }
+                  return null;
+                },
+              ),
+              DropdownButtonFormField<Type>(
+                hint: Text(AppLocalizations.of(context)!.selectType),
+                value: null,
+                validator: (value) {
+                  if (value == null) {
+                    return AppLocalizations.of(context)!.plsSelectType;
+                  }
+                  return null;
+                },
+                onChanged: (Type? newValue) {
+                  setState(() {
+                    _selectedType = newValue!.id.toString();
+                  });
+                },
+                items: _types.map<DropdownMenuItem<Type>>((Type type) {
+                  return DropdownMenuItem<Type>(
+                    value: type,
+                    child: Text(type.name),
+                  );
+                }).toList(),
+              ),
+              DropdownButtonFormField<Sortof>(
+                hint: Text(AppLocalizations.of(context)!.selectSortof),
+                value: null,
+                validator: (value) {
+                  if (value == null) {
+                    return AppLocalizations.of(context)!.plsSelectSortof;
+                  }
+                  return null;
+                },
+                onChanged: (Sortof? newValue) {
+                  setState(() {
+                    _selectedSortof = newValue!.id.toString();
+                  });
+                },
+                items: _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
+                  return DropdownMenuItem<Sortof>(
+                    value: sortof,
+                    child: Text(sortof.name),
+                  );
+                }).toList(),
+              ),
+              DropdownButtonFormField<Period>(
+                hint: Text(AppLocalizations.of(context)!.selectPeriod),
+                value: null,
+                validator: (value) {
+                  if (value == null) {
+                    return AppLocalizations.of(context)!.plsSelectPeriod;
+                  }
+                  return null;
+                },
+                onChanged: (Period? newValue) {
+                  setState(() {
+                    _selectedPeriod = newValue!.id.toString();
+                  });
+                },
+                items: _periods.map<DropdownMenuItem<Period>>((Period period) {
+                  return DropdownMenuItem<Period>(
+                    value: period,
+                    child: Text(period.name),
+                  );
+                }).toList(),
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 5,
+                maxLength: 1000,
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.description,
+                    counterText: '${_descriptionController.text.length}/1000'),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return AppLocalizations.of(context)!.fieldRequired;
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _link1Controller,
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.wikiLink),
+              ),
+              TextFormField(
+                controller: _link2Controller,
+                decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.topicLink),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _submitForm(context),
+                child: Text(AppLocalizations.of(context)!.save),
+              ),
+            ],
           ),
         ),
       ),

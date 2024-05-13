@@ -92,6 +92,10 @@ PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add cross_file
 PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add image_picker
 ```
 
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add connectivity_plus
+```
+
 ## Authors
 
 - Sebastian Mackiewicz

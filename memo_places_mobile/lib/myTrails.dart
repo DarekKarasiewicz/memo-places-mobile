@@ -157,90 +157,70 @@ class _MyTrailsState extends State<MyTrails> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.grey.shade700),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          title: Text(
-            AppLocalizations.of(context)!.yourTrails,
-            style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          AppLocalizations.of(context)!.yourTrails,
         ),
-        body: _trails.isEmpty
-            ? Center(
-                child: Text(
-                  AppLocalizations.of(context)!.noTrailsAdded,
-                  style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
-                ),
-              )
-            : ListView.builder(
-                itemCount: _trails.length,
-                itemBuilder: (context, index) {
-                  final trail = _trails[index];
-                  return Slidable(
-                      startActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => TrailDetails(trail)),
-                              );
-                            },
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            icon: Icons.arrow_forward,
-                            label: AppLocalizations.of(context)!.preview,
-                          )
-                        ],
-                      ),
-                      endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) {
-                              _showEditDialog(index);
-                            },
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            icon: Icons.edit_location_alt_outlined,
-                            label: AppLocalizations.of(context)!.edit,
-                          ),
-                          SlidableAction(
-                            onPressed: (context) {
-                              _showDeleteDialog(index);
-                            },
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete_outlined,
-                            label: AppLocalizations.of(context)!.delete,
-                          )
-                        ],
-                      ),
-                      child: MyTrailBox(trail: trail));
-                },
-              ),
       ),
+      body: _trails.isEmpty
+          ? Center(
+              child: Text(
+                AppLocalizations.of(context)!.noTrailsAdded,
+                style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
+              ),
+            )
+          : ListView.builder(
+              itemCount: _trails.length,
+              itemBuilder: (context, index) {
+                final trail = _trails[index];
+                return Slidable(
+                    startActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      extentRatio: 0.25,
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TrailDetails(trail)),
+                            );
+                          },
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                          icon: Icons.arrow_forward,
+                          label: AppLocalizations.of(context)!.preview,
+                        )
+                      ],
+                    ),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            _showEditDialog(index);
+                          },
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          icon: Icons.edit_location_alt_outlined,
+                          label: AppLocalizations.of(context)!.edit,
+                        ),
+                        SlidableAction(
+                          onPressed: (context) {
+                            _showDeleteDialog(index);
+                          },
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete_outlined,
+                          label: AppLocalizations.of(context)!.delete,
+                        )
+                      ],
+                    ),
+                    child: MyTrailBox(trail: trail));
+              },
+            ),
     );
   }
 }

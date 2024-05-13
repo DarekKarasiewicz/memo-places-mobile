@@ -107,50 +107,38 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        appBar: AppBar(
-          backgroundColor: Colors.amber,
-          title: Text(AppLocalizations.of(context)!.profile),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ProfileInfoBox(
-                username: _user.username,
-                email: _user.email,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.profile),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            ProfileInfoBox(
+              username: _user.username,
+              email: _user.email,
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: buttonsData
+                    .map((buttonData) => ProfileButton(
+                        onTap: buttonData.onTap, text: buttonData.text))
+                    .toList(),
               ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: buttonsData
-                      .map((buttonData) => ProfileButton(
-                          onTap: buttonData.onTap, text: buttonData.text))
-                      .toList(),
-                ),
-              ),
-              const SizedBox(
-                height: 120,
-              ),
-              SignInSignUpButton(
-                  buttonText: AppLocalizations.of(context)!.signOut,
-                  onTap: _clearAccessKeyAndRefresh),
-              const SizedBox(
-                height: 20,
-              )
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 120,
+            ),
+            SignInSignUpButton(
+                buttonText: AppLocalizations.of(context)!.signOut,
+                onTap: _clearAccessKeyAndRefresh),
+            const SizedBox(
+              height: 20,
+            )
+          ],
         ),
       ),
     );

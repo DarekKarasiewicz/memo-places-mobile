@@ -35,6 +35,8 @@
     "placeForm": "Ortsformular",
     "wikiLink": "Wikipedia-Link",
     "topicLink": "Themen-Link",
+    "noInternet":"Oh! Es scheint, als wärst du momentan nicht mit dem Internet verbunden.\nBitte überprüfe deine Verbindung und versuche es erneut.",
+    "storedPlacesUploadSucces":"Gespeicherte Orte erfolgreich hochgeladen",
     "googleMapsError": "Google Maps konnte nicht gestartet werden",
     "location_select": "Wählen Sie einen Ort auf der Karte aus",
     "description": "Beschreibung",

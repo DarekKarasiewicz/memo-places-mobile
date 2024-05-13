@@ -185,20 +185,9 @@ class _GoogleMapsState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.lightBlue,
-            title: Text(AppLocalizations.of(context)!.home)),
-        body: Center(
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
           child: isLoading
               ? const CircularProgressIndicator()
               : Stack(

@@ -175,51 +175,42 @@ class _TrailRecordState extends State<TrailRecordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      supportedLocales: L10n.all,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      home: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Stack(
-              children: [
-                GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                  markers: _markers,
-                  polylines: _polylines,
-                  initialCameraPosition:
-                      CameraPosition(target: currentPosition, zoom: 16),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Stack(
+            children: [
+              GoogleMap(
+                onMapCreated: _onMapCreated,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                markers: _markers,
+                polylines: _polylines,
+                initialCameraPosition:
+                    CameraPosition(target: currentPosition, zoom: 16),
+              ),
+              RecordMenu(
+                distance: totalDistanceKm.toStringAsFixed(3),
+                isRecording: isRecording,
+                time: _formattedTime,
+                startRecording: _startRecording,
+                endRecording: _endRecording,
+              ),
+              Positioned(
+                top: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    mapController.animateCamera(
+                      CameraUpdate.newLatLng(trailsPoints.isEmpty
+                          ? widget.startLocation
+                          : trailsPoints.last),
+                    );
+                  },
+                  child: const Icon(Icons.location_searching),
                 ),
-                RecordMenu(
-                  distance: totalDistanceKm.toStringAsFixed(3),
-                  isRecording: isRecording,
-                  time: _formattedTime,
-                  startRecording: _startRecording,
-                  endRecording: _endRecording,
-                ),
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      mapController.animateCamera(
-                        CameraUpdate.newLatLng(trailsPoints.isEmpty
-                            ? widget.startLocation
-                            : trailsPoints.last),
-                      );
-                    },
-                    child: const Icon(Icons.location_searching),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

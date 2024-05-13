@@ -17,4 +17,13 @@ class Sortof {
         value: json['value'] as String,
         order: json['order'] as int);
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'value': value,
+      'order': order,
+    };
+  }
 }

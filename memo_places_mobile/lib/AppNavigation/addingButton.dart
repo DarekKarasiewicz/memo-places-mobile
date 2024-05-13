@@ -37,10 +37,6 @@ class _AddingButtonState extends State<AddingButton> {
                           builder: (context) => PlaceForm(widget.position)),
                     );
                   },
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28.0),
-                  ),
                   child: const Icon(Icons.place),
                 ),
                 const SizedBox(width: 16),
@@ -53,10 +49,6 @@ class _AddingButtonState extends State<AddingButton> {
                 _expanded = !_expanded;
               });
             },
-            backgroundColor: Colors.blue,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28.0),
-            ),
             child: _expanded ? const Icon(Icons.close) : const Icon(Icons.add),
           ),
           if (_expanded)
@@ -73,10 +65,6 @@ class _AddingButtonState extends State<AddingButton> {
                               TrailRecordPage(startLocation: widget.position)),
                     );
                   },
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28.0),
-                  ),
                   child: const Icon(Icons.navigation),
                 ),
               ],
