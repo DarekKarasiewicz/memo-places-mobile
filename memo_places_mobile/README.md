@@ -93,7 +93,11 @@ PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add image_picker
 ```
 
 ```console
-PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add connectivity_plus
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add connectivity_plus easy_localization
+```
+
+```console
+PS C:\PATH_TO_YOUR_PROJECT\memo_places_mobile> flutter pub add easy_localization
 ```
 
 ## Authors

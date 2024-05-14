@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,10 +9,9 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/infoAfterSignUpPage.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignUp extends StatefulWidget {
   final void Function() togglePages;
@@ -84,7 +84,7 @@ class _SignInState extends State<SignUp> {
           MaterialPageRoute(builder: (context) => const InfoAfterSignUpPage()),
         );
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.accountCreatedSucces,
+          msg: LocaleKeys.account_created_succes.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -95,7 +95,7 @@ class _SignInState extends State<SignUp> {
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.accountExist,
+          msg: LocaleKeys.account_exist.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -106,7 +106,7 @@ class _SignInState extends State<SignUp> {
       } else {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.alertError,
+          msg: LocaleKeys.alert_error.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -138,12 +138,12 @@ class _SignInState extends State<SignUp> {
         RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$');
     if (!passwordRegex.hasMatch(password) || password.isEmpty) {
       setState(() {
-        _passwordErrorMsg = AppLocalizations.of(context)!.passwordValidation;
+        _passwordErrorMsg = LocaleKeys.password_validation.tr();
         _isPasswordValid = false;
       });
     } else if (password != confPassword) {
       setState(() {
-        _passwordErrorMsg = AppLocalizations.of(context)!.samePassword;
+        _passwordErrorMsg = LocaleKeys.same_password.tr();
         _isPasswordValid = false;
       });
     } else {
@@ -158,7 +158,7 @@ class _SignInState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.signUp),
+        title: Text(LocaleKeys.sign_up.tr()),
       ),
       body: SafeArea(
         child: Center(
@@ -177,28 +177,28 @@ class _SignInState extends State<SignUp> {
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                       controller: usernameController,
-                      hintText: AppLocalizations.of(context)!.enterUsername,
+                      hintText: LocaleKeys.enter_username.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.account_circle)),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                       errorText: _emailErrorMsg,
                       controller: emailController,
-                      hintText: AppLocalizations.of(context)!.enterEmail,
+                      hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                     errorText: _passwordErrorMsg,
                     controller: passwordController,
-                    hintText: AppLocalizations.of(context)!.enterPass,
+                    hintText: LocaleKeys.enter_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                     controller: confirmPasswordController,
-                    hintText: AppLocalizations.of(context)!.confirmPass,
+                    hintText: LocaleKeys.confirm_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
@@ -221,7 +221,7 @@ class _SignInState extends State<SignUp> {
                           _signUp();
                         }
                       },
-                      buttonText: AppLocalizations.of(context)!.signUp),
+                      buttonText: LocaleKeys.sign_up.tr()),
                   const SizedBox(height: 40),
                   Row(
                     children: [
@@ -234,7 +234,7 @@ class _SignInState extends State<SignUp> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
-                          AppLocalizations.of(context)!.or,
+                          LocaleKeys.or.tr(),
                           style: TextStyle(color: Colors.grey.shade700),
                         ),
                       ),

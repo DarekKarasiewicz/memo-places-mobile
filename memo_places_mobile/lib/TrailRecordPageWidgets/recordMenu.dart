@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class RecordMenu extends StatefulWidget {
   final String distance;
@@ -49,7 +50,8 @@ class _RecordMenuState extends State<RecordMenu> {
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  AppLocalizations.of(context)!.distance(widget.distance),
+                  LocaleKeys.distance
+                      .tr(namedArgs: {'distance': widget.distance}),
                   style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -60,10 +62,10 @@ class _RecordMenuState extends State<RecordMenu> {
             widget.isRecording
                 ? ElevatedButton(
                     onPressed: widget.endRecording,
-                    child: Text(AppLocalizations.of(context)!.stopSave))
+                    child: Text(LocaleKeys.stop_save.tr()))
                 : ElevatedButton(
                     onPressed: widget.startRecording,
-                    child: Text(AppLocalizations.of(context)!.save))
+                    child: Text(LocaleKeys.start.tr()))
           ],
         ),
       ),

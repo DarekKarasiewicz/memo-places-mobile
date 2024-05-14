@@ -1,16 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/formWidgets/formPictureSlider.dart';
+import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/home.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailForm extends StatefulWidget {
   final List<LatLng> trailCoordinates;
@@ -34,6 +39,7 @@ class _TrailFormState extends State<TrailForm> {
   final TextEditingController _link1Controller = TextEditingController();
   final TextEditingController _link2Controller = TextEditingController();
 
+  late final List<File> _selectedImages = [];
   late Future<String?> _futureAccess;
   List<Type> _types = [];
   List<Period> _periods = [];
@@ -51,8 +57,8 @@ class _TrailFormState extends State<TrailForm> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _descriptionController.text = AppLocalizations.of(context)!
-        .timeAndDistance(widget.time, widget.distance);
+    _descriptionController.text = LocaleKeys.time_and_distance
+        .tr(namedArgs: {'time': widget.time, 'distance': widget.distance});
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -69,7 +75,7 @@ class _TrailFormState extends State<TrailForm> {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
+      throw Exception(LocaleKeys.failed_load_types.tr());
     }
   }
 
@@ -82,7 +88,7 @@ class _TrailFormState extends State<TrailForm> {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
+      throw Exception(LocaleKeys.failed_load_periods.tr());
     }
   }
 
@@ -134,7 +140,7 @@ class _TrailFormState extends State<TrailForm> {
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)!.succesTrailAdded,
+              msg: LocaleKeys.succes_trail_added.tr(),
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -148,7 +154,7 @@ class _TrailFormState extends State<TrailForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)!.alertError,
+              msg: LocaleKeys.alert_error.tr(),
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -166,6 +172,31 @@ class _TrailFormState extends State<TrailForm> {
     }
   }
 
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
+  void _selectPictures() async {
+    final imagePicker = ImagePicker();
+    final pickedImages =
+        await imagePicker.pickMultiImage(limit: 3, imageQuality: 50);
+
+    if (pickedImages.isEmpty) {
+      return;
+    }
+
+    for (final pickedImage in pickedImages) {
+      if (_selectedImages.length >= 3) {
+        return;
+      }
+      setState(() {
+        _selectedImages.add(File(pickedImage.path));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _types.sort((a, b) => a.order.compareTo(b.order));
@@ -173,7 +204,7 @@ class _TrailFormState extends State<TrailForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.trailForm),
+        title: Text(LocaleKeys.trail_form.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -183,26 +214,25 @@ class _TrailFormState extends State<TrailForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.name),
+                decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldInfo;
+                    return LocaleKeys.field_info.tr();
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return AppLocalizations.of(context)!.invalidName;
+                    return LocaleKeys.invalid_name.tr();
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: Text(AppLocalizations.of(context)!.selectType),
+                hint: Text(LocaleKeys.select_type.tr()),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectType;
+                    return LocaleKeys.pls_select_type.tr();
                   }
                   return null;
                 },
@@ -219,11 +249,11 @@ class _TrailFormState extends State<TrailForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: Text(AppLocalizations.of(context)!.selectPeriod),
+                hint: Text(LocaleKeys.select_period.tr()),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectPeriod;
+                    return LocaleKeys.pls_select_period.tr();
                   }
                   return null;
                 },
@@ -239,34 +269,46 @@ class _TrailFormState extends State<TrailForm> {
                   );
                 }).toList(),
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              _selectedImages.isEmpty
+                  ? const SizedBox()
+                  : FormPictureSlider(
+                      images: _selectedImages, onImageRemoved: _removeImage),
+              _selectedImages.length == 3
+                  ? const SizedBox()
+                  : ImageInput(
+                      selectedImages: _selectedImages,
+                      onImageAdd: _selectPictures),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.description,
+                    labelText: LocaleKeys.description.tr(),
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldInfo;
+                    return LocaleKeys.field_info.tr();
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.wikiLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.wiki_link.tr()),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.topicLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.topic_link.tr()),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: Text(AppLocalizations.of(context)!.save),
+                child: Text(LocaleKeys.save.tr()),
               ),
             ],
           ),

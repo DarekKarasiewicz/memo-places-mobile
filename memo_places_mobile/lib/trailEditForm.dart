@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -8,8 +9,8 @@ import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/myTrails.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailEditForm extends StatefulWidget {
   final Trail trail;
@@ -61,7 +62,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
         _types = jsonData.map((data) => Type.fromJson(data)).toList();
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
+      throw Exception(LocaleKeys.failed_load_types.tr());
     }
   }
 
@@ -74,7 +75,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
         _periods = jsonData.map((data) => Period.fromJson(data)).toList();
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
+      throw Exception(LocaleKeys.failed_load_periods.tr());
     }
   }
 
@@ -103,7 +104,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
 
           if (response.statusCode == 200) {
             Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)!.succesAddedTrail,
+              msg: LocaleKeys.succes_added_trail.tr(),
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -117,7 +118,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
             );
           } else {
             Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)!.alertError,
+              msg: LocaleKeys.alert_error.tr(),
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
               timeInSecForIosWeb: 1,
@@ -161,7 +162,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)!.editTrail,
+          LocaleKeys.edit_trail.tr(),
         ),
       ),
       body: Padding(
@@ -172,26 +173,25 @@ class _TrailEditFormState extends State<TrailEditForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.name),
+                decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldInfo;
+                    return LocaleKeys.field_info.tr();
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return AppLocalizations.of(context)!.invalidName;
+                    return LocaleKeys.invalid_name.tr();
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: Text(AppLocalizations.of(context)!.selectType),
+                hint: Text(LocaleKeys.select_type.tr()),
                 value: _getTypeById(_selectedType),
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectType;
+                    return LocaleKeys.pls_select_type.tr();
                   }
                   return null;
                 },
@@ -208,11 +208,11 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: Text(AppLocalizations.of(context)!.selectPeriod),
+                hint: Text(LocaleKeys.select_period.tr()),
                 value: _getPeriodById(_selectedPeriod),
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectPeriod;
+                    return LocaleKeys.pls_select_period.tr();
                   }
                   return null;
                 },
@@ -233,29 +233,29 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.description,
+                    labelText: LocaleKeys.description.tr(),
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldInfo;
+                    return LocaleKeys.field_info.tr();
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.wikiLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.wiki_link.tr()),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.topicLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.topic_link.tr()),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: Text(AppLocalizations.of(context)!.save),
+                child: Text(LocaleKeys.save.tr()),
               ),
             ],
           ),

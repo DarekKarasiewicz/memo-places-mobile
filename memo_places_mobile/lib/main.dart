@@ -1,9 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/codegen_loader.g.dart';
 
 var colorScheme = ColorScheme.fromSeed(seedColor: Colors.grey.shade300);
 var lightTheme = ThemeData().copyWith(
@@ -44,18 +42,39 @@ var darkTheme = ThemeData.dark().copyWith(
   )),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData().copyWith(),
 );
-void main() {
-  runApp(MaterialApp(
-    supportedLocales: L10n.all,
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate
-    ],
-    darkTheme: darkTheme,
-    theme: lightTheme,
-    themeMode: ThemeMode.light,
-    home: const InternetChecker(),
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [
+        Locale('en'),
+        Locale('pl'),
+        Locale('de'),
+        Locale('ru')
+      ],
+      assetLoader: const CodegenLoader(),
+      path: 'lib/assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      darkTheme: darkTheme,
+      theme: lightTheme,
+      themeMode: ThemeMode.light,
+      home: const InternetChecker(),
+    );
+  }
 }

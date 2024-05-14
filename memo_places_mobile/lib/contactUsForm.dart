@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -5,9 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ContactUsForm extends StatefulWidget {
   const ContactUsForm({super.key});
@@ -59,7 +59,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.messageSentSucces,
+          msg: LocaleKeys.message_sent_succes.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -70,7 +70,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
         Navigator.pop(context);
       } else {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.alertError,
+          msg: LocaleKeys.alert_error.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -90,7 +90,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          AppLocalizations.of(context)!.contactUs,
+          LocaleKeys.contact_us.tr(),
         ),
       ),
       body: Center(
@@ -113,11 +113,9 @@ class _ContactUsFormState extends State<ContactUsForm> {
                   border: const OutlineInputBorder(),
                   labelStyle: TextStyle(
                       color: Colors.grey.shade700, fontWeight: FontWeight.bold),
-                  labelText: AppLocalizations.of(context)!.title,
-                  hintText: AppLocalizations.of(context)!.enterTitle,
-                  errorText: _isTitleEmpty
-                      ? AppLocalizations.of(context)!.fieldInfo
-                      : null,
+                  labelText: LocaleKeys.title.tr(),
+                  hintText: LocaleKeys.enter_email.tr(),
+                  errorText: _isTitleEmpty ? LocaleKeys.field_info.tr() : null,
                 ),
               ),
               const SizedBox(
@@ -139,11 +137,10 @@ class _ContactUsFormState extends State<ContactUsForm> {
                   border: const OutlineInputBorder(),
                   labelStyle: TextStyle(
                       color: Colors.grey.shade700, fontWeight: FontWeight.bold),
-                  labelText: AppLocalizations.of(context)!.message,
-                  hintText: AppLocalizations.of(context)!.enterMessage,
-                  errorText: _isMessageEmpty
-                      ? AppLocalizations.of(context)!.fieldInfo
-                      : null,
+                  labelText: LocaleKeys.message.tr(),
+                  hintText: LocaleKeys.enter_message.tr(),
+                  errorText:
+                      _isMessageEmpty ? LocaleKeys.field_info.tr() : null,
                 ),
               ),
               const SizedBox(
@@ -168,7 +165,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
                   }
                 },
                 child: Text(
-                  AppLocalizations.of(context)!.sendMessage,
+                  LocaleKeys.send_message.tr(),
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

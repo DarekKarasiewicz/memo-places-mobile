@@ -1,5 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/buttonData.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
@@ -8,11 +8,11 @@ import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/editProfile.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -30,9 +30,10 @@ class _ProfileState extends State<Profile> {
   Future<void> _clearAccessKeyAndRefresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove("access");
-    setState(() {
-      token = null;
-    });
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const InternetChecker()),
+    );
   }
 
   @override
@@ -51,17 +52,10 @@ class _ProfileState extends State<Profile> {
   void _initializeButtonsData() {
     buttonsData = [
       ButtonData(
-          text: AppLocalizations.of(context)!.editProfile,
-          onTap: _redirectToEditProfile),
-      ButtonData(
-          text: AppLocalizations.of(context)!.myPlaces,
-          onTap: _redirectToMyPlaces),
-      ButtonData(
-          text: AppLocalizations.of(context)!.myTrails,
-          onTap: _redirectToMyTrails),
-      ButtonData(
-          text: AppLocalizations.of(context)!.contactUs,
-          onTap: _redirectToContactUs),
+          text: LocaleKeys.edit_profile.tr(), onTap: _redirectToEditProfile),
+      ButtonData(text: LocaleKeys.my_places.tr(), onTap: _redirectToMyPlaces),
+      ButtonData(text: LocaleKeys.my_trails.tr(), onTap: _redirectToMyTrails),
+      ButtonData(text: LocaleKeys.contact_us.tr(), onTap: _redirectToContactUs),
     ];
   }
 
@@ -70,7 +64,7 @@ class _ProfileState extends State<Profile> {
     return prefs.getString(key);
   }
 
-  void _loadUserData() async {
+  Future<void> _loadUserData() async {
     String? token = await _futureAccess;
     setState(() {
       _user = User.fromJson(JwtDecoder.decode(token!));
@@ -109,37 +103,47 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.profile),
+        title: Text(LocaleKeys.profile.tr()),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            ProfileInfoBox(
-              username: _user.username,
-              email: _user.email,
-            ),
-            const SizedBox(height: 20),
-            Expanded(
+      body: FutureBuilder(
+        future: _futureAccess,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: buttonsData
-                    .map((buttonData) => ProfileButton(
-                        onTap: buttonData.onTap, text: buttonData.text))
-                    .toList(),
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ProfileInfoBox(
+                    username: _user.username,
+                    email: _user.email,
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: buttonsData
+                          .map((buttonData) => ProfileButton(
+                              onTap: buttonData.onTap, text: buttonData.text))
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 120,
+                  ),
+                  SignInSignUpButton(
+                      buttonText: LocaleKeys.sign_out.tr(),
+                      onTap: _clearAccessKeyAndRefresh),
+                  const SizedBox(
+                    height: 20,
+                  )
+                ],
               ),
-            ),
-            const SizedBox(
-              height: 120,
-            ),
-            SignInSignUpButton(
-                buttonText: AppLocalizations.of(context)!.signOut,
-                onTap: _clearAccessKeyAndRefresh),
-            const SizedBox(
-              height: 20,
-            )
-          ],
-        ),
+            );
+          } else {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+        },
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,8 +13,8 @@ import 'package:memo_places_mobile/home.dart';
 import 'package:memo_places_mobile/profile.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/signInOrSignUpPage.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Main extends StatefulWidget {
   const Main({super.key});
@@ -86,7 +87,7 @@ class _HomeState extends State<Main> {
 
         if (response.statusCode == 200) {
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)!.storedPlacesUploadSucces,
+            msg: LocaleKeys.stored_places_upload_succes.tr(),
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -97,7 +98,7 @@ class _HomeState extends State<Main> {
           deleteLocalData('places');
         } else {
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)!.alertError,
+            msg: LocaleKeys.alert_error.tr(),
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -143,11 +144,11 @@ class _HomeState extends State<Main> {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
-            label: AppLocalizations.of(context)!.home,
+            label: LocaleKeys.home.tr(),
             icon: const Icon(Icons.home, size: 27),
           ),
           BottomNavigationBarItem(
-            label: AppLocalizations.of(context)!.profile,
+            label: LocaleKeys.profile.tr(),
             icon: const Icon(Icons.account_box_outlined, size: 27),
           ),
         ],

@@ -1,32 +1,57 @@
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-class SliderWithDots extends StatefulWidget {
-  final List<String> images;
+class FormPictureSlider extends StatefulWidget {
+  final List<File> images;
+  final Function(int) onImageRemoved;
 
-  const SliderWithDots({required this.images, super.key});
+  const FormPictureSlider(
+      {required this.images, required this.onImageRemoved, super.key});
 
   @override
-  _SliderWithDotsState createState() => _SliderWithDotsState();
+  State<FormPictureSlider> createState() => _FormPictureSliderState();
 }
 
-class _SliderWithDotsState extends State<SliderWithDots> {
+class _FormPictureSliderState extends State<FormPictureSlider> {
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> imageSliders = widget.images
-        .map((image) => Container(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-                child: Image.network(
-                  image,
-                  fit: BoxFit.cover,
-                  width: 1000,
+    final List<Widget> imageSliders =
+        widget.images.asMap().entries.map((entry) {
+      final int index = entry.key;
+      final File image = entry.value;
+      return Container(
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+              child: Image.file(
+                image,
+                fit: BoxFit.cover,
+                width: 1000,
+              ),
+            ),
+            Positioned(
+              right: 10,
+              top: 10,
+              child: GestureDetector(
+                onTap: () {
+                  widget.onImageRemoved(index);
+                },
+                child: const Icon(
+                  Icons.close,
+                  color: Colors.red,
+                  size: 30,
                 ),
               ),
-            ))
-        .toList();
+            ),
+          ],
+        ),
+      );
+    }).toList();
 
     return Column(
       children: [

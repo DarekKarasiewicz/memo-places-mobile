@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/offlinePlaceBox.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OfflinePlacesList extends StatefulWidget {
@@ -43,24 +44,24 @@ class _OfflinePlacesListState extends State<OfflinePlacesList> {
         dialogContext = context;
 
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirm),
+          title: Text(LocaleKeys.confirm.tr()),
           content: Text(
-            AppLocalizations.of(context)!
-                .deleteWarning(places[index].placeName),
+            LocaleKeys.delete_warning
+                .tr(namedArgs: {'name': places[index].placeName}),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(LocaleKeys.cancel.tr()),
             ),
             TextButton(
               onPressed: () {
                 _deletePlace(index);
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.delete),
+              child: Text(LocaleKeys.delete.tr()),
             ),
           ],
         );
@@ -89,7 +90,7 @@ class _OfflinePlacesListState extends State<OfflinePlacesList> {
               return places.isEmpty
                   ? Center(
                       child: Text(
-                        AppLocalizations.of(context)!.noPlaceAdded,
+                        LocaleKeys.no_place_added.tr(),
                         style: TextStyle(
                             fontSize: 24, color: Colors.grey.shade700),
                       ),
@@ -109,7 +110,7 @@ class _OfflinePlacesListState extends State<OfflinePlacesList> {
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
                                 icon: Icons.delete_outlined,
-                                label: AppLocalizations.of(context)!.delete,
+                                label: LocaleKeys.delete.tr(),
                               )
                             ],
                           ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -7,11 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myTrailBox.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/trailDetails.dart';
 import 'package:memo_places_mobile/trailEditForm.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyTrails extends StatefulWidget {
   const MyTrails({super.key});
@@ -49,7 +49,7 @@ class _MyTrailsState extends State<MyTrails> {
           _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
         });
       } else {
-        throw Exception(AppLocalizations.of(context)!.failedLoadTrails);
+        throw Exception(LocaleKeys.failed_load_trails.tr());
       }
     } else {
       throw Exception('Access token is null');
@@ -65,24 +65,24 @@ class _MyTrailsState extends State<MyTrails> {
         dialogContext = context;
 
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirm),
+          title: Text(LocaleKeys.confirm.tr()),
           content: Text(
-            AppLocalizations.of(context)!
-                .deleteWarning(_trails[index].trailName),
+            LocaleKeys.delete_warning
+                .tr(namedArgs: {'name': _trails[index].trailName}),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(LocaleKeys.cancel.tr()),
             ),
             TextButton(
               onPressed: () {
                 _deleteTrail(index);
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.delete),
+              child: Text(LocaleKeys.delete.tr()),
             ),
           ],
         );
@@ -99,14 +99,14 @@ class _MyTrailsState extends State<MyTrails> {
         dialogContext = context;
 
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirm),
-          content: Text(AppLocalizations.of(context)!.editInfo),
+          title: Text(LocaleKeys.confirm.tr()),
+          content: Text(LocaleKeys.edit_info.tr()),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(LocaleKeys.cancel.tr()),
             ),
             TextButton(
               onPressed: () {
@@ -118,7 +118,7 @@ class _MyTrailsState extends State<MyTrails> {
                   ),
                 );
               },
-              child: Text(AppLocalizations.of(context)!.ok),
+              child: Text(LocaleKeys.ok.tr()),
             ),
           ],
         );
@@ -131,7 +131,7 @@ class _MyTrailsState extends State<MyTrails> {
         'http://localhost:8000/memo_places/path/${_trails[index].id}/'));
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
-        msg: AppLocalizations.of(context)!.trailDeleted,
+        msg: LocaleKeys.trail_deleted.tr(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -144,7 +144,7 @@ class _MyTrailsState extends State<MyTrails> {
       });
     } else {
       Fluttertoast.showToast(
-        msg: AppLocalizations.of(context)!.alertError,
+        msg: LocaleKeys.alert_error.tr(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -161,13 +161,13 @@ class _MyTrailsState extends State<MyTrails> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          AppLocalizations.of(context)!.yourTrails,
+          LocaleKeys.your_trails.tr(),
         ),
       ),
       body: _trails.isEmpty
           ? Center(
               child: Text(
-                AppLocalizations.of(context)!.noTrailsAdded,
+                LocaleKeys.no_trails_added.tr(),
                 style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
               ),
             )
@@ -191,7 +191,7 @@ class _MyTrailsState extends State<MyTrails> {
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
                           icon: Icons.arrow_forward,
-                          label: AppLocalizations.of(context)!.preview,
+                          label: LocaleKeys.preview.tr(),
                         )
                       ],
                     ),
@@ -205,7 +205,7 @@ class _MyTrailsState extends State<MyTrails> {
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
                           icon: Icons.edit_location_alt_outlined,
-                          label: AppLocalizations.of(context)!.edit,
+                          label: LocaleKeys.edit.tr(),
                         ),
                         SlidableAction(
                           onPressed: (context) {
@@ -214,7 +214,7 @@ class _MyTrailsState extends State<MyTrails> {
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           icon: Icons.delete_outlined,
-                          label: AppLocalizations.of(context)!.delete,
+                          label: LocaleKeys.delete.tr(),
                         )
                       ],
                     ),

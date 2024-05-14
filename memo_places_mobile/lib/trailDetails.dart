@@ -1,10 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final List<String> demoImages = [
   'https://picsum.photos/250?image=3',
@@ -22,7 +22,7 @@ class TrailDetails extends StatelessWidget {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw AppLocalizations.of(context)!.googleMapsError;
+      throw LocaleKeys.google_maps_error.tr();
     }
   }
 
@@ -56,13 +56,13 @@ class TrailDetails extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    Text(AppLocalizations.of(context)!.info),
-                    Text(AppLocalizations.of(context)!
-                        .typeInfo(trail.typeValue)),
-                    Text(AppLocalizations.of(context)!
-                        .periodInfo(trail.periodValue)),
-                    Text(AppLocalizations.of(context)!
-                        .dateInfo(trail.creationDate))
+                    Text(LocaleKeys.info.tr()),
+                    Text(LocaleKeys.type_info
+                        .tr(namedArgs: {'type': trail.typeValue})),
+                    Text(LocaleKeys.period_info
+                        .tr(namedArgs: {'period': trail.periodValue})),
+                    Text(LocaleKeys.date_info
+                        .tr(namedArgs: {'date': trail.creationDate}))
                   ],
                 ),
               ),
@@ -84,7 +84,7 @@ class TrailDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.description),
+                      Text(LocaleKeys.description.tr()),
                       Text(trail.description),
                     ],
                   ),
@@ -94,7 +94,7 @@ class TrailDetails extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () => _launchMaps,
-                child: Text(AppLocalizations.of(context)!.navigateTrail),
+                child: Text(LocaleKeys.navigate_trail.tr()),
               ),
             ),
             const SizedBox(

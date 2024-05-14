@@ -1,9 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/signInOrSignUpPage.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class InfoAfterSignUpPage extends StatelessWidget {
   const InfoAfterSignUpPage({super.key});
@@ -27,7 +27,7 @@ class InfoAfterSignUpPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    AppLocalizations.of(context)!.linkToActiveInfo,
+                    LocaleKeys.link_to_active_info.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.grey.shade700,
@@ -44,7 +44,7 @@ class InfoAfterSignUpPage extends StatelessWidget {
                           ),
                         );
                       },
-                      buttonText: AppLocalizations.of(context)!.back),
+                      buttonText: LocaleKeys.back.tr()),
                 ],
               ),
             ),

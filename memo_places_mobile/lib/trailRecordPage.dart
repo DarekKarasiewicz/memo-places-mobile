@@ -7,9 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memo_places_mobile/TrailRecordPageWidgets/recordMenu.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/trailForm.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrailRecordPage extends StatefulWidget {
   final LatLng startLocation;

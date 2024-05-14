@@ -1,18 +1,22 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/formWidgets/formPictureSlider.dart';
 import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OfflinePlaceForm extends StatefulWidget {
   const OfflinePlaceForm(this.position, {super.key});
@@ -29,6 +33,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
   final TextEditingController _link1Controller = TextEditingController();
   final TextEditingController _link2Controller = TextEditingController();
 
+  late final List<File> _selectedImages = [];
   late Future<String?> _futureAccess;
   List<Type> _types = [];
   List<Period> _periods = [];
@@ -101,6 +106,31 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
     }
   }
 
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
+  void _selectPictures() async {
+    final imagePicker = ImagePicker();
+    final pickedImages =
+        await imagePicker.pickMultiImage(limit: 3, imageQuality: 50);
+
+    if (pickedImages.isEmpty) {
+      return;
+    }
+
+    for (final pickedImage in pickedImages) {
+      if (_selectedImages.length >= 3) {
+        return;
+      }
+      setState(() {
+        _selectedImages.add(File(pickedImage.path));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _types.sort((a, b) => a.order.compareTo(b.order));
@@ -109,7 +139,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.placeForm),
+        title: Text(LocaleKeys.place_form.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -119,26 +149,25 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.name),
+                decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldRequired;
+                    return LocaleKeys.field_required.tr();
                   }
                   final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
 
                   if (!nameRegex.hasMatch(value)) {
-                    return AppLocalizations.of(context)!.invalidName;
+                    return LocaleKeys.invalid_name.tr();
                   }
                   return null;
                 },
               ),
               DropdownButtonFormField<Type>(
-                hint: Text(AppLocalizations.of(context)!.selectType),
+                hint: Text(LocaleKeys.select_type.tr()),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectType;
+                    return LocaleKeys.pls_select_type.tr();
                   }
                   return null;
                 },
@@ -155,11 +184,11 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Sortof>(
-                hint: Text(AppLocalizations.of(context)!.selectSortof),
+                hint: Text(LocaleKeys.select_sortof.tr()),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectSortof;
+                    return LocaleKeys.pls_select_sortof.tr();
                   }
                   return null;
                 },
@@ -176,11 +205,11 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                 }).toList(),
               ),
               DropdownButtonFormField<Period>(
-                hint: Text(AppLocalizations.of(context)!.selectPeriod),
+                hint: Text(LocaleKeys.select_period.tr()),
                 value: null,
                 validator: (value) {
                   if (value == null) {
-                    return AppLocalizations.of(context)!.plsSelectPeriod;
+                    return LocaleKeys.pls_select_period.tr();
                   }
                   return null;
                 },
@@ -199,35 +228,46 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
               const SizedBox(
                 height: 15,
               ),
-              const ImageInput(),
+              const SizedBox(
+                height: 20,
+              ),
+              _selectedImages.isEmpty
+                  ? const SizedBox()
+                  : FormPictureSlider(
+                      images: _selectedImages, onImageRemoved: _removeImage),
+              _selectedImages.length == 3
+                  ? const SizedBox()
+                  : ImageInput(
+                      selectedImages: _selectedImages,
+                      onImageAdd: _selectPictures),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.description,
+                    labelText: LocaleKeys.description.tr(),
                     counterText: '${_descriptionController.text.length}/1000'),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return AppLocalizations.of(context)!.fieldRequired;
+                    return LocaleKeys.field_required.tr();
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _link1Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.wikiLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.wiki_link.tr()),
               ),
               TextFormField(
                 controller: _link2Controller,
-                decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.topicLink),
+                decoration:
+                    InputDecoration(labelText: LocaleKeys.topic_link.tr()),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => _submitForm(context),
-                child: Text(AppLocalizations.of(context)!.save),
+                child: Text(LocaleKeys.save.tr()),
               ),
             ],
           ),

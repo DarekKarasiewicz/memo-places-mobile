@@ -1,10 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final List<String> demoImages = [
   'https://picsum.photos/250?image=3',
@@ -22,7 +22,7 @@ class PlaceDetails extends StatelessWidget {
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw AppLocalizations.of(context)!.googleMapsError;
+      throw LocaleKeys.google_maps_error.tr();
     }
   }
 
@@ -56,15 +56,15 @@ class PlaceDetails extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    Text(AppLocalizations.of(context)!.info),
-                    Text(AppLocalizations.of(context)!
-                        .typeInfo(place.typeValue)),
-                    Text(AppLocalizations.of(context)!
-                        .periodInfo(place.periodValue)),
-                    Text(AppLocalizations.of(context)!
-                        .sortofInfo(place.sortofValue)),
-                    Text(AppLocalizations.of(context)!
-                        .dateInfo(place.creationDate))
+                    Text(LocaleKeys.info.tr()),
+                    Text(LocaleKeys.type_info
+                        .tr(namedArgs: {'type': place.typeValue})),
+                    Text(LocaleKeys.period_info
+                        .tr(namedArgs: {'period': place.periodValue})),
+                    Text(LocaleKeys.sortof_info
+                        .tr(namedArgs: {'sortof': place.sortofValue})),
+                    Text(LocaleKeys.date_info
+                        .tr(namedArgs: {'date': place.creationDate}))
                   ],
                 ),
               ),
@@ -86,7 +86,7 @@ class PlaceDetails extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Text(AppLocalizations.of(context)!.description),
+                      Text(LocaleKeys.description.tr()),
                       Text(place.description),
                     ],
                   ),
@@ -96,7 +96,7 @@ class PlaceDetails extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () => _launchMaps,
-                child: Text(AppLocalizations.of(context)!.showGoogleMaps),
+                child: Text(LocaleKeys.show_google_maps.tr()),
               ),
             ),
             const SizedBox(

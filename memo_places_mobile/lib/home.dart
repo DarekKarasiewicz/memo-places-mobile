@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,11 +11,10 @@ import 'package:memo_places_mobile/MainPageWidgets/prewiewTrail.dart';
 import 'package:memo_places_mobile/Objects/currnetObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -25,8 +25,6 @@ class Home extends StatefulWidget {
 
 class _GoogleMapsState extends State {
   late GoogleMapController mapController;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   String? _access;
   late LatLng _position;
   bool isLoading = true;
@@ -41,6 +39,7 @@ class _GoogleMapsState extends State {
   @override
   void initState() {
     super.initState();
+    _loadCounter('access').then((value) => _access = value);
     _getCurrentLocation().then((location) => {
           setState(() {
             _position = LatLng(location.latitude, location.longitude);
@@ -57,11 +56,6 @@ class _GoogleMapsState extends State {
   Future<String?> _loadCounter(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
-  }
-
-  void _incrementCounter(String key, String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
   }
 
   @override
@@ -148,7 +142,7 @@ class _GoogleMapsState extends State {
         }).toSet());
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadPlaces);
+      throw Exception(LocaleKeys.failed_load_places.tr());
     }
   }
 
@@ -175,7 +169,7 @@ class _GoogleMapsState extends State {
         }).toSet());
       });
     } else {
-      throw Exception(AppLocalizations.of(context)!.failedLoadTrails);
+      throw Exception(LocaleKeys.failed_load_trails.tr());
     }
   }
 
@@ -185,6 +179,12 @@ class _GoogleMapsState extends State {
 
   @override
   Widget build(BuildContext context) {
+    Widget signInAccess = const SizedBox();
+
+    if (_access != null) {
+      signInAccess = AddingButton(_position);
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -224,7 +224,7 @@ class _GoogleMapsState extends State {
                                     closePreview, selectedObject.trail!)
                                 : PreviewPlace(
                                     closePreview, selectedObject.place!))
-                        : AddingButton(_position),
+                        : signInAccess,
                   ],
                 ),
         ),

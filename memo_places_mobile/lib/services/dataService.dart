@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
@@ -7,7 +8,7 @@ import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Type>> fetchTypes(BuildContext context) async {
@@ -17,7 +18,7 @@ Future<List<Type>> fetchTypes(BuildContext context) async {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Type.fromJson(data)).toList();
   } else {
-    throw Exception(AppLocalizations.of(context)!.failedLoadTypes);
+    throw Exception(LocaleKeys.failed_load_types.tr());
   }
 }
 
@@ -28,7 +29,7 @@ Future<List<Period>> fetchPeriods(BuildContext context) async {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Period.fromJson(data)).toList();
   } else {
-    throw Exception(AppLocalizations.of(context)!.failedLoadPeriods);
+    throw Exception(LocaleKeys.failed_load_periods.tr());
   }
 }
 
@@ -39,7 +40,7 @@ Future<List<Sortof>> fetchSortof(BuildContext context) async {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Sortof.fromJson(data)).toList();
   } else {
-    throw Exception(AppLocalizations.of(context)!.failedLoadSortof);
+    throw Exception(LocaleKeys.failed_load_sortof.tr());
   }
 }
 
@@ -50,7 +51,7 @@ Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Trail.fromJson(data)).toList();
   } else {
-    throw Exception(AppLocalizations.of(context)!.failedLoadTrails);
+    throw Exception(LocaleKeys.failed_load_trails.tr());
   }
 }
 
@@ -61,7 +62,7 @@ Future<List<Place>> fetchUserPlaces(BuildContext context, String userId) async {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Place.fromJson(data)).toList();
   } else {
-    throw Exception(AppLocalizations.of(context)!.failedLoadPlaces);
+    throw Exception(LocaleKeys.failed_load_places.tr());
   }
 }
 

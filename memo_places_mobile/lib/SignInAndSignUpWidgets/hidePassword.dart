@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class HidePassword extends StatelessWidget {
   final bool isPasswordHidden;
@@ -23,8 +24,8 @@ class HidePassword extends StatelessWidget {
           ),
           Text(
             isPasswordHidden
-                ? AppLocalizations.of(context)!.showPass
-                : AppLocalizations.of(context)!.hidePass,
+                ? LocaleKeys.show_pass.tr()
+                : LocaleKeys.hide_pass.tr(),
             style: TextStyle(
               color: Colors.grey.shade700,
             ),

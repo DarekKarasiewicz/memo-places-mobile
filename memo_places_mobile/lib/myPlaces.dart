@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -6,12 +7,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/placeEditForm.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyPlaces extends StatefulWidget {
   const MyPlaces({super.key});
@@ -49,7 +49,7 @@ class _MyPlacesState extends State<MyPlaces> {
           _places = jsonData.map((data) => Place.fromJson(data)).toList();
         });
       } else {
-        throw Exception(AppLocalizations.of(context)!.failedLoadPlaces);
+        throw Exception(LocaleKeys.failed_load_places.tr());
       }
     } else {
       throw Exception('Access token is null');
@@ -65,24 +65,24 @@ class _MyPlacesState extends State<MyPlaces> {
         dialogContext = context;
 
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirm),
+          title: Text(LocaleKeys.confirm.tr()),
           content: Text(
-            AppLocalizations.of(context)!
-                .deleteWarning(_places[index].placeName),
+            LocaleKeys.delete_warning
+                .tr(namedArgs: {'name': _places[index].placeName}),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(LocaleKeys.cancel.tr()),
             ),
             TextButton(
               onPressed: () {
                 _deletePlace(index);
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.delete),
+              child: Text(LocaleKeys.delete.tr()),
             ),
           ],
         );
@@ -99,14 +99,14 @@ class _MyPlacesState extends State<MyPlaces> {
         dialogContext = context;
 
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.confirm),
-          content: Text(AppLocalizations.of(context)!.editInfo),
+          title: Text(LocaleKeys.confirm.tr()),
+          content: Text(LocaleKeys.edit_info.tr()),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(AppLocalizations.of(context)!.cancel),
+              child: Text(LocaleKeys.cancel.tr()),
             ),
             TextButton(
               onPressed: () {
@@ -118,7 +118,7 @@ class _MyPlacesState extends State<MyPlaces> {
                   ),
                 );
               },
-              child: Text(AppLocalizations.of(context)!.ok),
+              child: Text(LocaleKeys.ok.tr()),
             ),
           ],
         );
@@ -131,7 +131,7 @@ class _MyPlacesState extends State<MyPlaces> {
         'http://localhost:8000/memo_places/places/${_places[index].id}/'));
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
-        msg: AppLocalizations.of(context)!.placeDeleted,
+        msg: LocaleKeys.place_deleted.tr(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -144,7 +144,7 @@ class _MyPlacesState extends State<MyPlaces> {
       });
     } else {
       Fluttertoast.showToast(
-        msg: AppLocalizations.of(context)!.alertError,
+        msg: LocaleKeys.alert_error.tr(),
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -161,13 +161,13 @@ class _MyPlacesState extends State<MyPlaces> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          AppLocalizations.of(context)!.yourPlaces,
+          LocaleKeys.your_places.tr(),
         ),
       ),
       body: _places.isEmpty
           ? Center(
               child: Text(
-                AppLocalizations.of(context)!.noPlaceAdded,
+                LocaleKeys.no_place_added.tr(),
                 style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
               ),
             )
@@ -191,7 +191,7 @@ class _MyPlacesState extends State<MyPlaces> {
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
                           icon: Icons.arrow_forward,
-                          label: AppLocalizations.of(context)!.preview,
+                          label: LocaleKeys.preview.tr(),
                         )
                       ],
                     ),
@@ -205,7 +205,7 @@ class _MyPlacesState extends State<MyPlaces> {
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
                           icon: Icons.edit_location_alt_outlined,
-                          label: AppLocalizations.of(context)!.edit,
+                          label: LocaleKeys.edit.tr(),
                         ),
                         SlidableAction(
                           onPressed: (context) {
@@ -214,7 +214,7 @@ class _MyPlacesState extends State<MyPlaces> {
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
                           icon: Icons.delete_outlined,
-                          label: AppLocalizations.of(context)!.delete,
+                          label: LocaleKeys.delete.tr(),
                         )
                       ],
                     ),

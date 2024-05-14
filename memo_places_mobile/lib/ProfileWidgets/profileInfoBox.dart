@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class ProfileInfoBox extends StatelessWidget {
   final String username;
@@ -34,7 +35,7 @@ class ProfileInfoBox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.welcome(username),
+                    LocaleKeys.welcome.tr(namedArgs: {'username': username}),
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,

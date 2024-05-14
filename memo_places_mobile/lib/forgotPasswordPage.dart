@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -5,8 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'dart:convert';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -42,7 +42,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         var responseDecoded = json.decode(response.body);
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.linkSent,
+          msg: LocaleKeys.link_sent.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -53,7 +53,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.dontHaveAccount,
+          msg: LocaleKeys.dont_have_account.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -63,7 +63,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.alertError,
+          msg: LocaleKeys.alert_error.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -96,7 +96,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    AppLocalizations.of(context)!.linkToActiveInfo,
+                    LocaleKeys.link_to_active_info.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.grey.shade700,
@@ -106,14 +106,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                       controller: emailController,
-                      hintText: AppLocalizations.of(context)!.enterEmail,
+                      hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
                   const SizedBox(height: 20),
                   SignInSignUpButton(
                       onTap: _resetPassword,
-                      buttonText:
-                          AppLocalizations.of(context)!.restartPassword),
+                      buttonText: LocaleKeys.restart_password.tr()),
                 ],
               ),
             ),

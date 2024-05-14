@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
@@ -7,10 +8,9 @@ import 'package:memo_places_mobile/Objects/user.dart';
 import 'dart:io';
 
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/main.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:memo_places_mobile/mainPage.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;
@@ -56,12 +56,12 @@ class _EditProfileState extends State<EditProfile> {
         RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$');
     if (!passwordRegex.hasMatch(password)) {
       setState(() {
-        _passwordErrorMsg = AppLocalizations.of(context)!.passwordValidation;
+        _passwordErrorMsg = LocaleKeys.password_validation.tr();
         _isPasswordValid = false;
       });
     } else if (password != confPassword) {
       setState(() {
-        _passwordErrorMsg = AppLocalizations.of(context)!.samePassword;
+        _passwordErrorMsg = LocaleKeys.same_password.tr();
         _isPasswordValid = false;
       });
     } else {
@@ -91,7 +91,7 @@ class _EditProfileState extends State<EditProfile> {
 
       if (response.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.changesSuccesSent,
+          msg: LocaleKeys.changes_succes_sent.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -105,7 +105,7 @@ class _EditProfileState extends State<EditProfile> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.alertError,
+          msg: LocaleKeys.alert_error.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -125,7 +125,7 @@ class _EditProfileState extends State<EditProfile> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          AppLocalizations.of(context)!.editProfile,
+          LocaleKeys.edit_profile.tr(),
         ),
       ),
       body: Center(
@@ -155,7 +155,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 onPressed: _getImageFromGallery,
                 child: Text(
-                  AppLocalizations.of(context)!.changeAvatar,
+                  LocaleKeys.change_avatar.tr(),
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -170,7 +170,7 @@ class _EditProfileState extends State<EditProfile> {
                 height: 20,
               ),
               Text(
-                AppLocalizations.of(context)!.changeUsername,
+                LocaleKeys.change_username.tr(),
                 style: TextStyle(
                     color: Colors.grey.shade700,
                     fontSize: 20,
@@ -196,10 +196,9 @@ class _EditProfileState extends State<EditProfile> {
                     labelStyle: TextStyle(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.bold),
-                    labelText: AppLocalizations.of(context)!.username,
-                    errorText: _isUsernameEmpty
-                        ? AppLocalizations.of(context)!.fieldInfo
-                        : null,
+                    labelText: LocaleKeys.username.tr(),
+                    errorText:
+                        _isUsernameEmpty ? LocaleKeys.field_info.tr() : null,
                   ),
                 ),
               ),
@@ -211,7 +210,7 @@ class _EditProfileState extends State<EditProfile> {
                 height: 20,
               ),
               Text(
-                AppLocalizations.of(context)!.changePass,
+                LocaleKeys.change_pass.tr(),
                 style: TextStyle(
                     color: Colors.grey.shade700,
                     fontSize: 20,
@@ -240,7 +239,7 @@ class _EditProfileState extends State<EditProfile> {
                           labelStyle: TextStyle(
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.bold),
-                          labelText: AppLocalizations.of(context)!.pass,
+                          labelText: LocaleKeys.pass.tr(),
                           errorText: _passwordErrorMsg),
                     ),
                     const SizedBox(
@@ -262,7 +261,7 @@ class _EditProfileState extends State<EditProfile> {
                         labelStyle: TextStyle(
                             color: Colors.grey.shade700,
                             fontWeight: FontWeight.bold),
-                        labelText: AppLocalizations.of(context)!.confirmPass,
+                        labelText: LocaleKeys.confirm_pass.tr(),
                       ),
                     ),
                     Row(
@@ -309,7 +308,7 @@ class _EditProfileState extends State<EditProfile> {
                   }
                 },
                 child: Text(
-                  AppLocalizations.of(context)!.save,
+                  LocaleKeys.save.tr(),
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

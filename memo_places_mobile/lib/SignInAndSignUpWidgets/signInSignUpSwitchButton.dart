@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class SignInSignUpSwitchButton extends StatelessWidget {
   final bool isAccountCreated;
@@ -17,8 +18,8 @@ class SignInSignUpSwitchButton extends StatelessWidget {
       children: [
         Text(
           isAccountCreated
-              ? AppLocalizations.of(context)!.notMember
-              : AppLocalizations.of(context)!.questionAccount,
+              ? LocaleKeys.not_member.tr()
+              : LocaleKeys.question_account.tr(),
           style: TextStyle(color: Colors.grey.shade700),
         ),
         const SizedBox(
@@ -28,8 +29,8 @@ class SignInSignUpSwitchButton extends StatelessWidget {
           onTap: loginRegisterSwitch,
           child: Text(
             isAccountCreated
-                ? AppLocalizations.of(context)!.createAccount
-                : AppLocalizations.of(context)!.signAccount,
+                ? LocaleKeys.create_account.tr()
+                : LocaleKeys.sign_account.tr(),
             style: const TextStyle(
                 color: Colors.blue, fontWeight: FontWeight.bold),
           ),

@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class OfflinePage extends StatelessWidget {
   const OfflinePage({super.key});
@@ -19,7 +20,7 @@ class OfflinePage extends StatelessWidget {
               height: 40,
             ),
             Text(
-              AppLocalizations.of(context)!.noInternet,
+              LocaleKeys.no_internet.tr(),
               textAlign: TextAlign.center,
             )
           ],

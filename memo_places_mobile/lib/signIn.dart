@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpSwitchButton.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
@@ -8,13 +12,12 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
-import 'package:memo_places_mobile/l10n/l10n.dart';
 import 'package:memo_places_mobile/main.dart';
 import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignIn extends StatefulWidget {
   final void Function() togglePages;
@@ -53,7 +56,25 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> _googleSignIn() async {
-    await GoogleSignInApi.signIn();
+    if (Platform.isIOS || Platform.isMacOS) {
+      GoogleSignIn googleSignIn = GoogleSignIn(
+          clientId:
+              "584457314127-6adiqurs38ajbmouuh326gel87hiv77l.apps.googleusercontent.com",
+          scopes: [
+            'email',
+          ],
+          hostedDomain: "");
+
+      final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
+    } else {
+      GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: [
+          'email',
+        ],
+      );
+
+      final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
+    }
   }
 
   Future<void> _login() async {
@@ -87,7 +108,7 @@ class _SignInState extends State<SignIn> {
             MaterialPageRoute(builder: (context) => const Main()),
           );
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)!.succesSignedIn,
+            msg: LocaleKeys.succes_signed_in.tr(),
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             timeInSecForIosWeb: 1,
@@ -99,7 +120,7 @@ class _SignInState extends State<SignIn> {
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.badCredentials,
+          msg: LocaleKeys.bad_credentials.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -109,7 +130,7 @@ class _SignInState extends State<SignIn> {
         );
       } else {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.alertError,
+          msg: LocaleKeys.alert_error.tr(),
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
@@ -127,7 +148,7 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.signIn),
+        title: Text(LocaleKeys.sign_in.tr()),
       ),
       body: SafeArea(
         child: Center(
@@ -146,13 +167,13 @@ class _SignInState extends State<SignIn> {
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                       controller: emailController,
-                      hintText: AppLocalizations.of(context)!.enterEmail,
+                      hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                     controller: passwordController,
-                    hintText: AppLocalizations.of(context)!.enterPass,
+                    hintText: LocaleKeys.enter_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
@@ -175,7 +196,7 @@ class _SignInState extends State<SignIn> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              AppLocalizations.of(context)!.forgotPass,
+                              LocaleKeys.forgot_pass.tr(),
                               style: TextStyle(color: Colors.grey.shade700),
                             ),
                           ))
@@ -183,8 +204,7 @@ class _SignInState extends State<SignIn> {
                   ),
                   const SizedBox(height: 20),
                   SignInSignUpButton(
-                      onTap: _login,
-                      buttonText: AppLocalizations.of(context)!.signIn),
+                      onTap: _login, buttonText: LocaleKeys.sign_in.tr()),
                   const SizedBox(height: 40),
                   Row(
                     children: [
@@ -197,7 +217,7 @@ class _SignInState extends State<SignIn> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
-                          AppLocalizations.of(context)!.or,
+                          LocaleKeys.or.tr(),
                           style: TextStyle(color: Colors.grey.shade700),
                         ),
                       ),
