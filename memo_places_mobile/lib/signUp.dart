@@ -9,6 +9,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/infoAfterSignUpPage.dart';
+import 'package:memo_places_mobile/services/googleSignInApi.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,6 +37,15 @@ class _SignInState extends State<SignUp> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 
   void changeHidden() {
@@ -252,7 +262,9 @@ class _SignInState extends State<SignUp> {
                   Center(
                       child: AuthTile(
                     imagePath: "lib/assets/images/googleIcon.png",
-                    onTap: onPressed,
+                    onTap: () {
+                      googleSignIn(context);
+                    },
                   )),
                   const SizedBox(
                     height: 30,
@@ -268,6 +280,4 @@ class _SignInState extends State<SignUp> {
       ),
     );
   }
-
-  void onPressed() {}
 }

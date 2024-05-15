@@ -30,10 +30,10 @@ class PlaceForm extends StatefulWidget {
 
 class _PlaceFormState extends State<PlaceForm> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _link1Controller = TextEditingController();
-  TextEditingController _link2Controller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _link1Controller = TextEditingController();
+  final TextEditingController _link2Controller = TextEditingController();
 
   late final List<File> _selectedImages = [];
   late Future<String?> _futureAccess;
@@ -51,6 +51,15 @@ class _PlaceFormState extends State<PlaceForm> {
     _fetchTypes();
     _fetchPeriods();
     _fetchSortof();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _link1Controller.dispose();
+    _link2Controller.dispose();
+    super.dispose();
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -293,8 +302,8 @@ class _PlaceFormState extends State<PlaceForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: LocaleKeys.description.tr(),
-                    counterText: '${_descriptionController.text.length}/1000'),
+                  labelText: LocaleKeys.description.tr(),
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return LocaleKeys.field_required.tr();

@@ -139,33 +139,36 @@ class _HomeState extends State<Main> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: isLogged ? screens[currentIndex] : const Home(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            label: LocaleKeys.home.tr(),
-            icon: const Icon(Icons.home, size: 27),
-          ),
-          BottomNavigationBarItem(
-            label: LocaleKeys.profile.tr(),
-            icon: const Icon(Icons.account_box_outlined, size: 27),
-          ),
-        ],
-        currentIndex: currentIndex,
-        onTap: (int index) {
-          if (index == 1 && !isLogged) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const SignInOrSingUpPage()),
-            );
-          } else {
-            setState(() {
-              currentIndex = index;
-            });
-          }
-        },
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: isLogged ? screens[currentIndex] : const Home(),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              label: LocaleKeys.home.tr(),
+              icon: const Icon(Icons.home, size: 27),
+            ),
+            BottomNavigationBarItem(
+              label: LocaleKeys.profile.tr(),
+              icon: const Icon(Icons.account_box_outlined, size: 27),
+            ),
+          ],
+          currentIndex: currentIndex,
+          onTap: (int index) {
+            if (index == 1 && !isLogged) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SignInOrSingUpPage()),
+              );
+            } else {
+              setState(() {
+                currentIndex = index;
+              });
+            }
+          },
+        ),
       ),
     );
   }

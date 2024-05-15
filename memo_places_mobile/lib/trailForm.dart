@@ -14,6 +14,7 @@ import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/formWidgets/formPictureSlider.dart';
 import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/home.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,6 +53,15 @@ class _TrailFormState extends State<TrailForm> {
     _futureAccess = _loadCounter("access");
     _fetchTypes();
     _fetchPeriods();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _link1Controller.dispose();
+    _link2Controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -150,7 +160,7 @@ class _TrailFormState extends State<TrailForm> {
             );
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const Home()),
+              MaterialPageRoute(builder: (context) => const InternetChecker()),
             );
           } else {
             Fluttertoast.showToast(
@@ -286,8 +296,8 @@ class _TrailFormState extends State<TrailForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: LocaleKeys.description.tr(),
-                    counterText: '${_descriptionController.text.length}/1000'),
+                  labelText: LocaleKeys.description.tr(),
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return LocaleKeys.field_info.tr();

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -11,10 +10,12 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
-import 'package:memo_places_mobile/main.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,13 @@ class _SignInState extends State<SignIn> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   void changeHidden() {
     setState(() {
       _isPaswordHidden = !_isPaswordHidden;
@@ -53,28 +61,6 @@ class _SignInState extends State<SignIn> {
   void _incrementCounter(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
-  }
-
-  Future<void> _googleSignIn() async {
-    if (Platform.isIOS || Platform.isMacOS) {
-      GoogleSignIn googleSignIn = GoogleSignIn(
-          clientId:
-              "584457314127-6adiqurs38ajbmouuh326gel87hiv77l.apps.googleusercontent.com",
-          scopes: [
-            'email',
-          ],
-          hostedDomain: "");
-
-      final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
-    } else {
-      GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: [
-          'email',
-        ],
-      );
-
-      final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
-    }
   }
 
   Future<void> _login() async {
@@ -105,42 +91,20 @@ class _SignInState extends State<SignIn> {
           Navigator.pop(context);
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const Main()),
+            MaterialPageRoute(builder: (context) => const InternetChecker()),
           );
-          Fluttertoast.showToast(
-            msg: LocaleKeys.succes_signed_in.tr(),
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          // Navigator.popUntil(context, (route) => route.isFirst);
+          showSuccesToast(LocaleKeys.succes_signed_in.tr());
         });
-      } else if (response.statusCode == 400) {
+      } else if (response.statusCode == 401) {
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: LocaleKeys.bad_credentials.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        throw CustomException(LocaleKeys.bad_credentials.tr());
       } else {
-        Fluttertoast.showToast(
-          msg: LocaleKeys.alert_error.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Navigator.pop(context);
+        throw CustomException(LocaleKeys.alert_error.tr());
       }
-    } catch (e) {
-      print('Error: $e');
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
@@ -235,7 +199,9 @@ class _SignInState extends State<SignIn> {
                   Center(
                       child: AuthTile(
                     imagePath: "lib/assets/images/googleIcon.png",
-                    onTap: _googleSignIn,
+                    onTap: () {
+                      googleSignIn(context);
+                    },
                   )),
                   const SizedBox(
                     height: 160,

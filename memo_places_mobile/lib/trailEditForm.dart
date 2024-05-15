@@ -48,6 +48,15 @@ class _TrailEditFormState extends State<TrailEditForm> {
     _link2Controller.text = widget.trail.topicLink;
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _link1Controller.dispose();
+    _link2Controller.dispose();
+    super.dispose();
+  }
+
   Future<String?> _loadCounter(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
@@ -233,8 +242,8 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: LocaleKeys.description.tr(),
-                    counterText: '${_descriptionController.text.length}/1000'),
+                  labelText: LocaleKeys.description.tr(),
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return LocaleKeys.field_info.tr();

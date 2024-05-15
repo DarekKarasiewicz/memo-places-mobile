@@ -9,6 +9,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dar
 import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/editProfile.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
+import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -30,10 +31,7 @@ class _ProfileState extends State<Profile> {
   Future<void> _clearAccessKeyAndRefresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove("access");
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const InternetChecker()),
-    );
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
@@ -103,6 +101,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(LocaleKeys.profile.tr()),
       ),
       body: FutureBuilder(

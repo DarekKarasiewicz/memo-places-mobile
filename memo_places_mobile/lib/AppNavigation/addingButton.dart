@@ -8,7 +8,7 @@ class AddingButton extends StatefulWidget {
   final LatLng position;
 
   @override
-  _AddingButtonState createState() => _AddingButtonState();
+  State<AddingButton> createState() => _AddingButtonState();
 }
 
 class _AddingButtonState extends State<AddingButton> {

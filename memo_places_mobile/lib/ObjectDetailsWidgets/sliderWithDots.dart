@@ -7,7 +7,7 @@ class SliderWithDots extends StatefulWidget {
   const SliderWithDots({required this.images, super.key});
 
   @override
-  _SliderWithDotsState createState() => _SliderWithDotsState();
+  State<SliderWithDots> createState() => _SliderWithDotsState();
 }
 
 class _SliderWithDotsState extends State<SliderWithDots> {

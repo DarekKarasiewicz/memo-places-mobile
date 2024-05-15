@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'dart:convert';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
@@ -16,11 +16,17 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  TextEditingController emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   Future<void> _resetPassword() async {
     String url = 'http://localhost:8000/admin_dashboard/reset_password/';
-    String email = emailController.text;
+    String email = _emailController.text;
     showDialog(
         context: context,
         builder: (context) {
@@ -39,41 +45,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
 
       if (response.statusCode == 200) {
-        var responseDecoded = json.decode(response.body);
+        showSuccesToast(LocaleKeys.link_sent.tr());
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: LocaleKeys.link_sent.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: LocaleKeys.dont_have_account.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        throw CustomException(LocaleKeys.dont_have_account.tr());
       } else {
-        Fluttertoast.showToast(
-          msg: LocaleKeys.alert_error.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        Navigator.pop(context);
+        throw CustomException(LocaleKeys.alert_error.tr());
       }
-    } catch (e) {
-      print('Error: $e');
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
@@ -105,7 +87,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
-                      controller: emailController,
+                      controller: _emailController,
                       hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),

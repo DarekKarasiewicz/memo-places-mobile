@@ -53,6 +53,15 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
     _link2Controller.text = widget.place.topicLink;
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _link1Controller.dispose();
+    _link2Controller.dispose();
+    super.dispose();
+  }
+
   Future<String?> _loadCounter(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(key);
@@ -284,8 +293,8 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 maxLines: 5,
                 maxLength: 1000,
                 decoration: InputDecoration(
-                    labelText: LocaleKeys.description.tr(),
-                    counterText: '${_descriptionController.text.length}/1000'),
+                  labelText: LocaleKeys.description.tr(),
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return LocaleKeys.field_required.tr();

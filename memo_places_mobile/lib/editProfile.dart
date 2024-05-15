@@ -1,15 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'dart:io';
 
-import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
-import 'package:memo_places_mobile/main.dart';
-import 'package:memo_places_mobile/mainPage.dart';
+import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class EditProfile extends StatefulWidget {
@@ -22,12 +20,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confPasswordController = TextEditingController();
-  bool _isUsernameEmpty = false;
-  bool _isPasswordValid = true;
-  bool _isPaswordHidden = true;
-  String? _passwordErrorMsg;
+  final bool _isUsernameEmpty = false;
   XFile? imgXFile;
   final ImagePicker imagePicker = ImagePicker();
 
@@ -37,10 +30,10 @@ class _EditProfileState extends State<EditProfile> {
     _usernameController.text = widget.user.username;
   }
 
-  void changeHidden() {
-    setState(() {
-      _isPaswordHidden = !_isPaswordHidden;
-    });
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
   }
 
   void _getImageFromGallery() async {
@@ -51,71 +44,26 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
-  void _passwordValidator(String password, String confPassword) {
-    RegExp passwordRegex =
-        RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$');
-    if (!passwordRegex.hasMatch(password)) {
-      setState(() {
-        _passwordErrorMsg = LocaleKeys.password_validation.tr();
-        _isPasswordValid = false;
-      });
-    } else if (password != confPassword) {
-      setState(() {
-        _passwordErrorMsg = LocaleKeys.same_password.tr();
-        _isPasswordValid = false;
-      });
-    } else {
-      setState(() {
-        _passwordErrorMsg = null;
-        _isPasswordValid = true;
-      });
-    }
-  }
-
   void _saveUserData() async {
-    Map<String, String> formData = _passwordController.text.isEmpty
-        ? {
-            'username': _usernameController.text,
-          }
-        : {
-            'username': _usernameController.text,
-            'password': _passwordController.text,
-          };
-
     try {
       var response = await http.post(
-        //Need changes but waiting for Sebastian
         Uri.parse('http://localhost:8000/memo_places/places/'),
-        body: formData,
+        body: {
+          'username': _usernameController.text,
+        },
       );
 
       if (response.statusCode == 200) {
-        Fluttertoast.showToast(
-          msg: LocaleKeys.changes_succes_sent.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        showSuccesToast(LocaleKeys.changes_succes_sent.tr());
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Main()),
+          MaterialPageRoute(builder: (context) => const InternetChecker()),
         );
       } else {
-        Fluttertoast.showToast(
-          msg: LocaleKeys.alert_error.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        throw CustomException(LocaleKeys.alert_error.tr());
       }
-    } catch (e) {
-      print('Error sending form: $e');
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
@@ -205,77 +153,6 @@ class _EditProfileState extends State<EditProfile> {
               const SizedBox(
                 height: 20,
               ),
-              const Divider(),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                LocaleKeys.change_pass.tr(),
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _isPaswordHidden,
-                      decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade700,
-                              width: 1.5,
-                            ),
-                          ),
-                          border: const OutlineInputBorder(),
-                          labelStyle: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.bold),
-                          labelText: LocaleKeys.pass.tr(),
-                          errorText: _passwordErrorMsg),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextField(
-                      controller: _confPasswordController,
-                      obscureText: _isPaswordHidden,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade700,
-                            width: 1.5,
-                          ),
-                        ),
-                        border: const OutlineInputBorder(),
-                        labelStyle: TextStyle(
-                            color: Colors.grey.shade700,
-                            fontWeight: FontWeight.bold),
-                        labelText: LocaleKeys.confirm_pass.tr(),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        HidePassword(
-                          isPasswordHidden: _isPaswordHidden,
-                          onHiddenChange: changeHidden,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               const SizedBox(
                 height: 20,
               ),
@@ -288,24 +165,7 @@ class _EditProfileState extends State<EditProfile> {
                       const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
                 ),
                 onPressed: () {
-                  if (_passwordController.text.isNotEmpty ||
-                      _confPasswordController.text.isNotEmpty) {
-                    _passwordValidator(
-                        _passwordController.text, _confPasswordController.text);
-                  }
-
-                  setState(() {
-                    _isUsernameEmpty = _usernameController.text.isEmpty;
-                    if (_passwordController.text.isEmpty &&
-                        _confPasswordController.text.isEmpty) {
-                      _passwordErrorMsg = null;
-                      _isPasswordValid = true;
-                    }
-                  });
-
-                  if (!_isUsernameEmpty && _isPasswordValid) {
-                    _saveUserData();
-                  }
+                  _saveUserData();
                 },
                 child: Text(
                   LocaleKeys.save.tr(),
