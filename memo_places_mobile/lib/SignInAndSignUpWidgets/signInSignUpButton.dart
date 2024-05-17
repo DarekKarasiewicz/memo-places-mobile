@@ -14,12 +14,15 @@ class SignInSignUpButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-            color: Colors.black, borderRadius: BorderRadius.circular(5)),
+            color: Theme.of(context).colorScheme.onBackground,
+            borderRadius: BorderRadius.circular(5)),
         child: Center(
           child: Text(
             buttonText,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
           ),
         ),
       ),

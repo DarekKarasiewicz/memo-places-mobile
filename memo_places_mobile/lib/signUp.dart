@@ -178,13 +178,13 @@ class _SignInState extends State<SignUp> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Center(
-                    child: Text(
-                      "Logo",
-                      style: TextStyle(fontSize: 24),
+                  Center(
+                    child: Image.asset(
+                      'lib/assets/images/logo_memory_places.png',
+                      width: 300,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
                   SignInAndSignUpTextField(
                       controller: usernameController,
                       hintText: LocaleKeys.enter_username.tr(),
@@ -212,14 +212,20 @@ class _SignInState extends State<SignUp> {
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      HidePassword(
-                        isPasswordHidden: _isPaswordHidden,
-                        onHiddenChange: changeHidden,
-                      ),
-                    ],
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        HidePassword(
+                          isPasswordHidden: _isPaswordHidden,
+                          onHiddenChange: changeHidden,
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   SignInSignUpButton(
@@ -238,20 +244,22 @@ class _SignInState extends State<SignUp> {
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           LocaleKeys.or.tr(),
-                          style: TextStyle(color: Colors.grey.shade700),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              fontSize: 18),
                         ),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ],

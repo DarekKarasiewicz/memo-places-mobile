@@ -12,16 +12,18 @@ class ProfileButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
             border: Border.symmetric(
-              horizontal: BorderSide(width: 2, color: Colors.grey.shade500),
+              horizontal: BorderSide(
+                  width: 2, color: Theme.of(context).colorScheme.tertiary),
             ),
-            color: Colors.grey.shade400),
+            color: Theme.of(context).colorScheme.secondary),
         padding: const EdgeInsets.all(20),
         child: Center(
             child: Text(
           text,
           style: const TextStyle(
-            fontSize: 16,
+            fontSize: 18,
           ),
         )),
       ),

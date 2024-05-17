@@ -54,14 +54,20 @@ class _OfflinePlacesListState extends State<OfflinePlacesList> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(LocaleKeys.cancel.tr()),
+              child: Text(
+                LocaleKeys.cancel.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
             TextButton(
               onPressed: () {
                 _deletePlace(index);
                 Navigator.pop(dialogContext);
               },
-              child: Text(LocaleKeys.delete.tr()),
+              child: Text(
+                LocaleKeys.delete.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
           ],
         );
@@ -81,50 +87,57 @@ class _OfflinePlacesListState extends State<OfflinePlacesList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 400,
-        width: double.infinity,
-        child: FutureBuilder(
-          future: Future.wait([loadOfflinePlacesFromDevice()]),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return places.isEmpty
-                  ? Center(
+      width: double.infinity,
+      child: FutureBuilder(
+        future: Future.wait([loadOfflinePlacesFromDevice()]),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return places.isEmpty
+                ? Center(
+                    child: SizedBox(
+                      width: 300,
                       child: Text(
                         LocaleKeys.no_place_added.tr(),
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 24, color: Colors.grey.shade700),
+                            fontSize: 24,
+                            color: Theme.of(context).colorScheme.onBackground,
+                            overflow: TextOverflow.clip),
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: places.length,
-                      itemBuilder: (context, index) {
-                        final place = places[index];
-                        return Slidable(
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (context) {
-                                  _showDeleteDialog(index);
-                                },
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete_outlined,
-                                label: LocaleKeys.delete.tr(),
-                              )
-                            ],
-                          ),
-                          child: OfflinePlaceBox(
-                            name: place.placeName,
-                          ),
-                        );
-                      },
-                    );
-            } else {
-              return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()));
-            }
-          },
-        ));
+                    ),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: places.length,
+                    itemBuilder: (context, index) {
+                      final place = places[index];
+                      return Slidable(
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                _showDeleteDialog(index);
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete_outlined,
+                              label: LocaleKeys.delete.tr(),
+                            )
+                          ],
+                        ),
+                        child: OfflinePlaceBox(
+                          name: place.placeName,
+                        ),
+                      );
+                    },
+                  );
+          } else {
+            return const Scaffold(
+                body: Center(child: CircularProgressIndicator()));
+          }
+        },
+      ),
+    );
   }
 }

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myTrailBox.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/trailDetails.dart';
 import 'package:memo_places_mobile/trailEditForm.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -75,14 +76,20 @@ class _MyTrailsState extends State<MyTrails> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(LocaleKeys.cancel.tr()),
+              child: Text(
+                LocaleKeys.cancel.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
             TextButton(
               onPressed: () {
                 _deleteTrail(index);
                 Navigator.pop(dialogContext);
               },
-              child: Text(LocaleKeys.delete.tr()),
+              child: Text(
+                LocaleKeys.delete.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
           ],
         );
@@ -106,7 +113,10 @@ class _MyTrailsState extends State<MyTrails> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: Text(LocaleKeys.cancel.tr()),
+              child: Text(
+                LocaleKeys.cancel.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -118,7 +128,10 @@ class _MyTrailsState extends State<MyTrails> {
                   ),
                 );
               },
-              child: Text(LocaleKeys.ok.tr()),
+              child: Text(
+                LocaleKeys.ok.tr(),
+                style: TextStyle(color: Theme.of(context).colorScheme.scrim),
+              ),
             ),
           ],
         );
@@ -158,69 +171,90 @@ class _MyTrailsState extends State<MyTrails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          LocaleKeys.your_trails.tr(),
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          children: [
+            CustomTitle(title: LocaleKeys.your_trails.tr()),
+            _trails.isEmpty
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height / 3,
+                      ),
+                      SizedBox(
+                        width: 300,
+                        child: Text(
+                          LocaleKeys.no_trails_added.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 24,
+                              color: Theme.of(context).colorScheme.onBackground,
+                              overflow: TextOverflow.clip),
+                        ),
+                      ),
+                    ],
+                  )
+                : Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _trails.length,
+                        itemBuilder: (context, index) {
+                          final trail = _trails[index];
+                          return Slidable(
+                              startActionPane: ActionPane(
+                                motion: const ScrollMotion(),
+                                extentRatio: 0.25,
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                TrailDetails(trail)),
+                                      );
+                                    },
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.arrow_forward,
+                                    label: LocaleKeys.preview.tr(),
+                                  )
+                                ],
+                              ),
+                              endActionPane: ActionPane(
+                                motion: const ScrollMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      _showEditDialog(index);
+                                    },
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.edit_location_alt_outlined,
+                                    label: LocaleKeys.edit.tr(),
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      _showDeleteDialog(index);
+                                    },
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete_outlined,
+                                    label: LocaleKeys.delete.tr(),
+                                  )
+                                ],
+                              ),
+                              child: MyTrailBox(trail: trail));
+                        },
+                      ),
+                    ),
+                  ),
+          ],
         ),
       ),
-      body: _trails.isEmpty
-          ? Center(
-              child: Text(
-                LocaleKeys.no_trails_added.tr(),
-                style: TextStyle(fontSize: 24, color: Colors.grey.shade700),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _trails.length,
-              itemBuilder: (context, index) {
-                final trail = _trails[index];
-                return Slidable(
-                    startActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      extentRatio: 0.25,
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TrailDetails(trail)),
-                            );
-                          },
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          icon: Icons.arrow_forward,
-                          label: LocaleKeys.preview.tr(),
-                        )
-                      ],
-                    ),
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            _showEditDialog(index);
-                          },
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit_location_alt_outlined,
-                          label: LocaleKeys.edit.tr(),
-                        ),
-                        SlidableAction(
-                          onPressed: (context) {
-                            _showDeleteDialog(index);
-                          },
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete_outlined,
-                          label: LocaleKeys.delete.tr(),
-                        )
-                      ],
-                    ),
-                    child: MyTrailBox(trail: trail));
-              },
-            ),
     );
   }
 }

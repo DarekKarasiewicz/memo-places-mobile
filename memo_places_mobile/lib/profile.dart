@@ -8,8 +8,6 @@ import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/editProfile.dart';
-import 'package:memo_places_mobile/internetChecker.dart';
-import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -108,39 +106,46 @@ class _ProfileState extends State<Profile> {
         future: _futureAccess,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ProfileInfoBox(
-                    username: _user.username,
-                    email: _user.email,
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: buttonsData
-                          .map((buttonData) => ProfileButton(
-                              onTap: buttonData.onTap, text: buttonData.text))
-                          .toList(),
+            return SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ProfileInfoBox(
+                      username: _user.username,
+                      email: _user.email,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 120,
-                  ),
-                  SignInSignUpButton(
-                      buttonText: LocaleKeys.sign_out.tr(),
-                      onTap: _clearAccessKeyAndRefresh),
-                  const SizedBox(
-                    height: 20,
-                  )
-                ],
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: SizedBox(
+                        height: 450,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ...buttonsData.map((buttonData) => ProfileButton(
+                                  onTap: buttonData.onTap,
+                                  text: buttonData.text)),
+                              SignInSignUpButton(
+                                  buttonText: LocaleKeys.sign_out.tr(),
+                                  onTap: _clearAccessKeyAndRefresh),
+                              const SizedBox(
+                                height: 20,
+                              )
+                            ]),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
-            return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
+            return Scaffold(
+                body: Center(
+                    child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.scrim),
+            )));
           }
         },
       ),

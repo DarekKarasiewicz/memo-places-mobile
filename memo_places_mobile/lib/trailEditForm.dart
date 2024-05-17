@@ -8,6 +8,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/formWidgets/customFormInput.dart';
+import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,8 +28,8 @@ class _TrailEditFormState extends State<TrailEditForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _link1Controller = TextEditingController();
-  final TextEditingController _link2Controller = TextEditingController();
+  final TextEditingController _wikiLinkController = TextEditingController();
+  final TextEditingController _topicLinkController = TextEditingController();
 
   late Future<String?> _futureAccess;
   List<Type> _types = [];
@@ -44,16 +47,16 @@ class _TrailEditFormState extends State<TrailEditForm> {
     _selectedType = widget.trail.type.toString();
     _nameController.text = widget.trail.trailName;
     _descriptionController.text = widget.trail.description;
-    _link1Controller.text = widget.trail.wikiLink;
-    _link2Controller.text = widget.trail.topicLink;
+    _wikiLinkController.text = widget.trail.wikiLink;
+    _topicLinkController.text = widget.trail.topicLink;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _link1Controller.dispose();
-    _link2Controller.dispose();
+    _wikiLinkController.dispose();
+    _topicLinkController.dispose();
     super.dispose();
   }
 
@@ -99,8 +102,8 @@ class _TrailEditFormState extends State<TrailEditForm> {
           'type': _selectedType,
           'period': _selectedPeriod,
           'description': _descriptionController.text,
-          'wiki_link': _link1Controller.text,
-          'topic_link': _link2Controller.text,
+          'wiki_link': _wikiLinkController.text,
+          'topic_link': _topicLinkController.text,
           'user': userId,
         };
 
@@ -163,40 +166,75 @@ class _TrailEditFormState extends State<TrailEditForm> {
     return null;
   }
 
+  String? _descriptionValidator(String? fieldContent) {
+    if (fieldContent!.isEmpty) {
+      return LocaleKeys.field_required.tr();
+    }
+    return null;
+  }
+
+  String? _nameValidator(String? fieldContent) {
+    if (fieldContent!.isEmpty) {
+      return LocaleKeys.field_required.tr();
+    }
+    final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
+
+    if (!nameRegex.hasMatch(fieldContent)) {
+      return LocaleKeys.invalid_name.tr();
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     _types.sort((a, b) => a.order.compareTo(b.order));
     _periods.sort((a, b) => a.order.compareTo(b.order));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          LocaleKeys.edit_trail.tr(),
-        ),
-      ),
+      appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              Center(
+                  child: CustomTitle(
+                title: LocaleKeys.trail_form.tr(),
+              )),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomFormInput(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return LocaleKeys.field_info.tr();
-                  }
-                  final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
-
-                  if (!nameRegex.hasMatch(value)) {
-                    return LocaleKeys.invalid_name.tr();
-                  }
-                  return null;
-                },
+                label: LocaleKeys.name.tr(),
+                validator: _nameValidator,
+              ),
+              const SizedBox(
+                height: 20,
               ),
               DropdownButtonFormField<Type>(
-                hint: Text(LocaleKeys.select_type.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.select_type.tr(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
                 value: _getTypeById(_selectedType),
                 validator: (value) {
                   if (value == null) {
@@ -212,12 +250,38 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 items: _types.map<DropdownMenuItem<Type>>((Type type) {
                   return DropdownMenuItem<Type>(
                     value: type,
-                    child: Text(type.name),
+                    child: Text(
+                      type.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   );
                 }).toList(),
               ),
+              const SizedBox(
+                height: 20,
+              ),
               DropdownButtonFormField<Period>(
-                hint: Text(LocaleKeys.select_period.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.select_period.tr(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
                 value: _getPeriodById(_selectedPeriod),
                 validator: (value) {
                   if (value == null) {
@@ -233,39 +297,36 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 items: _periods.map<DropdownMenuItem<Period>>((Period period) {
                   return DropdownMenuItem<Period>(
                     value: period,
-                    child: Text(period.name),
+                    child: Text(
+                      period.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   );
                 }).toList(),
               ),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 5,
+              const SizedBox(height: 20),
+              CustomFormInput(
                 maxLength: 1000,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.description.tr(),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return LocaleKeys.field_info.tr();
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _link1Controller,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.wiki_link.tr()),
-              ),
-              TextFormField(
-                controller: _link2Controller,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.topic_link.tr()),
+                maxLines: 5,
+                controller: _descriptionController,
+                label: LocaleKeys.description.tr(),
+                validator: _descriptionValidator,
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _submitForm(context),
-                child: Text(LocaleKeys.save.tr()),
+              CustomFormInput(
+                controller: _wikiLinkController,
+                label: LocaleKeys.wiki_link.tr(),
               ),
+              const SizedBox(height: 20),
+              CustomFormInput(
+                controller: _topicLinkController,
+                label: LocaleKeys.topic_link.tr(),
+              ),
+              const SizedBox(height: 35),
+              CustomButton(
+                onPressed: () => _submitForm(context),
+                text: LocaleKeys.save.tr(),
+              )
             ],
           ),
         ),

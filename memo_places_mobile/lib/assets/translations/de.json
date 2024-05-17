@@ -35,7 +35,6 @@
     "place_form": "Ortsformular",
     "wiki_link": "Wikipedia-Link",
     "topic_link": "Themen-Link",
-    "no_internet":"Oh! Es scheint, als wärst du momentan nicht mit dem Internet verbunden.\nBitte überprüfe deine Verbindung und versuche es erneut.",
     "stored_places_upload_succes":"Gespeicherte Orte erfolgreich hochgeladen",
     "google_maps_error": "Google Maps konnte nicht gestartet werden",
     "location_select": "Wählen Sie einen Ort auf der Karte aus",
@@ -110,5 +109,14 @@
     "place_deleted": "Ort gelöscht",
     "trail_deleted": "Pfad gelöscht",
     "preview": "Vorschau",
-    "alert_error": "Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut."
+    "alert_error": "Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut.",
+    "oops": "Hoppla!",
+    "no_internet_info": "Es scheint, dass du momentan keine Internetverbindung hast.",
+    "but": "aber ...",
+    "still_add_places": "Du kannst trotzdem deine Orte hinzufügen",
+    "select_pictures": "Bilder auswählen",
+    "found_by": "Gefunden von\n{username}",
+    "username_info": "\u2022 Gefunden von - {username}",
+    "found": "{date} gefunden",
+    "links": "Verknüpfungen"
 }

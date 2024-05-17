@@ -102,7 +102,6 @@
     "welcome": "Welcome, {username}!",
     "place_added_succes": "Place added successfully",
     "stored_places_upload_succes": "Stored places uploaded successfully",
-    "no_internet": "Oops! It seems like you're not connected to the internet right now.\nPlease check your connection and try again.",
     "delete": "Delete",
     "edit": "Edit",
     "edit_info": "You will be able only to edit basic information, for more editing options please visit our website.",
@@ -110,5 +109,15 @@
     "place_deleted": "Place deleted",
     "trail_deleted": "Trail deleted",
     "preview": "Preview",
-    "alert_error": "Something went wrong. Please try again later."
+    "alert_error": "Something went wrong. Please try again later.",
+    "oops": "Oops!",
+    "no_internet_info": "It seems like you're not connected to the internet right now.",
+    "but": "but ...",
+    "still_add_places": "You can still add your places",
+    "select_pictures": "Select Pictures",
+    "found_by": "Found by\n{username}",
+    "username_info": "\u2022 Found by - {username}",
+    "found": "Found {date}",
+    "links": "Links"
+
 }

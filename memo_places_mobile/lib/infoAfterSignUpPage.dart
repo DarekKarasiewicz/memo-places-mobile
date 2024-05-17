@@ -18,10 +18,10 @@ class InfoAfterSignUpPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Center(
-                    child: Text(
-                      "Logo",
-                      style: TextStyle(fontSize: 24),
+                  Center(
+                    child: Image.asset(
+                      'lib/assets/images/logo_memory_places.png',
+                      width: 300,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -29,9 +29,9 @@ class InfoAfterSignUpPage extends StatelessWidget {
                     LocaleKeys.link_to_active_info.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: Colors.grey.shade700,
+                        color: Theme.of(context).colorScheme.onBackground,
                         fontWeight: FontWeight.bold,
-                        fontSize: 16),
+                        fontSize: 20),
                   ),
                   const SizedBox(height: 20),
                   SignInSignUpButton(

@@ -6,6 +6,8 @@ import 'package:memo_places_mobile/Objects/user.dart';
 import 'dart:io';
 
 import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -70,116 +72,87 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          LocaleKeys.edit_profile.tr(),
-        ),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 58,
-                backgroundColor: Colors.transparent,
-                backgroundImage: imgXFile == null
-                    ? const NetworkImage(
-                            'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg')
-                        as ImageProvider
-                    : FileImage(File(imgXFile!.path)),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.all(Colors.grey.shade800),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.grey.shade700),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                ),
-                onPressed: _getImageFromGallery,
-                child: Text(
-                  LocaleKeys.change_avatar.tr(),
-                  style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Divider(),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                LocaleKeys.change_username.tr(),
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: TextField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade700,
-                        width: 1.5,
-                      ),
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            CustomTitle(title: LocaleKeys.edit_profile.tr()),
+            const SizedBox(
+              height: 40,
+            ),
+            CircleAvatar(
+              radius: 58,
+              backgroundColor: Colors.transparent,
+              backgroundImage: imgXFile == null
+                  ? const NetworkImage(
+                          'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg')
+                      as ImageProvider
+                  : FileImage(File(imgXFile!.path)),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomButton(
+              onPressed: _getImageFromGallery,
+              text: LocaleKeys.change_avatar.tr(),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Divider(),
+            const SizedBox(
+              height: 20,
+            ),
+            Text(
+              LocaleKeys.change_username.tr(),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: _usernameController,
+                style: const TextStyle(fontSize: 20),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
                     ),
-                    border: const OutlineInputBorder(),
-                    labelStyle: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.bold),
-                    labelText: LocaleKeys.username.tr(),
-                    errorText:
-                        _isUsernameEmpty ? LocaleKeys.field_info.tr() : null,
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.all(Colors.grey.shade800),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.grey.shade700),
-                  padding: MaterialStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15)),
-                ),
-                onPressed: () {
-                  _saveUserData();
-                },
-                child: Text(
-                  LocaleKeys.save.tr(),
-                  style: const TextStyle(
-                      fontSize: 20,
+                  border: const OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                      fontSize: 20),
+                  labelText: LocaleKeys.username.tr(),
+                  errorText:
+                      _isUsernameEmpty ? LocaleKeys.field_info.tr() : null,
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              )
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomButton(
+              onPressed: _saveUserData,
+              text: LocaleKeys.save.tr(),
+            ),
+            const SizedBox(
+              height: 20,
+            )
+          ],
         ),
       ),
     );

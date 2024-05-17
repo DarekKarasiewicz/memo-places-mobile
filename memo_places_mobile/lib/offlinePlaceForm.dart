@@ -11,6 +11,9 @@ import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/formWidgets/customFormInput.dart';
+import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/formWidgets/formPictureSlider.dart';
 import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
@@ -30,8 +33,6 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _link1Controller = TextEditingController();
-  final TextEditingController _link2Controller = TextEditingController();
 
   late final List<File> _selectedImages = [];
   late Future<String?> _futureAccess;
@@ -67,8 +68,6 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _link1Controller.dispose();
-    _link2Controller.dispose();
     super.dispose();
   }
 
@@ -140,6 +139,25 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
     }
   }
 
+  String? _descriptionValidator(String? fieldContent) {
+    if (fieldContent!.isEmpty) {
+      return LocaleKeys.field_required.tr();
+    }
+    return null;
+  }
+
+  String? _nameValidator(String? fieldContent) {
+    if (fieldContent!.isEmpty) {
+      return LocaleKeys.field_required.tr();
+    }
+    final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
+
+    if (!nameRegex.hasMatch(fieldContent)) {
+      return LocaleKeys.invalid_name.tr();
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     _types.sort((a, b) => a.order.compareTo(b.order));
@@ -147,32 +165,51 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
     _periods.sort((a, b) => a.order.compareTo(b.order));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(LocaleKeys.place_form.tr()),
-      ),
+      appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              TextFormField(
+              Center(
+                child: CustomTitle(
+                  title: LocaleKeys.add_place.tr(),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomFormInput(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: LocaleKeys.name.tr()),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return LocaleKeys.field_required.tr();
-                  }
-                  final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
-
-                  if (!nameRegex.hasMatch(value)) {
-                    return LocaleKeys.invalid_name.tr();
-                  }
-                  return null;
-                },
+                label: LocaleKeys.name.tr(),
+                validator: _nameValidator,
+              ),
+              const SizedBox(
+                height: 20,
               ),
               DropdownButtonFormField<Type>(
-                hint: Text(LocaleKeys.select_type.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.select_type.tr(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
                 value: null,
                 validator: (value) {
                   if (value == null) {
@@ -188,12 +225,38 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                 items: _types.map<DropdownMenuItem<Type>>((Type type) {
                   return DropdownMenuItem<Type>(
                     value: type,
-                    child: Text(type.name),
+                    child: Text(
+                      type.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   );
                 }).toList(),
               ),
+              const SizedBox(
+                height: 20,
+              ),
               DropdownButtonFormField<Sortof>(
-                hint: Text(LocaleKeys.select_sortof.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.select_sortof.tr(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
                 value: null,
                 validator: (value) {
                   if (value == null) {
@@ -209,12 +272,38 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                 items: _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
                   return DropdownMenuItem<Sortof>(
                     value: sortof,
-                    child: Text(sortof.name),
+                    child: Text(
+                      sortof.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   );
                 }).toList(),
               ),
+              const SizedBox(
+                height: 20,
+              ),
               DropdownButtonFormField<Period>(
-                hint: Text(LocaleKeys.select_period.tr()),
+                decoration: InputDecoration(
+                  labelText: LocaleKeys.select_period.tr(),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.scrim,
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      width: 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onBackground,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
                 value: null,
                 validator: (value) {
                   if (value == null) {
@@ -230,7 +319,10 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                 items: _periods.map<DropdownMenuItem<Period>>((Period period) {
                   return DropdownMenuItem<Period>(
                     value: period,
-                    child: Text(period.name),
+                    child: Text(
+                      period.name,
+                      style: const TextStyle(fontSize: 20),
+                    ),
                   );
                 }).toList(),
               ),
@@ -249,34 +341,18 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                   : ImageInput(
                       selectedImages: _selectedImages,
                       onImageAdd: _selectPictures),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 5,
-                maxLength: 1000,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.description.tr(),
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return LocaleKeys.field_required.tr();
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _link1Controller,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.wiki_link.tr()),
-              ),
-              TextFormField(
-                controller: _link2Controller,
-                decoration:
-                    InputDecoration(labelText: LocaleKeys.topic_link.tr()),
-              ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              CustomFormInput(
+                maxLength: 1000,
+                maxLines: 5,
+                controller: _descriptionController,
+                label: LocaleKeys.description.tr(),
+                validator: _descriptionValidator,
+              ),
+              const SizedBox(height: 35),
+              CustomButton(
                 onPressed: () => _submitForm(context),
-                child: Text(LocaleKeys.save.tr()),
+                text: LocaleKeys.save.tr(),
               ),
             ],
           ),

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:memo_places_mobile/AppNavigation/addingButton.dart';
 import 'package:memo_places_mobile/MainPageWidgets/previewPlace.dart';
@@ -11,7 +13,10 @@ import 'package:memo_places_mobile/MainPageWidgets/prewiewTrail.dart';
 import 'package:memo_places_mobile/Objects/currnetObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/Theme/theme.dart';
+import 'package:memo_places_mobile/Theme/themeProvider.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -25,8 +30,9 @@ class Home extends StatefulWidget {
 
 class _GoogleMapsState extends State {
   late GoogleMapController mapController;
+  late String _mapStyleString;
   String? _access;
-  late LatLng _position;
+  late LatLng _position = const LatLng(0.0, 0.0);
   bool isLoading = true;
   bool isSelectedPlace = false;
   Set<Marker> _markers = {};
@@ -39,6 +45,7 @@ class _GoogleMapsState extends State {
   @override
   void initState() {
     super.initState();
+    _loadMapStyle();
     _loadCounter('access').then((value) => _access = value);
     _getCurrentLocation().then((location) => {
           setState(() {
@@ -51,6 +58,8 @@ class _GoogleMapsState extends State {
             isLoading = false;
           })
         });
+    Provider.of<ThemeProvider>(context, listen: false)
+        .addListener(_loadMapStyle);
   }
 
   Future<String?> _loadCounter(String key) async {
@@ -61,7 +70,22 @@ class _GoogleMapsState extends State {
   @override
   void dispose() {
     _positionStreamSubscription.cancel();
+    mapController.dispose();
+    Provider.of<ThemeProvider>(context, listen: false)
+        .removeListener(_loadMapStyle);
+
     super.dispose();
+  }
+
+  Future<void> _loadMapStyle() async {
+    String stylePath =
+        Provider.of<ThemeProvider>(context, listen: false).themeData ==
+                lightTheme
+            ? 'lib/assets/map_styles/light_map_style.json'
+            : 'lib/assets/map_styles/dark_map_style.json';
+    _mapStyleString =
+        await DefaultAssetBundle.of(context).loadString(stylePath);
+    setState(() {});
   }
 
   Future<Position> _getCurrentLocation() async {
@@ -91,18 +115,31 @@ class _GoogleMapsState extends State {
     });
   }
 
-  void _updateUserMarker() {
+  void _updateUserMarker() async {
+    final Uint8List markerIcon =
+        await getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
+
     Set<Marker> updatedMarkers = _markers.union({
       Marker(
         markerId: const MarkerId("user_location"),
         position: _position,
-        icon: BitmapDescriptor.defaultMarker,
+        icon: BitmapDescriptor.fromBytes(markerIcon),
       ),
     });
 
     setState(() {
       _markers = updatedMarkers;
     });
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   void _setObject(Place? place, Trail? trail) {
@@ -173,10 +210,6 @@ class _GoogleMapsState extends State {
     }
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget signInAccess = const SizedBox();
@@ -189,17 +222,23 @@ class _GoogleMapsState extends State {
       body: SafeArea(
         child: Center(
           child: isLoading
-              ? const CircularProgressIndicator()
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.scrim),
+                )
               : Stack(
                   children: [
                     GoogleMap(
-                      onMapCreated: _onMapCreated,
+                      onMapCreated: (controller) {
+                        mapController = controller;
+                      },
                       myLocationButtonEnabled: false,
                       zoomControlsEnabled: false,
                       initialCameraPosition:
                           CameraPosition(target: _position, zoom: 12.0),
                       markers: _markers,
                       polylines: _polylines,
+                      style: _mapStyleString,
                     ),
                     Positioned(
                       top: 16,
@@ -212,6 +251,23 @@ class _GoogleMapsState extends State {
                           );
                         },
                         child: const Icon(Icons.location_searching),
+                      ),
+                    ),
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: FloatingActionButton(
+                        heroTag: 'toggleTheme',
+                        onPressed: () {
+                          Provider.of<ThemeProvider>(context, listen: false)
+                              .toggleTheme();
+                        },
+                        child: Icon(
+                            Provider.of<ThemeProvider>(context, listen: false)
+                                        .themeData ==
+                                    lightTheme
+                                ? Icons.light_mode
+                                : Icons.dark_mode),
                       ),
                     ),
                     isSelectedPlace

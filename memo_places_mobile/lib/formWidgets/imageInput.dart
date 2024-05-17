@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:memo_places_mobile/formWidgets/customButtonWithIcon.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class ImageInput extends StatefulWidget {
   final List<File> selectedImages;
@@ -18,10 +21,10 @@ class _ImageInputState extends State<ImageInput> {
     return Container(
       alignment: Alignment.center,
       width: double.infinity,
-      child: TextButton.icon(
+      child: CustomButtonWithIcon(
+        icon: Icons.photo_size_select_actual_rounded,
+        text: LocaleKeys.select_pictures.tr(),
         onPressed: widget.onImageAdd,
-        icon: const Icon(Icons.photo_size_select_actual_rounded),
-        label: const Text('Select Pictures'),
       ),
     );
   }

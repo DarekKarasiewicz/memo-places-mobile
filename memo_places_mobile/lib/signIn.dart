@@ -71,8 +71,11 @@ class _SignInState extends State<SignIn> {
     showDialog(
         context: context,
         builder: (context) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.scrim),
+            ),
           );
         });
 
@@ -122,10 +125,10 @@ class _SignInState extends State<SignIn> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Center(
-                    child: Text(
-                      "Logo",
-                      style: TextStyle(fontSize: 24),
+                  Center(
+                    child: Image.asset(
+                      'lib/assets/images/logo_memory_places.png',
+                      width: 300,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -134,37 +137,43 @@ class _SignInState extends State<SignIn> {
                       hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
                   SignInAndSignUpTextField(
                     controller: passwordController,
                     hintText: LocaleKeys.enter_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      HidePassword(
-                        isPasswordHidden: _isPaswordHidden,
-                        onHiddenChange: changeHidden,
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPasswordPage()),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Text(
-                              LocaleKeys.forgot_pass.tr(),
-                              style: TextStyle(color: Colors.grey.shade700),
-                            ),
-                          ))
-                    ],
+                  const SizedBox(height: 3),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        HidePassword(
+                          isPasswordHidden: _isPaswordHidden,
+                          onHiddenChange: changeHidden,
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordPage()),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                LocaleKeys.forgot_pass.tr(),
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                              ),
+                            ))
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   SignInSignUpButton(
@@ -175,20 +184,22 @@ class _SignInState extends State<SignIn> {
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           LocaleKeys.or.tr(),
-                          style: TextStyle(color: Colors.grey.shade700),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              fontSize: 18),
                         ),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 1,
-                          color: Colors.grey.shade400,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ],

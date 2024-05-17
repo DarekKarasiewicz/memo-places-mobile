@@ -23,16 +23,19 @@ class SignInAndSignUpTextField extends StatelessWidget {
       decoration: InputDecoration(
           errorText: errorText,
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey.shade500),
+          hintStyle:
+              TextStyle(color: Theme.of(context).colorScheme.onBackground),
           prefixIcon: icon,
-          prefixIconColor: Colors.grey.shade500,
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
+          prefixIconColor: Theme.of(context).colorScheme.onBackground,
+          enabledBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.secondary),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade400),
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.tertiary),
           ),
-          fillColor: Colors.grey.shade200,
+          fillColor: Theme.of(context).colorScheme.onPrimary,
           filled: true),
       obscureText: obscureText,
     );

@@ -31,18 +31,20 @@ class ProfileInfoBox extends StatelessWidget {
               ),
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    LocaleKeys.welcome.tr(namedArgs: {'username': username}),
+                    username,
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                        fontSize: 24, fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Text(
                     email,
-                    style: const TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ],
               ),

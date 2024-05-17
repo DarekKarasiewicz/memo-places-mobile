@@ -175,6 +175,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: Center(
           child: Stack(
             children: [

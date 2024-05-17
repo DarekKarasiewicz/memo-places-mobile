@@ -51,7 +51,6 @@ class CodegenLoader extends AssetLoader{
   "place_form": "Ortsformular",
   "wiki_link": "Wikipedia-Link",
   "topic_link": "Themen-Link",
-  "no_internet": "Oh! Es scheint, als wärst du momentan nicht mit dem Internet verbunden.\nBitte überprüfe deine Verbindung und versuche es erneut.",
   "stored_places_upload_succes": "Gespeicherte Orte erfolgreich hochgeladen",
   "google_maps_error": "Google Maps konnte nicht gestartet werden",
   "location_select": "Wählen Sie einen Ort auf der Karte aus",
@@ -126,7 +125,16 @@ class CodegenLoader extends AssetLoader{
   "place_deleted": "Ort gelöscht",
   "trail_deleted": "Pfad gelöscht",
   "preview": "Vorschau",
-  "alert_error": "Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut."
+  "alert_error": "Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut.",
+  "oops": "Hoppla!",
+  "no_internet_info": "Es scheint, dass du momentan keine Internetverbindung hast.",
+  "but": "aber ...",
+  "still_add_places": "Du kannst trotzdem deine Orte hinzufügen",
+  "select_pictures": "Bilder auswählen",
+  "found_by": "Gefunden von\n{username}",
+  "username_info": "• Gefunden von - {username}",
+  "found": "{date} gefunden",
+  "links": "Verknüpfungen"
 };
 static const Map<String,dynamic> ru = {
   "distance": "Расстояние {distance} км",
@@ -154,7 +162,6 @@ static const Map<String,dynamic> ru = {
   "link_sent": "Ссылка отправлена",
   "dont_have_account": "У вас нет аккаунта!",
   "stored_places_upload_succes": "Места успешно загружены",
-  "no_internet": "Упс! Похоже, вы сейчас не подключены к интернету.\nПожалуйста, проверьте ваше подключение и попробуйте еще раз.",
   "restart_link_info": "Вы получите электронное письмо с ссылкой для сброса пароля.",
   "restart_password": "Сбросить пароль",
   "enter_email": "Введите email",
@@ -240,7 +247,16 @@ static const Map<String,dynamic> ru = {
   "place_deleted": "Место удалено",
   "trail_deleted": "Маршрут удален",
   "preview": "Предварительный просмотр",
-  "alert_error": "Что-то пошло не так. Пожалуйста, попробуйте снова позже."
+  "alert_error": "Что-то пошло не так. Пожалуйста, попробуйте снова позже.",
+  "oops": "Упс!",
+  "no_internet_info": "Похоже, у вас сейчас нет интернет-соединения.",
+  "but": "но ...",
+  "still_add_places": "Вы все равно можете добавлять свои места",
+  "select_pictures": "Выберите изображения",
+  "found_by": "Найдено пользователем\n{username}",
+  "username_info": "• Найдено пользователем - {username}",
+  "found": "Найдено {date}",
+  "links": "Ссылки"
 };
 static const Map<String,dynamic> pl = {
   "distance": "Dystans {distance} km",
@@ -282,7 +298,6 @@ static const Map<String,dynamic> pl = {
   "info": "Informacje:",
   "my_places": "Moje Miejsca",
   "my_trails": "Moje Trasy",
-  "no_internet": "Ups! Wygląda na to, że teraz nie masz połączenia z internetem.\nSprawdź swoje połączenie i spróbuj ponownie.",
   "account_created_succes": "Konto zostało pomyślnie utworzone!",
   "account_exist": "Konto już istnieje!",
   "type_info": "• Typ - {type}",
@@ -354,7 +369,16 @@ static const Map<String,dynamic> pl = {
   "place_deleted": "Miejsce usunięte",
   "trail_deleted": "Szlak usunięty",
   "preview": "Podgląd",
-  "alert_error": "Coś poszło nie tak. Spróbuj ponownie później."
+  "alert_error": "Coś poszło nie tak. Spróbuj ponownie później.",
+  "oops": "Ups!",
+  "no_internet_info": "Wygląda na to, że nie masz teraz połączenia z internetem.",
+  "but": "ale ...",
+  "still_add_places": "Możesz nadal dodawać swoje miejsca",
+  "select_pictures": "Wybierz zdjęcia",
+  "found_by": "Znalezione przez\n{username}",
+  "username_info": "• Znalezione przez - {username}",
+  "found": "Znaleziono {date}",
+  "links": "Linki"
 };
 static const Map<String,dynamic> en = {
   "distance": "Distance {distance} Km",
@@ -460,7 +484,6 @@ static const Map<String,dynamic> en = {
   "welcome": "Welcome, {username}!",
   "place_added_succes": "Place added successfully",
   "stored_places_upload_succes": "Stored places uploaded successfully",
-  "no_internet": "Oops! It seems like you're not connected to the internet right now.\nPlease check your connection and try again.",
   "delete": "Delete",
   "edit": "Edit",
   "edit_info": "You will be able only to edit basic information, for more editing options please visit our website.",
@@ -468,7 +491,16 @@ static const Map<String,dynamic> en = {
   "place_deleted": "Place deleted",
   "trail_deleted": "Trail deleted",
   "preview": "Preview",
-  "alert_error": "Something went wrong. Please try again later."
+  "alert_error": "Something went wrong. Please try again later.",
+  "oops": "Oops!",
+  "no_internet_info": "It seems like you're not connected to the internet right now.",
+  "but": "but ...",
+  "still_add_places": "You can still add your places",
+  "select_pictures": "Select Pictures",
+  "found_by": "Found by\n{username}",
+  "username_info": "• Found by - {username}",
+  "found": "Found {date}",
+  "links": "Links"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"de": de, "ru": ru, "pl": pl, "en": en};
 }

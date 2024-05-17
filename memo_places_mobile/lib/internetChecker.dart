@@ -87,8 +87,12 @@ class _InternetCheckerState extends State<InternetChecker> {
 
           return content;
         } else {
-          return const Scaffold(
-              body: Center(child: CircularProgressIndicator()));
+          return Scaffold(
+              body: Center(
+                  child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+                Theme.of(context).colorScheme.scrim),
+          )));
         }
       },
     );

@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/trailDetails.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class PreviewTrail extends StatelessWidget {
   final void Function() closePreview;
@@ -30,7 +32,7 @@ class PreviewTrail extends StatelessWidget {
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20)),
             child: Container(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.background,
               child: Column(
                 children: [
                   // This code contains icons for functions now handeled by gestures, may be used in future for easy accesability.
@@ -66,7 +68,7 @@ class PreviewTrail extends StatelessWidget {
                     child: Row(
                       children: [
                         Container(
-                          margin: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                           child: Image.network(
                             'https://picsum.photos/250?image=9',
                             width: 150,
@@ -76,23 +78,28 @@ class PreviewTrail extends StatelessWidget {
                         ),
                         Expanded(
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  trail.trailName,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              Text(
+                                trail.trailName,
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const Spacer(),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  trail.creationDate,
+                              Text(
+                                LocaleKeys.found_by.tr(
+                                    namedArgs: {'username': trail.username}),
+                                style: const TextStyle(
+                                  fontSize: 16,
                                 ),
+                              ),
+                              Text(
+                                LocaleKeys.found.tr(
+                                    namedArgs: {'date': trail.creationDate}),
+                                style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(
                                 height: 5,

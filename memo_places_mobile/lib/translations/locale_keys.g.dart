@@ -37,7 +37,6 @@ abstract class  LocaleKeys {
   static const place_form = 'place_form';
   static const wiki_link = 'wiki_link';
   static const topic_link = 'topic_link';
-  static const no_internet = 'no_internet';
   static const stored_places_upload_succes = 'stored_places_upload_succes';
   static const google_maps_error = 'google_maps_error';
   static const location_select = 'location_select';
@@ -113,5 +112,14 @@ abstract class  LocaleKeys {
   static const trail_deleted = 'trail_deleted';
   static const preview = 'preview';
   static const alert_error = 'alert_error';
+  static const oops = 'oops';
+  static const no_internet_info = 'no_internet_info';
+  static const but = 'but';
+  static const still_add_places = 'still_add_places';
+  static const select_pictures = 'select_pictures';
+  static const found_by = 'found_by';
+  static const username_info = 'username_info';
+  static const found = 'found';
+  static const links = 'links';
 
 }

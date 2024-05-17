@@ -13,16 +13,18 @@ class OfflinePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              Icons.signal_wifi_connected_no_internet_4_rounded,
+              Icons.wifi_off,
               size: 100,
             ),
-            const SizedBox(
-              height: 40,
+            Text(
+              LocaleKeys.oops.tr(),
+              style: const TextStyle(fontSize: 32),
             ),
             Text(
-              LocaleKeys.no_internet.tr(),
+              LocaleKeys.no_internet_info.tr(),
+              style: const TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
-            )
+            ),
           ],
         ),
       ),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -62,12 +64,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(
-          LocaleKeys.contact_us.tr(),
-        ),
-      ),
+      appBar: AppBar(),
       body: FutureBuilder(
         future: loadUserData(),
         builder: (context, snapshot) {
@@ -79,21 +76,27 @@ class _ContactUsFormState extends State<ContactUsForm> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      CustomTitle(title: LocaleKeys.contact_us.tr()),
+                      const SizedBox(
+                        height: 40,
+                      ),
                       TextField(
                         controller: _titleController,
+                        style: const TextStyle(fontSize: 20),
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).colorScheme.onPrimary,
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.grey.shade700,
+                              color: Theme.of(context).colorScheme.scrim,
                               width: 1.5,
                             ),
                           ),
                           border: const OutlineInputBorder(),
                           labelStyle: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.bold),
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
                           labelText: LocaleKeys.title.tr(),
                           hintText: LocaleKeys.enter_email.tr(),
                           errorText:
@@ -105,21 +108,23 @@ class _ContactUsFormState extends State<ContactUsForm> {
                       ),
                       TextField(
                         controller: _messageController,
+                        style: const TextStyle(fontSize: 20),
                         maxLines: 5,
                         maxLength: 200,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).colorScheme.onPrimary,
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: Colors.grey.shade700,
+                              color: Theme.of(context).colorScheme.scrim,
                               width: 1.5,
                             ),
                           ),
                           border: const OutlineInputBorder(),
                           labelStyle: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontWeight: FontWeight.bold),
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
                           labelText: LocaleKeys.message.tr(),
                           hintText: LocaleKeys.enter_message.tr(),
                           errorText: _isMessageEmpty
@@ -130,42 +135,30 @@ class _ContactUsFormState extends State<ContactUsForm> {
                       const SizedBox(
                         height: 40,
                       ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.grey.shade800),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.grey.shade700),
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15)),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isTitleEmpty = _titleController.text.isEmpty;
-                            _isMessageEmpty = _messageController.text.isEmpty;
-                          });
+                      CustomButton(
+                          onPressed: () {
+                            setState(() {
+                              _isTitleEmpty = _titleController.text.isEmpty;
+                              _isMessageEmpty = _messageController.text.isEmpty;
+                            });
 
-                          if (!_isTitleEmpty && !_isMessageEmpty) {
-                            _sendMessage();
-                          }
-                        },
-                        child: Text(
-                          LocaleKeys.send_message.tr(),
-                          style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                      )
+                            if (!_isTitleEmpty && !_isMessageEmpty) {
+                              _sendMessage();
+                            }
+                          },
+                          text: LocaleKeys.send_message.tr())
                     ],
                   ),
                 ),
               ),
             );
           } else {
-            return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
+            return Scaffold(
+                body: Center(
+                    child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.scrim),
+            )));
           }
         },
       ),

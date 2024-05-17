@@ -78,8 +78,8 @@ class _FormPictureSliderState extends State<FormPictureSlider> {
               decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: _current == index
-                      ? const Color.fromRGBO(0, 0, 0, 0.9)
-                      : const Color.fromRGBO(0, 0, 0, 0.4)),
+                      ? Theme.of(context).colorScheme.tertiary
+                      : Theme.of(context).colorScheme.secondary),
             );
           }).toList(),
         )

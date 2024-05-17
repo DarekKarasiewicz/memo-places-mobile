@@ -14,9 +14,10 @@ class MyPlaceBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onPrimary,
         border: Border(
-          bottom: BorderSide(width: 4, color: Colors.grey.shade700),
+          bottom: BorderSide(
+              width: 4, color: Theme.of(context).colorScheme.tertiary),
         ),
       ),
       child: Column(
@@ -36,7 +37,7 @@ class MyPlaceBox extends StatelessWidget {
                 child: Text(
                   place.placeName,
                   style: TextStyle(
-                      color: Colors.grey.shade700,
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis),

@@ -20,7 +20,8 @@ class SignInSignUpSwitchButton extends StatelessWidget {
           isAccountCreated
               ? LocaleKeys.not_member.tr()
               : LocaleKeys.question_account.tr(),
-          style: TextStyle(color: Colors.grey.shade700),
+          style: TextStyle(
+              color: Theme.of(context).colorScheme.tertiary, fontSize: 18),
         ),
         const SizedBox(
           width: 5,
@@ -31,8 +32,10 @@ class SignInSignUpSwitchButton extends StatelessWidget {
             isAccountCreated
                 ? LocaleKeys.create_account.tr()
                 : LocaleKeys.sign_account.tr(),
-            style: const TextStyle(
-                color: Colors.blue, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.scrim,
+                fontWeight: FontWeight.bold,
+                fontSize: 18),
           ),
         ),
       ],

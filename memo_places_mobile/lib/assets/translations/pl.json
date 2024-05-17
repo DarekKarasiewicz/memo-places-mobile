@@ -38,7 +38,6 @@
     "info": "Informacje:",
     "my_places": "Moje Miejsca",
     "my_trails": "Moje Trasy",
-    "no_internet": "Ups! Wygląda na to, że teraz nie masz połączenia z internetem.\nSprawdź swoje połączenie i spróbuj ponownie.",
     "account_created_succes": "Konto zostało pomyślnie utworzone!",
     "account_exist": "Konto już istnieje!", 
     "type_info": "\u2022 Typ - {type}",
@@ -110,5 +109,14 @@
     "place_deleted": "Miejsce usunięte",
     "trail_deleted": "Szlak usunięty",
     "preview": "Podgląd",
-    "alert_error": "Coś poszło nie tak. Spróbuj ponownie później."
+    "alert_error": "Coś poszło nie tak. Spróbuj ponownie później.",
+    "oops": "Ups!",
+    "no_internet_info": "Wygląda na to, że nie masz teraz połączenia z internetem.",
+    "but": "ale ...",
+    "still_add_places": "Możesz nadal dodawać swoje miejsca",
+    "select_pictures": "Wybierz zdjęcia",
+    "found_by": "Znalezione przez\n{username}",
+    "username_info": "\u2022 Znalezione przez - {username}",
+    "found": "Znaleziono {date}",
+    "links": "Linki"
 }

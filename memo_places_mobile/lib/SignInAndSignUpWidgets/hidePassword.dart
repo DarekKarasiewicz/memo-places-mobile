@@ -20,14 +20,17 @@ class HidePassword extends StatelessWidget {
         child: Row(children: [
           Icon(
             isPasswordHidden ? Icons.lock_open : Icons.lock,
-            color: Colors.grey.shade700,
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+          const SizedBox(
+            width: 5,
           ),
           Text(
             isPasswordHidden
                 ? LocaleKeys.show_pass.tr()
                 : LocaleKeys.hide_pass.tr(),
             style: TextStyle(
-              color: Colors.grey.shade700,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
           )
         ]),

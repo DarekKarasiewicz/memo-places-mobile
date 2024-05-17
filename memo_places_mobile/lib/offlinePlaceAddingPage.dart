@@ -1,9 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:memo_places_mobile/formWidgets/customButtonWithIcon.dart';
 import 'package:memo_places_mobile/offlinePlaceForm.dart';
 import 'package:memo_places_mobile/offlineWidgets/offlinePlacesList.dart';
+import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class OfflinePlaceAddingPage extends StatefulWidget {
   const OfflinePlaceAddingPage({super.key});
@@ -54,41 +58,46 @@ class _OfflinePlaceAddingPageState extends State<OfflinePlaceAddingPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => OfflinePlaceForm(_position)),
-                  );
-                },
-                child: Container(
-                  width: 200.0,
-                  height: 200.0,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(100),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.add_location_alt_outlined,
-                      size: 100.0,
-                    ),
-                  ),
-                ),
+              const Icon(
+                Icons.wifi_off,
+                size: 100,
               ),
+              Text(
+                LocaleKeys.oops.tr(),
+                style: const TextStyle(fontSize: 32),
+              ),
+              Text(
+                LocaleKeys.no_internet_info.tr(),
+                style: const TextStyle(fontSize: 20),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                LocaleKeys.but.tr(),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                LocaleKeys.still_add_places.tr(),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomButtonWithIcon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OfflinePlaceForm(_position)),
+                    );
+                  },
+                  icon: Icons.add_location_alt_outlined,
+                  text: LocaleKeys.add_place.tr()),
               const SizedBox(
                 height: 30,
               ),
-              const OfflinePlacesList()
+              const Expanded(child: OfflinePlacesList())
             ],
           ),
         ),

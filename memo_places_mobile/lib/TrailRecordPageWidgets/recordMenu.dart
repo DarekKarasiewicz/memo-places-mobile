@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class RecordMenu extends StatefulWidget {
@@ -44,28 +45,28 @@ class _RecordMenuState extends State<RecordMenu> {
               children: [
                 Text(
                   widget.time,
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.scrim,
                       fontSize: 32,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
                   LocaleKeys.distance
                       .tr(namedArgs: {'distance': widget.distance}),
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.scrim,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 )
               ],
             ),
             widget.isRecording
-                ? ElevatedButton(
+                ? CustomButton(
                     onPressed: widget.endRecording,
-                    child: Text(LocaleKeys.stop_save.tr()))
-                : ElevatedButton(
+                    text: LocaleKeys.stop_save.tr())
+                : CustomButton(
                     onPressed: widget.startRecording,
-                    child: Text(LocaleKeys.start.tr()))
+                    text: LocaleKeys.start.tr())
           ],
         ),
       ),
