@@ -12,7 +12,7 @@ class SignInOrSingUpPage extends StatefulWidget {
 class _SignInOrSignUpPageState extends State<SignInOrSingUpPage> {
   bool _isSignInPageShown = true;
 
-  void togglePages() {
+  void _togglePages() {
     setState(() {
       _isSignInPageShown = !_isSignInPageShown;
     });
@@ -21,9 +21,9 @@ class _SignInOrSignUpPageState extends State<SignInOrSingUpPage> {
   @override
   Widget build(BuildContext context) {
     if (_isSignInPageShown) {
-      return SignIn(togglePages: togglePages);
+      return SignIn(togglePages: _togglePages);
     } else {
-      return SignUp(togglePages: togglePages);
+      return SignUp(togglePages: _togglePages);
     }
   }
 }

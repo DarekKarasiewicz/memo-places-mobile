@@ -22,7 +22,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
   bool _isTitleEmpty = false;
   bool _isMessageEmpty = false;
 
-  late User _user;
+  late User? _user;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
   void _sendMessage() async {
     Map<String, String> formData = {
-      'email': _user.email,
+      'email': _user!.email,
       'title': _titleController.text,
       'description': _messageController.text,
     };
@@ -52,7 +52,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.message_sent_succes.tr());
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       } else {
         throw CustomException(LocaleKeys.alert_error.tr());
       }

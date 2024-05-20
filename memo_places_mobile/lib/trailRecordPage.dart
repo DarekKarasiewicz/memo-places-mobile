@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -23,15 +22,15 @@ class TrailRecordPage extends StatefulWidget {
 }
 
 class _TrailRecordState extends State<TrailRecordPage> {
-  late GoogleMapController mapController;
+  late GoogleMapController _mapController;
   late String _mapStyleString = '';
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
-  late LatLng currentPosition;
-  late List<LatLng> trailsPoints = [];
-  bool isRecording = false;
+  late LatLng _currentPosition;
+  late List<LatLng> _trailsPoints = [];
+  bool _isRecording = false;
   late StreamSubscription<Position> _positionStreamSubscription;
-  double totalDistanceKm = 0.0;
+  double _totalDistanceKm = 0.0;
   Timer? _timer;
   int _hours = 0;
   int _minutes = 0;
@@ -41,7 +40,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
   void initState() {
     super.initState();
     _loadMapStyle();
-    currentPosition = widget.startLocation;
+    _currentPosition = widget.startLocation;
     _startLocationUpdates();
   }
 
@@ -53,17 +52,17 @@ class _TrailRecordState extends State<TrailRecordPage> {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+    _mapController = controller;
   }
 
   void _startLocationUpdates() {
     _positionStreamSubscription =
         Geolocator.getPositionStream().listen((Position position) {
       setState(() {
-        currentPosition = LatLng(position.latitude, position.longitude);
+        _currentPosition = LatLng(position.latitude, position.longitude);
         _updateUserMarker();
-        if (isRecording == true) {
-          trailsPoints.add(LatLng(position.latitude, position.longitude));
+        if (_isRecording == true) {
+          _trailsPoints.add(LatLng(position.latitude, position.longitude));
           _updateRecordedPolyline();
           _updateDistance();
         }
@@ -84,11 +83,11 @@ class _TrailRecordState extends State<TrailRecordPage> {
 
   void _updateUserMarker() async {
     final Uint8List markerIcon =
-        await getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
+        await _getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
     Set<Marker> updatedMarkers = _markers.union({
       Marker(
         markerId: const MarkerId("user_location"),
-        position: currentPosition,
+        position: _currentPosition,
         icon: BitmapDescriptor.fromBytes(markerIcon),
         consumeTapEvents: true,
       ),
@@ -99,7 +98,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
     });
   }
 
-  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+  Future<Uint8List> _getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width);
@@ -114,7 +113,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
       Polyline(
           polylineId: const PolylineId("recorded_trail_polyline"),
           visible: true,
-          points: trailsPoints,
+          points: _trailsPoints,
           width: 10,
           color: const Color.fromARGB(137, 33, 75, 243),
           startCap: Cap.roundCap,
@@ -127,10 +126,10 @@ class _TrailRecordState extends State<TrailRecordPage> {
   }
 
   void _updateDistance() {
-    if (trailsPoints.length > 1) {
+    if (_trailsPoints.length > 1) {
       double distance = _calculateDistance(
-          trailsPoints[trailsPoints.length - 2], trailsPoints.last);
-      totalDistanceKm += distance;
+          _trailsPoints[_trailsPoints.length - 2], _trailsPoints.last);
+      _totalDistanceKm += distance;
     }
   }
 
@@ -180,21 +179,21 @@ class _TrailRecordState extends State<TrailRecordPage> {
   void _startRecording() {
     _startTimer();
     setState(() {
-      isRecording = true;
+      _isRecording = true;
     });
   }
 
   void _endRecording() {
     _timer?.cancel();
     setState(() {
-      isRecording = false;
+      _isRecording = false;
     });
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
           builder: (context) => TrailForm(
-                trailCoordinates: trailsPoints,
-                distance: totalDistanceKm.toStringAsFixed(3),
+                trailCoordinates: _trailsPoints,
+                distance: _totalDistanceKm.toStringAsFixed(3),
                 time: _formattedTime,
               )),
     );
@@ -216,11 +215,11 @@ class _TrailRecordState extends State<TrailRecordPage> {
                 polylines: _polylines,
                 style: _mapStyleString,
                 initialCameraPosition:
-                    CameraPosition(target: currentPosition, zoom: 16),
+                    CameraPosition(target: _currentPosition, zoom: 16),
               ),
               RecordMenu(
-                distance: totalDistanceKm.toStringAsFixed(3),
-                isRecording: isRecording,
+                distance: _totalDistanceKm.toStringAsFixed(3),
+                isRecording: _isRecording,
                 time: _formattedTime,
                 startRecording: _startRecording,
                 endRecording: _endRecording,
@@ -229,14 +228,26 @@ class _TrailRecordState extends State<TrailRecordPage> {
                 top: 16,
                 right: 16,
                 child: FloatingActionButton(
+                  heroTag: 'locateMe',
                   onPressed: () {
-                    mapController.animateCamera(
-                      CameraUpdate.newLatLng(trailsPoints.isEmpty
+                    _mapController.animateCamera(
+                      CameraUpdate.newLatLng(_trailsPoints.isEmpty
                           ? widget.startLocation
-                          : trailsPoints.last),
+                          : _trailsPoints.last),
                     );
                   },
                   child: const Icon(Icons.location_searching),
+                ),
+              ),
+              Positioned(
+                top: 16,
+                left: 16,
+                child: FloatingActionButton(
+                  heroTag: 'back',
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(Icons.arrow_back),
                 ),
               ),
             ],

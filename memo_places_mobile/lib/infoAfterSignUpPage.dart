@@ -36,7 +36,7 @@ class InfoAfterSignUpPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   SignInSignUpButton(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const SignInOrSingUpPage(),

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
@@ -16,11 +15,11 @@ class PlaceDetails extends StatefulWidget {
 }
 
 class _PlaceDetailsState extends State<PlaceDetails> {
-  late List<String> updatedImages;
+  late List<String> _updatedImages;
   @override
   void initState() {
     super.initState();
-    updatedImages = widget.place.images!.map((image) {
+    _updatedImages = widget.place.images!.map((image) {
       return 'http://localhost:8000/$image';
     }).toList();
   }
@@ -44,7 +43,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
           child: Column(
             children: [
               widget.place.images!.isNotEmpty
-                  ? SliderWithDots(images: updatedImages)
+                  ? SliderWithDots(images: _updatedImages)
                   : const SizedBox(),
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),

@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class ProfileInfoBox extends StatelessWidget {
   final String username;

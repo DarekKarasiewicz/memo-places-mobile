@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/buttonData.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/ProfileWidgets/profileButton.dart';
@@ -11,6 +10,7 @@ import 'package:memo_places_mobile/editProfile.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,14 +22,13 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  late Future<String?> _futureAccess = _loadCounter("access");
   List<ButtonData> buttonsData = [];
-  late User _user;
+  late User? _user;
   late String? token;
 
   Future<void> _clearAccessKeyAndRefresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("access");
+    await prefs.remove("user");
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const InternetChecker()),
@@ -39,8 +38,7 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    _futureAccess = _loadCounter("access");
-    _loadUserData();
+    loadUserData().then((value) => _user = value);
   }
 
   @override
@@ -57,18 +55,6 @@ class _ProfileState extends State<Profile> {
       ButtonData(text: LocaleKeys.my_trails.tr(), onTap: _redirectToMyTrails),
       ButtonData(text: LocaleKeys.contact_us.tr(), onTap: _redirectToContactUs),
     ];
-  }
-
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  Future<void> _loadUserData() async {
-    String? token = await _futureAccess;
-    setState(() {
-      _user = User.fromJson(JwtDecoder.decode(token!));
-    });
   }
 
   void _redirectToMyPlaces() {
@@ -95,7 +81,7 @@ class _ProfileState extends State<Profile> {
   void _redirectToEditProfile() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditProfile(_user)),
+      MaterialPageRoute(builder: (context) => EditProfile(_user!)),
     );
   }
 
@@ -107,7 +93,7 @@ class _ProfileState extends State<Profile> {
         title: Text(LocaleKeys.profile.tr()),
       ),
       body: FutureBuilder(
-        future: _futureAccess,
+        future: loadUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return SingleChildScrollView(
@@ -116,8 +102,8 @@ class _ProfileState extends State<Profile> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ProfileInfoBox(
-                      username: _user.username,
-                      email: _user.email,
+                      username: _user!.username,
+                      email: _user!.email,
                     ),
                     const SizedBox(height: 20),
                     Padding(

@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
@@ -26,36 +26,32 @@ class Main extends StatefulWidget {
 }
 
 class _HomeState extends State<Main> {
-  late String? token;
-  late String id;
-  int currentIndex = 0;
-  bool isLogged = false;
-  late List<Widget> screens = [];
+  late User? _user;
+  int _currentIndex = 0;
+  bool _isLogged = false;
+  late List<Widget> _screens = [];
 
   @override
   void initState() {
     super.initState();
-    screens = [
+    _screens = [
       const Home(),
       const Profile(),
     ];
-    _loadCounter("access").then((value) {
-      token = value;
-      if (token != null) {
-        isLogged = true;
-        _syncTypeData();
-        _syncPeriodsData();
-        _syncSortofData();
-        _syncPlaceData(token!);
-      } else {
-        isLogged = false;
-      }
-    });
-  }
-
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
+    loadUserData().then(
+      (value) {
+        _user = value;
+        if (_user != null) {
+          _isLogged = true;
+          _syncTypeData();
+          _syncPeriodsData();
+          _syncSortofData();
+          _syncPlaceData(_user!.id.toString());
+        } else {
+          _isLogged = false;
+        }
+      },
+    );
   }
 
   void _incrementCounter(String key, String value) async {
@@ -63,9 +59,7 @@ class _HomeState extends State<Main> {
     prefs.setString(key, value);
   }
 
-  Future<void> _syncPlaceData(String token) async {
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    String userId = decodedToken["user_id"].toString();
+  Future<void> _syncPlaceData(String userId) async {
     List<OfflinePlace> offlinePlaces = await loadOfflinePlacesFromDevice();
     if (offlinePlaces.isNotEmpty) {
       for (OfflinePlace offlinePlace in offlinePlaces) {
@@ -122,6 +116,11 @@ class _HomeState extends State<Main> {
                 responses.every((response) => response.statusCode == 200);
 
             if (allSuccessful) {
+              for (final image in images) {
+                if (await image.exists()) {
+                  image.delete();
+                }
+              }
               showSuccesToast(LocaleKeys.place_added_succes.tr());
             } else {
               throw CustomException(LocaleKeys.alert_error.tr());
@@ -136,6 +135,7 @@ class _HomeState extends State<Main> {
         }
       }
       deleteLocalData('places');
+      setState(() {});
     } else {
       return;
     }
@@ -170,7 +170,7 @@ class _HomeState extends State<Main> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: isLogged ? screens[currentIndex] : const Home(),
+        body: _isLogged ? _screens[_currentIndex] : const Home(),
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
@@ -182,9 +182,9 @@ class _HomeState extends State<Main> {
               icon: const Icon(Icons.account_box_outlined, size: 27),
             ),
           ],
-          currentIndex: currentIndex,
+          currentIndex: _currentIndex,
           onTap: (int index) {
-            if (index == 1 && !isLogged) {
+            if (index == 1 && !_isLogged) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -192,7 +192,7 @@ class _HomeState extends State<Main> {
               );
             } else {
               setState(() {
-                currentIndex = index;
+                _currentIndex = index;
               });
             }
           },

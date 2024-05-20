@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/toasts.dart';
@@ -56,8 +57,8 @@ Future<void> _checkGoogleAccountInBackend(
     );
 
     if (response.statusCode == 200) {
-      var responseDecoded = json.decode(response.body);
-      _incrementCounter('access', responseDecoded['access']);
+      User user = User.fromJson(JwtDecoder.decode(response.body));
+      _incrementCounter("user", jsonEncode(user));
       showSuccesToast(LocaleKeys.succes_signed_in.tr());
       Navigator.pushReplacement(
         context,
@@ -74,8 +75,8 @@ Future<void> _checkGoogleAccountInBackend(
       );
 
       if (secondResponse.statusCode == 200) {
-        var secondResponseDecoded = json.decode(secondResponse.body);
-        _incrementCounter("access", secondResponseDecoded['access']);
+        User user = User.fromJson(JwtDecoder.decode(secondResponse.body));
+        _incrementCounter("user", jsonEncode(user));
         showSuccesToast(LocaleKeys.succes_signed_in.tr());
         Navigator.pushReplacement(
           context,

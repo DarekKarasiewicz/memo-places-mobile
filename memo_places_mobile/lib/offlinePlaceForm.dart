@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
@@ -36,7 +36,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
   final TextEditingController _descriptionController = TextEditingController();
 
   late final List<File> _selectedImages = [];
-  late Future<String?> _futureAccess;
+  late User? _user;
   List<Type> _types = [];
   List<Period> _periods = [];
   List<Sortof> _sortofs = [];
@@ -47,7 +47,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
   @override
   void initState() {
     super.initState();
-    _futureAccess = _loadCounter("access");
+    loadUserData().then((value) => _user = value);
     loadTypesFromDevice().then((value) {
       setState(() {
         _types = value;
@@ -72,11 +72,6 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
     super.dispose();
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
   void _incrementCounter(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
@@ -92,9 +87,6 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
 
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String? token = await _futureAccess;
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token!);
-      int userId = decodedToken["user_id"];
       List<Future<String>> futurePaths = _selectedImages.map((image) {
         return _saveLocally(image);
       }).toList();
@@ -106,7 +98,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
           description: _descriptionController.text,
           lat: widget.position.latitude,
           lng: widget.position.longitude,
-          user: userId,
+          user: _user!.id,
           sortof: _selectedSortof,
           type: _selectedType,
           period: _selectedPeriod,

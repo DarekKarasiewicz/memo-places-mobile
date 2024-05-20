@@ -1,15 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/placeEditForm.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class MyPlaces extends StatefulWidget {
@@ -21,8 +22,8 @@ class MyPlaces extends StatefulWidget {
 
 class _MyPlacesState extends State<MyPlaces> {
   late List<Place> _places = [];
-  late User _user;
-  late bool isLoading = true;
+  late User? _user;
+  late bool _isLoading = true;
 
   @override
   void initState() {
@@ -30,10 +31,10 @@ class _MyPlacesState extends State<MyPlaces> {
     loadUserData().then(
       (user) => setState(() {
         _user = user;
-        fetchUserPlaces(context, _user.id.toString()).then(
+        fetchUserPlaces(context, _user!.id.toString()).then(
           (places) => setState(() {
             _places = places;
-            isLoading = false;
+            _isLoading = false;
           }),
         );
       }),
@@ -123,31 +124,19 @@ class _MyPlacesState extends State<MyPlaces> {
   }
 
   Future<void> _deletePlace(int index) async {
-    final response = await http.delete(Uri.parse(
-        'http://localhost:8000/memo_places/places/${_places[index].id}/'));
-    if (response.statusCode == 200) {
-      Fluttertoast.showToast(
-        msg: LocaleKeys.place_deleted.tr(),
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      setState(() {
-        _places.removeAt(index);
-      });
-    } else {
-      Fluttertoast.showToast(
-        msg: LocaleKeys.alert_error.tr(),
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+    try {
+      final response = await http.delete(Uri.parse(
+          'http://localhost:8000/memo_places/places/${_places[index].id}/'));
+      if (response.statusCode == 200) {
+        showSuccesToast(LocaleKeys.place_deleted.tr());
+        setState(() {
+          _places.removeAt(index);
+        });
+      } else {
+        throw CustomException(LocaleKeys.alert_error.tr());
+      }
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
@@ -156,7 +145,7 @@ class _MyPlacesState extends State<MyPlaces> {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: isLoading
+        child: _isLoading
             ? CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
                     Theme.of(context).colorScheme.scrim),

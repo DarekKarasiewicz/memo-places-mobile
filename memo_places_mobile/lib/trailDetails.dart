@@ -1,17 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-final List<String> demoImages = [
-  'https://picsum.photos/250?image=3',
-  'https://picsum.photos/250?image=6',
-  'https://picsum.photos/250?image=9'
-];
 
 class TrailDetails extends StatefulWidget {
   const TrailDetails(this.trail, {super.key});
@@ -22,11 +15,11 @@ class TrailDetails extends StatefulWidget {
 }
 
 class _TrailDetailsState extends State<TrailDetails> {
-  late List<String> updatedImages;
+  late List<String> _updatedImages;
   @override
   void initState() {
     super.initState();
-    updatedImages = widget.trail.images!.map((image) {
+    _updatedImages = widget.trail.images!.map((image) {
       return 'http://localhost:8000/$image';
     }).toList();
   }
@@ -50,7 +43,7 @@ class _TrailDetailsState extends State<TrailDetails> {
           child: Column(
             children: [
               widget.trail.images!.isNotEmpty
-                  ? SliderWithDots(images: updatedImages)
+                  ? SliderWithDots(images: _updatedImages)
                   : const SizedBox(),
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),

@@ -46,12 +46,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.link_sent.tr());
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       } else if (response.statusCode == 400) {
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
         throw CustomException(LocaleKeys.dont_have_account.tr());
       } else {
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
         throw CustomException(LocaleKeys.alert_error.tr());
       }
     } on CustomException catch (error) {

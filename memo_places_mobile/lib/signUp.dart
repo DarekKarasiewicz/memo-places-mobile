@@ -1,18 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpSwitchButton.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/infoAfterSignUpPage.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUp extends StatefulWidget {
   final void Function() togglePages;
@@ -24,10 +23,11 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignInState extends State<SignUp> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   String? _passwordErrorMsg;
   bool _isPasswordValid = false;
   String? _emailErrorMsg;
@@ -41,34 +41,24 @@ class _SignInState extends State<SignUp> {
 
   @override
   void dispose() {
-    emailController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void changeHidden() {
+  void _changeHidden() {
     setState(() {
       _isPaswordHidden = !_isPaswordHidden;
     });
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  void _incrementCounter(String key, String value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
-  }
-
   Future<void> _signUp() async {
     String url = 'http://localhost:8000/memo_places/users/';
-    String email = emailController.text;
-    String password = passwordController.text;
-    String username = usernameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String username = _usernameController.text;
     showDialog(
         context: context,
         builder: (context) {
@@ -89,48 +79,28 @@ class _SignInState extends State<SignUp> {
       );
 
       if (response.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const InfoAfterSignUpPage()),
-        );
-        Fluttertoast.showToast(
-          msg: LocaleKeys.account_created_succes.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        if (mounted) {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const InfoAfterSignUpPage()),
+          );
+        }
+        showSuccesToast(LocaleKeys.account_created_succes.tr());
       } else if (response.statusCode == 400) {
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: LocaleKeys.account_exist.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        throw CustomException(LocaleKeys.account_exist.tr());
       } else {
         Navigator.pop(context);
-        Fluttertoast.showToast(
-          msg: LocaleKeys.alert_error.tr(),
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
+        throw CustomException(LocaleKeys.alert_error.tr());
       }
-    } catch (e) {
-      print('Error: $e');
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
-  void emailValidator(String email) {
+  void _emailValidator(String email) {
     RegExp emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
     if (!emailRegex.hasMatch(email) || email.isEmpty) {
       setState(() {
@@ -143,7 +113,7 @@ class _SignInState extends State<SignUp> {
     }
   }
 
-  void passwordValidator(String password, String confPassword) {
+  void _passwordValidator(String password, String confPassword) {
     RegExp passwordRegex =
         RegExp(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,}$');
     if (!passwordRegex.hasMatch(password) || password.isEmpty) {
@@ -186,28 +156,28 @@ class _SignInState extends State<SignUp> {
                   ),
                   const SizedBox(height: 25),
                   SignInAndSignUpTextField(
-                      controller: usernameController,
+                      controller: _usernameController,
                       hintText: LocaleKeys.enter_username.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.account_circle)),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                       errorText: _emailErrorMsg,
-                      controller: emailController,
+                      controller: _emailController,
                       hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
                     errorText: _passwordErrorMsg,
-                    controller: passwordController,
+                    controller: _passwordController,
                     hintText: LocaleKeys.enter_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
                   ),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
-                    controller: confirmPasswordController,
+                    controller: _confirmPasswordController,
                     hintText: LocaleKeys.confirm_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),
@@ -222,7 +192,7 @@ class _SignInState extends State<SignUp> {
                       children: [
                         HidePassword(
                           isPasswordHidden: _isPaswordHidden,
-                          onHiddenChange: changeHidden,
+                          onHiddenChange: _changeHidden,
                         ),
                       ],
                     ),
@@ -230,9 +200,9 @@ class _SignInState extends State<SignUp> {
                   const SizedBox(height: 20),
                   SignInSignUpButton(
                       onTap: () {
-                        passwordValidator(passwordController.text,
-                            confirmPasswordController.text);
-                        emailValidator(emailController.text);
+                        _passwordValidator(_passwordController.text,
+                            _confirmPasswordController.text);
+                        _emailValidator(_emailController.text);
                         if (_isEmailValid && _isPasswordValid) {
                           _signUp();
                         }

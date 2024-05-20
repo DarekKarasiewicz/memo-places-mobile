@@ -28,11 +28,11 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/offlinePage.dart';
 import 'package:memo_places_mobile/offlinePlaceAddingPage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
 
 class InternetChecker extends StatefulWidget {
   const InternetChecker({super.key});
@@ -43,12 +43,12 @@ class InternetChecker extends StatefulWidget {
 
 class _InternetCheckerState extends State<InternetChecker> {
   late List<ConnectivityResult> connectivityResult = [];
-  late String? token;
+  late User? user;
   @override
   void initState() {
     super.initState();
-    _loadCounter('access').then((value) {
-      token = value;
+    loadUserData().then((value) {
+      user = value;
       _checkConnectivity();
     });
   }
@@ -60,26 +60,21 @@ class _InternetCheckerState extends State<InternetChecker> {
     });
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _loadCounter('access'),
+      future: loadUserData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           var content;
 
           if (!connectivityResult.contains(ConnectivityResult.wifi) &&
               !connectivityResult.contains(ConnectivityResult.mobile) &&
-              token != null) {
+              user != null) {
             content = const OfflinePlaceAddingPage();
           } else if (!connectivityResult.contains(ConnectivityResult.wifi) &&
               !connectivityResult.contains(ConnectivityResult.mobile) &&
-              token == null) {
+              user == null) {
             content = const OfflinePage();
           } else {
             content = const Main();

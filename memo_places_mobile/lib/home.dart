@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:easy_localization/easy_localization.dart';
@@ -13,6 +12,7 @@ import 'package:memo_places_mobile/MainPageWidgets/prewiewTrail.dart';
 import 'package:memo_places_mobile/Objects/currnetObject.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/Theme/theme.dart';
 import 'package:memo_places_mobile/Theme/themeProvider.dart';
 import 'package:memo_places_mobile/customExeption.dart';
@@ -32,24 +32,24 @@ class Home extends StatefulWidget {
 }
 
 class _GoogleMapsState extends State {
-  late GoogleMapController mapController;
+  late GoogleMapController _mapController;
   late String _mapStyleString;
-  String? _access;
+  late User? _user = null;
   late LatLng _position = const LatLng(0.0, 0.0);
-  bool isLoading = true;
-  bool isSelectedPlace = false;
+  bool _isLoading = true;
+  bool _isSelectedPlace = false;
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
   List<Place> _places = [];
   List<Trail> _trails = [];
-  late CurrentObject selectedObject;
+  late CurrentObject _selectedObject;
   late StreamSubscription<Position> _positionStreamSubscription;
 
   @override
   void initState() {
     super.initState();
     _loadMapStyle();
-    _loadCounter('access').then((value) => _access = value);
+    loadUserData().then((value) => _user = value);
     _getCurrentLocation().then((location) => {
           setState(() {
             _position = LatLng(location.latitude, location.longitude);
@@ -58,22 +58,17 @@ class _GoogleMapsState extends State {
           _fetchPlaces(),
           _fetchTrails(),
           setState(() {
-            isLoading = false;
+            _isLoading = false;
           })
         });
     Provider.of<ThemeProvider>(context, listen: false)
         .addListener(_loadMapStyle);
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
   @override
   void dispose() {
     _positionStreamSubscription.cancel();
-    mapController.dispose();
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -117,7 +112,7 @@ class _GoogleMapsState extends State {
 
   void _updateUserMarker() async {
     final Uint8List markerIcon =
-        await getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
+        await _getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
 
     Set<Marker> updatedMarkers = _markers.union({
       Marker(
@@ -132,7 +127,7 @@ class _GoogleMapsState extends State {
     });
   }
 
-  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+  Future<Uint8List> _getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width);
@@ -144,18 +139,18 @@ class _GoogleMapsState extends State {
 
   void _setObject(Place? place, Trail? trail) {
     setState(() {
-      isSelectedPlace = true;
+      _isSelectedPlace = true;
       if (place == null) {
-        selectedObject = CurrentObject(null, trail);
+        _selectedObject = CurrentObject(null, trail);
       } else {
-        selectedObject = CurrentObject(place, null);
+        _selectedObject = CurrentObject(place, null);
       }
     });
   }
 
   void closePreview() {
     setState(() {
-      isSelectedPlace = false;
+      _isSelectedPlace = false;
     });
   }
 
@@ -232,18 +227,23 @@ class _GoogleMapsState extends State {
     }
   }
 
+  Future<void> _clearAccessKeyAndRefresh() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove("access");
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget signInAccess = const SizedBox();
 
-    if (_access != null) {
+    if (_user != null) {
       signInAccess = AddingButton(_position);
     }
 
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: isLoading
+          child: _isLoading
               ? CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
                       Theme.of(context).colorScheme.scrim),
@@ -252,7 +252,7 @@ class _GoogleMapsState extends State {
                   children: [
                     GoogleMap(
                       onMapCreated: (controller) {
-                        mapController = controller;
+                        _mapController = controller;
                       },
                       myLocationButtonEnabled: false,
                       zoomControlsEnabled: false,
@@ -268,7 +268,7 @@ class _GoogleMapsState extends State {
                       child: FloatingActionButton(
                         heroTag: 'locateMe',
                         onPressed: () {
-                          mapController.animateCamera(
+                          _mapController.animateCamera(
                             CameraUpdate.newLatLng(_position),
                           );
                         },
@@ -292,16 +292,16 @@ class _GoogleMapsState extends State {
                                 : Icons.dark_mode),
                       ),
                     ),
-                    isSelectedPlace
+                    _isSelectedPlace
                         ? Positioned(
                             bottom: 0,
                             left: 0,
                             right: 0,
-                            child: selectedObject.place == null
+                            child: _selectedObject.place == null
                                 ? PreviewTrail(
-                                    closePreview, selectedObject.trail!)
+                                    closePreview, _selectedObject.trail!)
                                 : PreviewPlace(
-                                    closePreview, selectedObject.place!))
+                                    closePreview, _selectedObject.place!))
                         : signInAccess,
                   ],
                 ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +13,7 @@ import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;
@@ -46,21 +49,36 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  void _incrementCounter(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+  }
+
   void _saveUserData() async {
     try {
-      var response = await http.post(
-        Uri.parse('http://localhost:8000/memo_places/places/'),
+      var response = await http.put(
+        Uri.parse(
+            'http://localhost:8000/memo_places/users/${widget.user.id.toString()}/'),
         body: {
           'username': _usernameController.text,
         },
       );
 
       if (response.statusCode == 200) {
+        Map<String, dynamic> userMap = jsonDecode(response.body);
+
+        User user = User(
+            id: userMap['id'],
+            username: userMap['username'],
+            email: userMap['email']);
+        _incrementCounter("user", jsonEncode(user));
         showSuccesToast(LocaleKeys.changes_succes_sent.tr());
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const InternetChecker()),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const InternetChecker()),
+          );
+        }
       } else {
         throw CustomException(LocaleKeys.alert_error.tr());
       }

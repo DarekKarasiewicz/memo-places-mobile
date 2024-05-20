@@ -5,9 +5,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/customExeption.dart';
@@ -19,7 +20,6 @@ import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TrailForm extends StatefulWidget {
   final List<LatLng> trailCoordinates;
@@ -44,7 +44,7 @@ class _TrailFormState extends State<TrailForm> {
   final TextEditingController _topicLinkController = TextEditingController();
 
   late final List<File> _selectedImages = [];
-  late Future<String?> _futureAccess;
+  late User? _user;
   List<Type> _types = [];
   List<Period> _periods = [];
   late String _selectedPeriod;
@@ -53,9 +53,21 @@ class _TrailFormState extends State<TrailForm> {
   @override
   void initState() {
     super.initState();
-    _futureAccess = _loadCounter("access");
-    _fetchTypes();
-    _fetchPeriods();
+    loadUserData().then((value) => _user = value);
+    try {
+      fetchTypes(context).then((value) {
+        setState(() {
+          _types = value;
+        });
+      });
+      fetchPeriods(context).then((value) {
+        setState(() {
+          _periods = value;
+        });
+      });
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
+    }
   }
 
   @override
@@ -74,37 +86,6 @@ class _TrailFormState extends State<TrailForm> {
         .tr(namedArgs: {'time': widget.time, 'distance': widget.distance});
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  Future<void> _fetchTypes() async {
-    var response = await http
-        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _types = jsonData.map((data) => Type.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_types.tr());
-    }
-  }
-
-  Future<void> _fetchPeriods() async {
-    var response = await http
-        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _periods = jsonData.map((data) => Period.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_periods.tr());
-    }
-  }
-
   List<LatLng> removeDuplicates(List<LatLng> latLngList) {
     Set<LatLng> uniqueLatLngSet = {};
 
@@ -115,7 +96,7 @@ class _TrailFormState extends State<TrailForm> {
     return uniqueLatLngSet.toList();
   }
 
-  String convertLatLngToJson(List<LatLng> latLngList) {
+  String _convertLatLngToJson(List<LatLng> latLngList) {
     List<Map<String, double>> listOfMaps = latLngList.map((latLng) {
       return {
         'lat': latLng.latitude,
@@ -130,20 +111,16 @@ class _TrailFormState extends State<TrailForm> {
     List<Future<http.StreamedResponse>> uploadFutures = [];
 
     if (_formKey.currentState!.validate()) {
-      String? token = await _futureAccess;
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token!);
-      String userId = decodedToken["user_id"].toString();
-
       Map<String, String> formData = {
         'path_name': _nameController.text,
         'coordinates':
-            convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
+            _convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
         'type': _selectedType,
         'period': _selectedPeriod,
         'description': _descriptionController.text,
         'wiki_link': _wikiLinkController.text,
         'topic_link': _topicLinkController.text,
-        'user': userId,
+        'user': _user!.id.toString(),
       };
 
       try {

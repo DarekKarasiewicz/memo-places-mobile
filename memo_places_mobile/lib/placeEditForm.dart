@@ -1,20 +1,19 @@
-import 'dart:convert';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/formWidgets/customFormInput.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PlaceEditForm extends StatefulWidget {
   final Place place;
@@ -32,7 +31,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
   final TextEditingController _wikiLinkController = TextEditingController();
   final TextEditingController _topicLinkController = TextEditingController();
 
-  late Future<String?> _futureAccess;
+  late User? _user;
   List<Type> _types = [];
   List<Period> _periods = [];
   List<Sortof> _sortofs = [];
@@ -43,10 +42,26 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
   @override
   void initState() {
     super.initState();
-    _futureAccess = _loadCounter("access");
-    _fetchTypes();
-    _fetchPeriods();
-    _fetchSortof();
+    loadUserData().then((value) => _user = value);
+    try {
+      fetchTypes(context).then((value) {
+        setState(() {
+          _types = value;
+        });
+      });
+      fetchPeriods(context).then((value) {
+        setState(() {
+          _periods = value;
+        });
+      });
+      fetchSortof(context).then((value) {
+        setState(() {
+          _sortofs = value;
+        });
+      });
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
+    }
     _selectedSortof = widget.place.sortof.toString();
     _selectedPeriod = widget.place.period.toString();
     _selectedType = widget.place.type.toString();
@@ -65,104 +80,37 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
     super.dispose();
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  Future<void> _fetchTypes() async {
-    var response = await http
-        .get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _types = jsonData.map((data) => Type.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_types.tr());
-    }
-  }
-
-  Future<void> _fetchPeriods() async {
-    var response = await http
-        .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _periods = jsonData.map((data) => Period.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_periods.tr());
-    }
-  }
-
-  Future<void> _fetchSortof() async {
-    var response = await http
-        .get(Uri.parse('http://localhost:8000/admin_dashboard/sortofs/'));
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _sortofs = jsonData.map((data) => Sortof.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_sortof.tr());
-    }
-  }
-
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String? token = await _futureAccess;
-      if (token != null) {
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        String userId = decodedToken["user_id"].toString();
-        Map<String, String> formData = {
-          'place_name': _nameController.text,
-          'type': _selectedType,
-          'sortof': _selectedSortof,
-          'period': _selectedPeriod,
-          'description': _descriptionController.text,
-          'wiki_link': _wikiLinkController.text,
-          'topic_link': _topicLinkController.text,
-          'user': userId,
-        };
+      Map<String, String> formData = {
+        'place_name': _nameController.text,
+        'type': _selectedType,
+        'sortof': _selectedSortof,
+        'period': _selectedPeriod,
+        'description': _descriptionController.text,
+        'wiki_link': _wikiLinkController.text,
+        'topic_link': _topicLinkController.text,
+        'user': _user!.id.toString(),
+      };
 
-        try {
-          var response = await http.put(
-            Uri.parse(
-                'http://localhost:8000/memo_places/places/${widget.place.id}/'),
-            body: formData,
+      try {
+        var response = await http.put(
+          Uri.parse(
+              'http://localhost:8000/memo_places/places/${widget.place.id}/'),
+          body: formData,
+        );
+
+        if (response.statusCode == 200) {
+          showSuccesToast(LocaleKeys.succes_place_edited.tr());
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyPlaces()),
           );
-
-          if (response.statusCode == 200) {
-            Fluttertoast.showToast(
-              msg: LocaleKeys.succes_place_edited.tr(),
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MyPlaces()),
-            );
-          } else {
-            Fluttertoast.showToast(
-              msg: LocaleKeys.alert_error.tr(),
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
-          }
-        } catch (e) {
-          print('Error sending form: $e');
+        } else {
+          throw CustomException(LocaleKeys.alert_error.tr());
         }
-      } else {
-        print('Error: JWT token is null');
+      } on CustomException catch (error) {
+        showErrorToast(error.toString());
       }
     }
   }

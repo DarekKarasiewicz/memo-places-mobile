@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpSwitchButton.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
@@ -25,9 +27,8 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  String? _access;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPaswordHidden = true;
 
   @override
@@ -37,8 +38,8 @@ class _SignInState extends State<SignIn> {
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -48,11 +49,6 @@ class _SignInState extends State<SignIn> {
     });
   }
 
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
   void _incrementCounter(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
@@ -60,8 +56,8 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _login() async {
     String url = 'http://localhost:8000/memo_places/token/';
-    String email = emailController.text;
-    String password = passwordController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
 
     showDialog(
         context: context,
@@ -83,9 +79,10 @@ class _SignInState extends State<SignIn> {
 
       if (response.statusCode == 200) {
         var responseDecoded = json.decode(response.body);
+        String access = responseDecoded["access"];
+        User user = User.fromJson(JwtDecoder.decode(access));
         setState(() {
-          _access = responseDecoded["access"];
-          _incrementCounter("access", _access!);
+          _incrementCounter("user", jsonEncode(user));
           Navigator.pop(context);
           Navigator.pushReplacement(
             context,
@@ -128,13 +125,13 @@ class _SignInState extends State<SignIn> {
                   ),
                   const SizedBox(height: 20),
                   SignInAndSignUpTextField(
-                      controller: emailController,
+                      controller: _emailController,
                       hintText: LocaleKeys.enter_email.tr(),
                       obscureText: false,
                       icon: const Icon(Icons.email)),
                   const SizedBox(height: 25),
                   SignInAndSignUpTextField(
-                    controller: passwordController,
+                    controller: _passwordController,
                     hintText: LocaleKeys.enter_pass.tr(),
                     obscureText: _isPaswordHidden,
                     icon: const Icon(Icons.lock),

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
@@ -158,11 +157,16 @@ Future<List<OfflinePlace>> loadOfflinePlacesFromDevice() async {
   return deviceOfflienPlaces;
 }
 
-Future<User> loadUserData() async {
+Future<User?> loadUserData() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  String? token = prefs.getString('access');
+  String? user = prefs.getString('user');
 
-  return User.fromJson(JwtDecoder.decode(token!));
+  if (user == null) {
+    return null;
+  }
+
+  Map<String, dynamic> userMap = jsonDecode(user);
+  return User.fromJson(userMap);
 }
 
 void deleteLocalData(String key) async {
