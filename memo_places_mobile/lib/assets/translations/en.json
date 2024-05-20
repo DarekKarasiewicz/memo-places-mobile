@@ -118,6 +118,25 @@
     "found_by": "Found by\n{username}",
     "username_info": "\u2022 Found by - {username}",
     "found": "Found {date}",
-    "links": "Links"
+    "links": "Links",
+    "existing": "Existing",
+    "non_existing": "Non-existing",
+    "commemorative_plaque": "Commemorative plaque",
+    "commemorative_monument": "Commemorative monument",
+    "war_cemetery": "War cemetery",
+    "civil_cemetery": "Civil cemetery",
+    "burial_site": "Burial site",
+    "execution_site": "Execution site",
+    "battlefield": "Battlefield",
+    "archaeological_site": "Archaeological site",
+    "wayside_shrine": "Wayside shrine",
+    "historical_monument": "Historical monument",
+    "poland_before_third_partition": "Poland before the Third Partition (<1795)",
+    "napoleonic_wars": "Napoleonic Wars (1799-1815)",
+    "poland_after_partitions": "Poland after the Partitions (1795-1914)",
+    "world_war_I": "World War I (1914-1918)",
+    "interwar_period": "Interwar period (1918-1939)",
+    "world_war_II": "World War II (1939-1945)",
+    "stalinist_period": "Stalinist period (1945-1953)"
 
 }

@@ -1,9 +1,5 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpSwitchButton.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
@@ -13,7 +9,6 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dar
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
-import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -96,7 +91,6 @@ class _SignInState extends State<SignIn> {
             context,
             MaterialPageRoute(builder: (context) => const InternetChecker()),
           );
-          // Navigator.popUntil(context, (route) => route.isFirst);
           showSuccesToast(LocaleKeys.succes_signed_in.tr());
         });
       } else if (response.statusCode == 401) {
@@ -118,6 +112,7 @@ class _SignInState extends State<SignIn> {
         title: Text(LocaleKeys.sign_in.tr()),
       ),
       body: SafeArea(
+        bottom: false,
         child: Center(
           child: SingleChildScrollView(
             child: Padding(

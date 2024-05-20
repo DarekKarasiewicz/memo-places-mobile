@@ -7,19 +7,27 @@ import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final List<String> demoImages = [
-  'https://picsum.photos/250?image=3',
-  'https://picsum.photos/250?image=6',
-  'https://picsum.photos/250?image=9'
-];
-
-class PlaceDetails extends StatelessWidget {
+class PlaceDetails extends StatefulWidget {
   const PlaceDetails(this.place, {super.key});
   final Place place;
 
+  @override
+  State<PlaceDetails> createState() => _PlaceDetailsState();
+}
+
+class _PlaceDetailsState extends State<PlaceDetails> {
+  late List<String> updatedImages;
+  @override
+  void initState() {
+    super.initState();
+    updatedImages = widget.place.images!.map((image) {
+      return 'http://localhost:8000/$image';
+    }).toList();
+  }
+
   _launchMaps(BuildContext context) async {
     final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}');
+        'https://www.google.com/maps/search/?api=1&query=${widget.place.lat},${widget.place.lng}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
@@ -35,7 +43,9 @@ class PlaceDetails extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SliderWithDots(images: demoImages),
+              widget.place.images!.isNotEmpty
+                  ? SliderWithDots(images: updatedImages)
+                  : const SizedBox(),
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 decoration: BoxDecoration(
@@ -59,7 +69,7 @@ class PlaceDetails extends StatelessWidget {
                           child: Text(LocaleKeys.title.tr()),
                         ),
                         Text(
-                          place.placeName,
+                          widget.place.placeName,
                           style: const TextStyle(overflow: TextOverflow.clip),
                         ),
                       ],
@@ -94,15 +104,15 @@ class PlaceDetails extends StatelessWidget {
                         ),
                       ),
                       Text(LocaleKeys.type_info
-                          .tr(namedArgs: {'type': place.typeValue})),
+                          .tr(namedArgs: {'type': widget.place.typeValue})),
                       Text(LocaleKeys.period_info
-                          .tr(namedArgs: {'period': place.periodValue})),
+                          .tr(namedArgs: {'period': widget.place.periodValue})),
                       Text(LocaleKeys.sortof_info
-                          .tr(namedArgs: {'sortof': place.sortofValue})),
+                          .tr(namedArgs: {'sortof': widget.place.sortofValue})),
                       Text(LocaleKeys.username_info
-                          .tr(namedArgs: {'username': place.username})),
+                          .tr(namedArgs: {'username': widget.place.username})),
                       Text(LocaleKeys.date_info
-                          .tr(namedArgs: {'date': place.creationDate})),
+                          .tr(namedArgs: {'date': widget.place.creationDate})),
                     ],
                   ),
                 ),
@@ -133,7 +143,7 @@ class PlaceDetails extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 3),
                           child: Text(LocaleKeys.description.tr()),
                         ),
-                        Text(place.description),
+                        Text(widget.place.description),
                       ],
                     ),
                   ),
@@ -163,8 +173,8 @@ class PlaceDetails extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 3),
                           child: Text(LocaleKeys.links.tr()),
                         ),
-                        Text(place.wikiLink),
-                        Text(place.topicLink),
+                        Text(widget.place.wikiLink),
+                        Text(widget.place.topicLink),
                       ],
                     ),
                   ),

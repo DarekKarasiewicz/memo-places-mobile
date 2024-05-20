@@ -13,32 +13,34 @@ class SignInSignUpSwitchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          isAccountCreated
-              ? LocaleKeys.not_member.tr()
-              : LocaleKeys.question_account.tr(),
-          style: TextStyle(
-              color: Theme.of(context).colorScheme.tertiary, fontSize: 18),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        GestureDetector(
-          onTap: loginRegisterSwitch,
-          child: Text(
+    return FittedBox(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
             isAccountCreated
-                ? LocaleKeys.create_account.tr()
-                : LocaleKeys.sign_account.tr(),
+                ? LocaleKeys.not_member.tr()
+                : LocaleKeys.question_account.tr(),
             style: TextStyle(
-                color: Theme.of(context).colorScheme.scrim,
-                fontWeight: FontWeight.bold,
-                fontSize: 18),
+                color: Theme.of(context).colorScheme.tertiary, fontSize: 18),
           ),
-        ),
-      ],
+          const SizedBox(
+            width: 5,
+          ),
+          GestureDetector(
+            onTap: loginRegisterSwitch,
+            child: Text(
+              isAccountCreated
+                  ? LocaleKeys.create_account.tr()
+                  : LocaleKeys.sign_account.tr(),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.scrim,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

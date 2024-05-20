@@ -6,19 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> googleSignIn(BuildContext context) async {
   if (Platform.isIOS || Platform.isMacOS) {
     GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId:
-            "584457314127-6adiqurs38ajbmouuh326gel87hiv77l.apps.googleusercontent.com",
-        scopes: [
-          'email',
-        ],
-        hostedDomain: "");
+      clientId:
+          "584457314127-6adiqurs38ajbmouuh326gel87hiv77l.apps.googleusercontent.com",
+      scopes: [
+        'email',
+      ],
+    );
 
     final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
     if (googleAccount != null) {
@@ -56,18 +58,10 @@ Future<void> _checkGoogleAccountInBackend(
     if (response.statusCode == 200) {
       var responseDecoded = json.decode(response.body);
       _incrementCounter('access', responseDecoded['access']);
+      showSuccesToast(LocaleKeys.succes_signed_in.tr());
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const InternetChecker()),
-      );
-      Fluttertoast.showToast(
-        msg: LocaleKeys.succes_signed_in.tr(),
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-        textColor: Colors.white,
-        fontSize: 16.0,
       );
     } else if (response.statusCode == 404) {
       var secondResponse = await http.post(
@@ -82,21 +76,18 @@ Future<void> _checkGoogleAccountInBackend(
       if (secondResponse.statusCode == 200) {
         var secondResponseDecoded = json.decode(secondResponse.body);
         _incrementCounter("access", secondResponseDecoded['access']);
+        showSuccesToast(LocaleKeys.succes_signed_in.tr());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const InternetChecker()),
+        );
       } else {
-        throw Exception(LocaleKeys.alert_error.tr());
+        throw CustomException(LocaleKeys.alert_error.tr());
       }
     } else {
-      throw Exception(LocaleKeys.alert_error.tr());
+      throw CustomException(LocaleKeys.alert_error.tr());
     }
-  } on Exception catch (error) {
-    Fluttertoast.showToast(
-      msg: error.toString(),
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
+  } on CustomException catch (error) {
+    showErrorToast(error.toString());
   }
 }

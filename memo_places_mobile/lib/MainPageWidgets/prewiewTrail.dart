@@ -20,6 +20,7 @@ class PreviewTrail extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
+              fullscreenDialog: true,
               builder: (context) => TrailDetails(trail),
             ),
           );
@@ -35,47 +36,25 @@ class PreviewTrail extends StatelessWidget {
               color: Theme.of(context).colorScheme.background,
               child: Column(
                 children: [
-                  // This code contains icons for functions now handeled by gestures, may be used in future for easy accesability.
-                  // Container(
-                  //   margin:
-                  //       const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //     children: [
-                  //       IconButton(
-                  //         icon: const Icon(Icons.close),
-                  //         onPressed: () {
-                  //           closePreview();
-                  //         },
-                  //       ),
-                  //       const Icon(Icons.drag_handle),
-                  //       IconButton(
-                  //           onPressed: () {
-                  //             Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => const PlaceForm()),
-                  //             );
-                  //           },
-                  //           icon: const Icon(Icons.arrow_forward))
-                  //     ],
-                  //   ),
-                  // ),
                   const Center(
                     child: Icon(Icons.drag_handle),
                   ),
                   Expanded(
                     child: Row(
                       children: [
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                          child: Image.network(
-                            'https://picsum.photos/250?image=9',
-                            width: 150,
-                            height: 150,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        trail.images!.isNotEmpty
+                            ? Container(
+                                margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                child: Image.network(
+                                  'http://localhost:8000${trail.images![0]}',
+                                  width: 150,
+                                  height: 150,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const SizedBox(
+                                width: 10,
+                              ),
                         Expanded(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,

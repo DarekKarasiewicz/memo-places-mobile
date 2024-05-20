@@ -15,6 +15,9 @@ import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Theme/theme.dart';
 import 'package:memo_places_mobile/Theme/themeProvider.dart';
+import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,9 +74,6 @@ class _GoogleMapsState extends State {
   void dispose() {
     _positionStreamSubscription.cancel();
     mapController.dispose();
-    Provider.of<ThemeProvider>(context, listen: false)
-        .removeListener(_loadMapStyle);
-
     super.dispose();
   }
 
@@ -121,10 +121,10 @@ class _GoogleMapsState extends State {
 
     Set<Marker> updatedMarkers = _markers.union({
       Marker(
-        markerId: const MarkerId("user_location"),
-        position: _position,
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-      ),
+          markerId: const MarkerId("user_location"),
+          position: _position,
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+          anchor: const Offset(0.5, 0.5)),
     });
 
     setState(() {
@@ -160,53 +160,75 @@ class _GoogleMapsState extends State {
   }
 
   Future<void> _fetchPlaces() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:8000/memo_places/places/'));
+    try {
+      final response = await http
+          .get(Uri.parse('http://localhost:8000/memo_places/places/'));
 
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _places = jsonData.map((data) => Place.fromJson(data)).toList();
-        _markers.addAll(_places.map((place) {
-          return Marker(
-            markerId: MarkerId(place.id.toString()),
-            position: LatLng(place.lat, place.lng),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-            consumeTapEvents: true,
-            onTap: () => _setObject(place, null),
-          );
-        }).toSet());
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_places.tr());
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = jsonDecode(response.body);
+        var fechedPlaces = <Place>[];
+        for (var data in jsonData) {
+          var place = Place.fromJson(data);
+          place.images = await fetchPlaceImages(context, place.id.toString());
+          fechedPlaces.add(place);
+        }
+
+        setState(() {
+          _places = fechedPlaces;
+          _markers.addAll(_places.map((place) {
+            return Marker(
+              markerId: MarkerId(place.id.toString()),
+              position: LatLng(place.lat, place.lng),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue),
+              consumeTapEvents: true,
+              onTap: () => _setObject(place, null),
+            );
+          }).toSet());
+        });
+      } else {
+        throw CustomException(LocaleKeys.failed_load_places.tr());
+      }
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 
   Future<void> _fetchTrails() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:8000/memo_places/path/'));
+    try {
+      final response =
+          await http.get(Uri.parse('http://localhost:8000/memo_places/path/'));
 
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      setState(() {
-        _trails = jsonData.map((data) => Trail.fromJson(data)).toList();
-        _polylines.addAll(_trails.map((trail) {
-          return Polyline(
-            polylineId: PolylineId(trail.id.toString()),
-            visible: true,
-            points: trail.coordinates,
-            width: 10,
-            color: const Color.fromARGB(137, 33, 75, 243),
-            startCap: Cap.roundCap,
-            endCap: Cap.roundCap,
-            consumeTapEvents: true,
-            onTap: () => _setObject(null, trail),
-          );
-        }).toSet());
-      });
-    } else {
-      throw Exception(LocaleKeys.failed_load_trails.tr());
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = jsonDecode(response.body);
+        var fechedTrails = <Trail>[];
+        for (var data in jsonData) {
+          var trail = Trail.fromJson(data);
+          trail.images = await fetchTrailImages(context, trail.id.toString());
+          fechedTrails.add(trail);
+        }
+
+        setState(() {
+          _trails = fechedTrails;
+          _polylines.addAll(_trails.map((trail) {
+            return Polyline(
+              polylineId: PolylineId(trail.id.toString()),
+              visible: true,
+              points: trail.coordinates,
+              width: 10,
+              color: const Color.fromARGB(137, 33, 75, 243),
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              consumeTapEvents: true,
+              onTap: () => _setObject(null, trail),
+            );
+          }).toSet());
+        });
+      } else {
+        throw Exception(LocaleKeys.failed_load_trails.tr());
+      }
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
     }
   }
 

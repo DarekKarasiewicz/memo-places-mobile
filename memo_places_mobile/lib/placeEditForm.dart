@@ -281,7 +281,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                   return DropdownMenuItem<Type>(
                     value: type,
                     child: Text(
-                      type.name,
+                      type.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -322,7 +322,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                   return DropdownMenuItem<Sortof>(
                     value: sortof,
                     child: Text(
-                      sortof.name,
+                      sortof.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -369,7 +369,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                   return DropdownMenuItem<Period>(
                     value: period,
                     child: Text(
-                      period.name,
+                      period.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );

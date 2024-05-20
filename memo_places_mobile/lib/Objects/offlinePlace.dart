@@ -9,9 +9,9 @@ class OfflinePlace {
   final int period;
   final String topicLink;
   final String wikiLink;
-  final String img;
+  List<String>? imagesPaths;
 
-  const OfflinePlace({
+  OfflinePlace({
     required this.placeName,
     required this.description,
     required this.lat,
@@ -22,22 +22,25 @@ class OfflinePlace {
     required this.period,
     this.topicLink = '',
     this.wikiLink = '',
-    this.img = '',
+    this.imagesPaths,
   });
 
   factory OfflinePlace.fromJson(Map<String, dynamic> json) {
     return OfflinePlace(
-        placeName: json['place_name'] as String,
-        description: json['description'] as String,
-        lng: json['lng'] as double,
-        lat: json['lat'] as double,
-        user: json['user'] as int,
-        sortof: json['sortof'] as int,
-        type: json['type'] as int,
-        period: json['period'] as int,
-        topicLink: json['topic_link'] as String? ?? '',
-        wikiLink: json['wiki_link'] as String? ?? '',
-        img: json['img'] as String? ?? '');
+      placeName: json['place_name'] as String,
+      description: json['description'] as String,
+      lng: json['lng'] as double,
+      lat: json['lat'] as double,
+      user: json['user'] as int,
+      sortof: json['sortof'] as int,
+      type: json['type'] as int,
+      period: json['period'] as int,
+      topicLink: json['topic_link'] as String? ?? '',
+      wikiLink: json['wiki_link'] as String? ?? '',
+      imagesPaths: (json['imagesPaths'] != null)
+          ? List<String>.from(json['imagesPaths'])
+          : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -52,7 +55,7 @@ class OfflinePlace {
       'period': period,
       'topic_link': topicLink,
       'wiki_link': wikiLink,
-      'img': img,
+      'imagesPaths': imagesPaths,
     };
   }
 }

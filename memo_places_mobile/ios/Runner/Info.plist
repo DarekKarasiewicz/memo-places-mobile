@@ -27,6 +27,10 @@
 		<string>pl</string>
 		<string>ru</string>
 	</array>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to photo library</string>
 	<key>NSCameraUsageDescription</key>

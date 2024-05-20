@@ -47,12 +47,50 @@ Future<List<Sortof>> fetchSortof(BuildContext context) async {
   }
 }
 
+Future<List<String>> fetchPlaceImages(
+    BuildContext context, String placeId) async {
+  final response = await http.get(Uri.parse(
+      'http://localhost:8000/memo_places/place_image/place=$placeId'));
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = jsonDecode(response.body);
+    List<String> imageUrls = [];
+    for (var item in jsonData) {
+      imageUrls.add(item['img']);
+    }
+    return imageUrls;
+  } else {
+    throw CustomException(LocaleKeys.alert_error.tr());
+  }
+}
+
+Future<List<String>> fetchTrailImages(
+    BuildContext context, String trailId) async {
+  final response = await http.get(
+      Uri.parse('http://localhost:8000/memo_places/path_image/path=$trailId'));
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = jsonDecode(response.body);
+    List<String> imageUrls = [];
+    for (var item in jsonData) {
+      imageUrls.add(item['img']);
+    }
+    return imageUrls;
+  } else {
+    throw CustomException(LocaleKeys.alert_error.tr());
+  }
+}
+
 Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
   final response = await http
       .get(Uri.parse('http://localhost:8000/memo_places/path/user=$userId'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
-    return jsonData.map((data) => Trail.fromJson(data)).toList();
+    var fechedTrails = <Trail>[];
+    for (var data in jsonData) {
+      var trail = Trail.fromJson(data);
+      trail.images = await fetchTrailImages(context, trail.id.toString());
+      fechedTrails.add(trail);
+    }
+    return fechedTrails;
   } else {
     throw CustomException(LocaleKeys.failed_load_trails.tr());
   }
@@ -63,7 +101,13 @@ Future<List<Place>> fetchUserPlaces(BuildContext context, String userId) async {
       .get(Uri.parse('http://localhost:8000/memo_places/places/user=$userId'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
-    return jsonData.map((data) => Place.fromJson(data)).toList();
+    var fechedPlaces = <Place>[];
+    for (var data in jsonData) {
+      var place = Place.fromJson(data);
+      place.images = await fetchPlaceImages(context, place.id.toString());
+      fechedPlaces.add(place);
+    }
+    return fechedPlaces;
   } else {
     throw CustomException(LocaleKeys.failed_load_places.tr());
   }

@@ -13,13 +13,27 @@ final List<String> demoImages = [
   'https://picsum.photos/250?image=9'
 ];
 
-class TrailDetails extends StatelessWidget {
+class TrailDetails extends StatefulWidget {
   const TrailDetails(this.trail, {super.key});
   final Trail trail;
 
+  @override
+  State<TrailDetails> createState() => _TrailDetailsState();
+}
+
+class _TrailDetailsState extends State<TrailDetails> {
+  late List<String> updatedImages;
+  @override
+  void initState() {
+    super.initState();
+    updatedImages = widget.trail.images!.map((image) {
+      return 'http://localhost:8000/$image';
+    }).toList();
+  }
+
   _launchMaps(BuildContext context) async {
     final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${trail.coordinates[0].latitude},${trail.coordinates[0].longitude}');
+        'https://www.google.com/maps/search/?api=1&query=${widget.trail.coordinates[0].latitude},${widget.trail.coordinates[0].longitude}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
@@ -35,7 +49,9 @@ class TrailDetails extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SliderWithDots(images: demoImages),
+              widget.trail.images!.isNotEmpty
+                  ? SliderWithDots(images: updatedImages)
+                  : const SizedBox(),
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 decoration: BoxDecoration(
@@ -59,7 +75,7 @@ class TrailDetails extends StatelessWidget {
                           child: Text(LocaleKeys.title.tr()),
                         ),
                         Text(
-                          trail.trailName,
+                          widget.trail.trailName,
                           style: const TextStyle(overflow: TextOverflow.clip),
                         ),
                       ],
@@ -94,13 +110,13 @@ class TrailDetails extends StatelessWidget {
                         ),
                       ),
                       Text(LocaleKeys.type_info
-                          .tr(namedArgs: {'type': trail.typeValue})),
+                          .tr(namedArgs: {'type': widget.trail.typeValue})),
                       Text(LocaleKeys.period_info
-                          .tr(namedArgs: {'period': trail.periodValue})),
+                          .tr(namedArgs: {'period': widget.trail.periodValue})),
                       Text(LocaleKeys.username_info
-                          .tr(namedArgs: {'username': trail.username})),
+                          .tr(namedArgs: {'username': widget.trail.username})),
                       Text(LocaleKeys.date_info
-                          .tr(namedArgs: {'date': trail.creationDate})),
+                          .tr(namedArgs: {'date': widget.trail.creationDate})),
                     ],
                   ),
                 ),
@@ -131,7 +147,7 @@ class TrailDetails extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 3),
                           child: Text(LocaleKeys.description.tr()),
                         ),
-                        Text(trail.description),
+                        Text(widget.trail.description),
                       ],
                     ),
                   ),
@@ -161,8 +177,8 @@ class TrailDetails extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 3),
                           child: Text(LocaleKeys.links.tr()),
                         ),
-                        Text(trail.wikiLink),
-                        Text(trail.topicLink),
+                        Text(widget.trail.wikiLink),
+                        Text(widget.trail.topicLink),
                       ],
                     ),
                   ),

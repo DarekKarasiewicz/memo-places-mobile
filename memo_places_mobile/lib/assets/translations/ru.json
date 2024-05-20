@@ -118,5 +118,25 @@
     "found_by": "Найдено пользователем\n{username}",
     "username_info": "\u2022 Найдено пользователем - {username}",
     "found": "Найдено {date}",
-    "links": "Ссылки"
+    "links": "Ссылки",
+    "existing": "Существующие",
+    "non_existing": "Не существующие",
+    "commemorative_plaque": "Мемориальная доска",
+    "commemorative_monument": "Памятник",
+    "war_cemetery": "Военное кладбище",
+    "civil_cemetery": "Гражданское кладбище",
+    "burial_site": "Место захоронения",
+    "execution_site": "Место казни",
+    "battlefield": "Поле битвы",
+    "archaeological_site": "Археологический объект",
+    "wayside_shrine": "Дорожная часовня",
+    "historical_monument": "Исторический памятник",
+    "poland_before_third_partition": "Польша до третьего раздела (< 1795)",
+    "napoleonic_wars": "Наполеоновские войны (1799 – 1815)",
+    "poland_after_partitions": "Польша после разделов (1795 – 1914)",
+    "world_war_I": "Первая мировая война (1914 – 1918)",
+    "interwar_period": "Межвоенный период (1918 – 1939)",
+    "world_war_II": "Вторая мировая война (1939 – 1945)",
+    "stalinist_period": "Сталинский период (1945 – 1953)"
+
 }

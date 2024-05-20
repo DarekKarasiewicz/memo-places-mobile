@@ -1,18 +1,16 @@
-import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
+import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/placeEditForm.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPlaces extends StatefulWidget {
   const MyPlaces({super.key});
@@ -23,38 +21,23 @@ class MyPlaces extends StatefulWidget {
 
 class _MyPlacesState extends State<MyPlaces> {
   late List<Place> _places = [];
-  late Future<String?> _futureAccess;
+  late User _user;
+  late bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _futureAccess = _loadCounter("access");
-    _fetchUserPlaces();
-  }
-
-  Future<String?> _loadCounter(String key) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(key);
-  }
-
-  Future<void> _fetchUserPlaces() async {
-    String? access = await _futureAccess;
-    if (access != null) {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(access);
-      String id = decodedToken["user_id"].toString();
-      final response = await http
-          .get(Uri.parse('http://localhost:8000/memo_places/places/user=$id'));
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = jsonDecode(response.body);
-        setState(() {
-          _places = jsonData.map((data) => Place.fromJson(data)).toList();
-        });
-      } else {
-        throw Exception(LocaleKeys.failed_load_places.tr());
-      }
-    } else {
-      throw Exception('Access token is null');
-    }
+    loadUserData().then(
+      (user) => setState(() {
+        _user = user;
+        fetchUserPlaces(context, _user.id.toString()).then(
+          (places) => setState(() {
+            _places = places;
+            isLoading = false;
+          }),
+        );
+      }),
+    );
   }
 
   void _showDeleteDialog(int index) {
@@ -173,87 +156,95 @@ class _MyPlacesState extends State<MyPlaces> {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: Column(
-          children: [
-            CustomTitle(title: LocaleKeys.your_places.tr()),
-            _places.isEmpty
-                ? Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 3,
-                      ),
-                      SizedBox(
-                        width: 300,
-                        child: Text(
-                          LocaleKeys.no_place_added.tr(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 24,
-                              color: Theme.of(context).colorScheme.onBackground,
-                              overflow: TextOverflow.clip),
+        child: isLoading
+            ? CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.scrim),
+              )
+            : Column(
+                children: [
+                  CustomTitle(title: LocaleKeys.your_places.tr()),
+                  _places.isEmpty
+                      ? Column(
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height / 3,
+                            ),
+                            SizedBox(
+                              width: 300,
+                              child: Text(
+                                LocaleKeys.no_place_added.tr(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onBackground,
+                                    overflow: TextOverflow.clip),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _places.length,
+                              itemBuilder: (context, index) {
+                                final place = _places[index];
+                                return Slidable(
+                                    startActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      extentRatio: 0.5,
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PlaceDetails(place)),
+                                            );
+                                          },
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.arrow_forward,
+                                          label: LocaleKeys.preview.tr(),
+                                        )
+                                      ],
+                                    ),
+                                    endActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _showEditDialog(index);
+                                          },
+                                          backgroundColor: Colors.green,
+                                          foregroundColor: Colors.white,
+                                          icon:
+                                              Icons.edit_location_alt_outlined,
+                                          label: LocaleKeys.edit.tr(),
+                                        ),
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _showDeleteDialog(index);
+                                          },
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete_outlined,
+                                          label: LocaleKeys.delete.tr(),
+                                        )
+                                      ],
+                                    ),
+                                    child: MyPlaceBox(place: place));
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                : Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _places.length,
-                        itemBuilder: (context, index) {
-                          final place = _places[index];
-                          return Slidable(
-                              startActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                extentRatio: 0.25,
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                PlaceDetails(place)),
-                                      );
-                                    },
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.arrow_forward,
-                                    label: LocaleKeys.preview.tr(),
-                                  )
-                                ],
-                              ),
-                              endActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      _showEditDialog(index);
-                                    },
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.edit_location_alt_outlined,
-                                    label: LocaleKeys.edit.tr(),
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      _showDeleteDialog(index);
-                                    },
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete_outlined,
-                                    label: LocaleKeys.delete.tr(),
-                                  )
-                                ],
-                              ),
-                              child: MyPlaceBox(place: place));
-                        },
-                      ),
-                    ),
-                  ),
-          ],
-        ),
+                ],
+              ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:memo_places_mobile/ProfileWidgets/profileInfoBox.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
 import 'package:memo_places_mobile/contactUsForm.dart';
 import 'package:memo_places_mobile/editProfile.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/myPlaces.dart';
 import 'package:memo_places_mobile/myTrails.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -29,7 +30,10 @@ class _ProfileState extends State<Profile> {
   Future<void> _clearAccessKeyAndRefresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove("access");
-    Navigator.popUntil(context, (route) => route.isFirst);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const InternetChecker()),
+    );
   }
 
   @override

@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:memo_places_mobile/Theme/theme.dart';
+import 'package:memo_places_mobile/Theme/themeProvider.dart';
 import 'package:memo_places_mobile/TrailRecordPageWidgets/recordMenu.dart';
 import 'package:memo_places_mobile/trailForm.dart';
+import 'package:provider/provider.dart';
 
 class TrailRecordPage extends StatefulWidget {
   final LatLng startLocation;
@@ -20,6 +24,7 @@ class TrailRecordPage extends StatefulWidget {
 
 class _TrailRecordState extends State<TrailRecordPage> {
   late GoogleMapController mapController;
+  late String _mapStyleString = '';
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
   late LatLng currentPosition;
@@ -35,6 +40,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
   @override
   void initState() {
     super.initState();
+    _loadMapStyle();
     currentPosition = widget.startLocation;
     _startLocationUpdates();
   }
@@ -65,12 +71,25 @@ class _TrailRecordState extends State<TrailRecordPage> {
     });
   }
 
-  void _updateUserMarker() {
+  Future<void> _loadMapStyle() async {
+    String stylePath =
+        Provider.of<ThemeProvider>(context, listen: false).themeData ==
+                lightTheme
+            ? 'lib/assets/map_styles/light_map_style.json'
+            : 'lib/assets/map_styles/dark_map_style.json';
+    _mapStyleString =
+        await DefaultAssetBundle.of(context).loadString(stylePath);
+    setState(() {});
+  }
+
+  void _updateUserMarker() async {
+    final Uint8List markerIcon =
+        await getBytesFromAsset('lib/assets/markers/user_marker.PNG', 80);
     Set<Marker> updatedMarkers = _markers.union({
       Marker(
         markerId: const MarkerId("user_location"),
         position: currentPosition,
-        icon: BitmapDescriptor.defaultMarker,
+        icon: BitmapDescriptor.fromBytes(markerIcon),
         consumeTapEvents: true,
       ),
     });
@@ -78,6 +97,16 @@ class _TrailRecordState extends State<TrailRecordPage> {
     setState(() {
       _markers = updatedMarkers;
     });
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   void _updateRecordedPolyline() {
@@ -185,6 +214,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
                 zoomControlsEnabled: false,
                 markers: _markers,
                 polylines: _polylines,
+                style: _mapStyleString,
                 initialCameraPosition:
                     CameraPosition(target: currentPosition, zoom: 16),
               ),

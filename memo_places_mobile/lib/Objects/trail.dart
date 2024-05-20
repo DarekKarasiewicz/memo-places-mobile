@@ -16,9 +16,9 @@ class Trail {
   final String periodValue;
   final String topicLink;
   final String wikiLink;
-  final String img;
+  List<String>? images;
 
-  const Trail(
+  Trail(
       {required this.id,
       required this.trailName,
       required this.description,
@@ -32,7 +32,7 @@ class Trail {
       required this.periodValue,
       this.topicLink = '',
       this.wikiLink = '',
-      this.img = ''});
+      this.images});
 
   factory Trail.fromJson(Map<String, dynamic> json) {
     List<dynamic> coordinatesJson = jsonDecode(json['coordinates']);
@@ -56,7 +56,6 @@ class Trail {
       periodValue: json['period_value'] as String,
       topicLink: json['topic_link'] as String? ?? '',
       wikiLink: json['wiki_link'] as String? ?? '',
-      img: json['img'] as String? ?? '',
     );
   }
 }

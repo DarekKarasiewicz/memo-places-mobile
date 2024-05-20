@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
+import 'package:memo_places_mobile/customExeption.dart';
+import 'package:memo_places_mobile/toasts.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
-import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/home.dart';
@@ -67,6 +69,8 @@ class _HomeState extends State<Main> {
     List<OfflinePlace> offlinePlaces = await loadOfflinePlacesFromDevice();
     if (offlinePlaces.isNotEmpty) {
       for (OfflinePlace offlinePlace in offlinePlaces) {
+        List<Future<http.StreamedResponse>> uploadFutures = [];
+
         Map<String, String> placeData = {
           'place_name': offlinePlace.placeName,
           'lat': offlinePlace.lat.toString(),
@@ -79,35 +83,59 @@ class _HomeState extends State<Main> {
           'topic_link': offlinePlace.topicLink,
           'user': userId,
         };
-
-        var response = await http.post(
-          Uri.parse('http://localhost:8000/memo_places/places/'),
-          body: placeData,
-        );
-
-        if (response.statusCode == 200) {
-          Fluttertoast.showToast(
-            msg: LocaleKeys.stored_places_upload_succes.tr(),
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-            textColor: Colors.white,
-            fontSize: 16.0,
+        try {
+          var response = await http.post(
+            Uri.parse('http://localhost:8000/memo_places/places/'),
+            body: placeData,
           );
-          deleteLocalData('places');
-        } else {
-          Fluttertoast.showToast(
-            msg: LocaleKeys.alert_error.tr(),
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+
+          if (response.statusCode == 200 && offlinePlace.imagesPaths != null) {
+            List<File> images = offlinePlace.imagesPaths!
+                .map((imagePath) => File.fromUri(Uri.parse(imagePath)))
+                .toList();
+
+            Map<String, dynamic> responseData = jsonDecode(response.body);
+            String id = responseData['id'].toString();
+            for (final image in images) {
+              if (await image.exists()) {
+                var request = http.MultipartRequest(
+                    'POST',
+                    Uri.parse(
+                        'http://localhost:8000/memo_places/place_image/'));
+
+                request.fields['place'] = id;
+
+                var multipartFile = http.MultipartFile(
+                  'img',
+                  http.ByteStream(image.openRead()),
+                  await image.length(),
+                  filename: path.basename(image.path),
+                );
+
+                request.files.add(multipartFile);
+                uploadFutures.add(request.send());
+              }
+            }
+
+            var responses = await Future.wait(uploadFutures);
+            bool allSuccessful =
+                responses.every((response) => response.statusCode == 200);
+
+            if (allSuccessful) {
+              showSuccesToast(LocaleKeys.place_added_succes.tr());
+            } else {
+              throw CustomException(LocaleKeys.alert_error.tr());
+            }
+          } else if (response.statusCode == 200) {
+            showSuccesToast(LocaleKeys.place_added_succes.tr());
+          } else {
+            throw CustomException(LocaleKeys.alert_error.tr());
+          }
+        } on CustomException catch (error) {
+          showErrorToast(error.toString());
         }
       }
+      deleteLocalData('places');
     } else {
       return;
     }

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -19,6 +19,7 @@ import 'package:memo_places_mobile/formWidgets/imageInput.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OfflinePlaceForm extends StatefulWidget {
@@ -81,11 +82,23 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
     prefs.setString(key, value);
   }
 
+  Future<String> _saveLocally(File image) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final fileName = path.basename(image.path);
+    String dirPath = appDocDir.uri.resolve(fileName).path;
+    File savedImage = await image.copy(dirPath);
+    return savedImage.path;
+  }
+
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       String? token = await _futureAccess;
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token!);
       int userId = decodedToken["user_id"];
+      List<Future<String>> futurePaths = _selectedImages.map((image) {
+        return _saveLocally(image);
+      }).toList();
+      List<String> paths = await Future.wait(futurePaths);
       List<OfflinePlace> devicePlaces = await loadOfflinePlacesFromDevice();
       List<OfflinePlace> place = [];
       place.add(OfflinePlace(
@@ -96,7 +109,8 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
           user: userId,
           sortof: _selectedSortof,
           type: _selectedType,
-          period: _selectedPeriod));
+          period: _selectedPeriod,
+          imagesPaths: paths));
 
       if (devicePlaces.isEmpty) {
         List<Map<String, dynamic>> jsonData =
@@ -226,7 +240,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                   return DropdownMenuItem<Type>(
                     value: type,
                     child: Text(
-                      type.name,
+                      type.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -273,7 +287,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                   return DropdownMenuItem<Sortof>(
                     value: sortof,
                     child: Text(
-                      sortof.name,
+                      sortof.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -320,7 +334,7 @@ class _OfflinePlaceFormState extends State<OfflinePlaceForm> {
                   return DropdownMenuItem<Period>(
                     value: period,
                     child: Text(
-                      period.name,
+                      period.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );

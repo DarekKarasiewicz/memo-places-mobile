@@ -3,21 +3,21 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
+import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/formWidgets/customFormInput.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/formWidgets/formPictureSlider.dart';
 import 'package:memo_places_mobile/formWidgets/imageInput.dart';
-import 'package:memo_places_mobile/home.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -127,60 +127,69 @@ class _TrailFormState extends State<TrailForm> {
   }
 
   void _submitForm(BuildContext context) async {
+    List<Future<http.StreamedResponse>> uploadFutures = [];
+
     if (_formKey.currentState!.validate()) {
       String? token = await _futureAccess;
-      if (token != null) {
-        Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-        String userId = decodedToken["user_id"].toString();
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token!);
+      String userId = decodedToken["user_id"].toString();
 
-        Map<String, String> formData = {
-          'path_name': _nameController.text,
-          'coordinates':
-              convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
-          'type': _selectedType,
-          'period': _selectedPeriod,
-          'description': _descriptionController.text,
-          'wiki_link': _wikiLinkController.text,
-          'topic_link': _topicLinkController.text,
-          'user': userId,
-        };
+      Map<String, String> formData = {
+        'path_name': _nameController.text,
+        'coordinates':
+            convertLatLngToJson(removeDuplicates(widget.trailCoordinates)),
+        'type': _selectedType,
+        'period': _selectedPeriod,
+        'description': _descriptionController.text,
+        'wiki_link': _wikiLinkController.text,
+        'topic_link': _topicLinkController.text,
+        'user': userId,
+      };
 
-        try {
-          var response = await http.post(
-            Uri.parse('http://localhost:8000/memo_places/path/'),
-            body: formData,
-          );
+      try {
+        var response = await http.post(
+          Uri.parse('http://localhost:8000/memo_places/path/'),
+          body: formData,
+        );
 
-          if (response.statusCode == 200) {
-            Fluttertoast.showToast(
-              msg: LocaleKeys.succes_trail_added.tr(),
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: const Color.fromARGB(200, 76, 175, 79),
-              textColor: Colors.white,
-              fontSize: 16.0,
+        if (response.statusCode == 200) {
+          Map<String, dynamic> responseData = jsonDecode(response.body);
+          String id = responseData['id'].toString();
+          for (final image in _selectedImages) {
+            var request = http.MultipartRequest('POST',
+                Uri.parse('http://localhost:8000/memo_places/path_image/'));
+
+            request.fields['path'] = id;
+
+            var multipartFile = http.MultipartFile(
+              'img',
+              http.ByteStream(image.openRead()),
+              await image.length(),
+              filename: path.basename(image.path),
             );
+
+            request.files.add(multipartFile);
+            uploadFutures.add(request.send());
+          }
+
+          var responses = await Future.wait(uploadFutures);
+          bool allSuccessful =
+              responses.every((response) => response.statusCode == 200);
+
+          if (allSuccessful) {
+            showSuccesToast(LocaleKeys.place_added_succes.tr());
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const InternetChecker()),
             );
           } else {
-            Fluttertoast.showToast(
-              msg: LocaleKeys.alert_error.tr(),
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: const Color.fromARGB(197, 230, 45, 31),
-              textColor: Colors.white,
-              fontSize: 16.0,
-            );
+            throw CustomException(LocaleKeys.alert_error.tr());
           }
-        } catch (e) {
-          print('Error sending form: $e');
+        } else {
+          throw CustomException(LocaleKeys.alert_error.tr());
         }
-      } else {
-        print('Error: JWT token is null');
+      } on CustomException catch (error) {
+        showErrorToast(error.toString());
       }
     }
   }
@@ -296,7 +305,7 @@ class _TrailFormState extends State<TrailForm> {
                   return DropdownMenuItem<Type>(
                     value: type,
                     child: Text(
-                      type.name,
+                      type.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -343,7 +352,7 @@ class _TrailFormState extends State<TrailForm> {
                   return DropdownMenuItem<Period>(
                     value: period,
                     child: Text(
-                      period.name,
+                      period.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );

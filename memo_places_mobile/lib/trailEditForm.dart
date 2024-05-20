@@ -251,7 +251,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
                   return DropdownMenuItem<Type>(
                     value: type,
                     child: Text(
-                      type.name,
+                      type.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
@@ -298,7 +298,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
                   return DropdownMenuItem<Period>(
                     value: period,
                     child: Text(
-                      period.name,
+                      period.value.tr(),
                       style: const TextStyle(fontSize: 20),
                     ),
                   );
