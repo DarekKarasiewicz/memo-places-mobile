@@ -33,6 +33,7 @@ import 'package:memo_places_mobile/mainPage.dart';
 import 'package:memo_places_mobile/offlinePage.dart';
 import 'package:memo_places_mobile/offlinePlaceAddingPage.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
+import 'package:memo_places_mobile/welcomePage.dart';
 
 class InternetChecker extends StatefulWidget {
   const InternetChecker({super.key});
@@ -76,6 +77,8 @@ class _InternetCheckerState extends State<InternetChecker> {
               !connectivityResult.contains(ConnectivityResult.mobile) &&
               user == null) {
             content = const OfflinePage();
+          } else if (user == null) {
+            content = const WelcomePage();
           } else {
             content = const Main();
           }

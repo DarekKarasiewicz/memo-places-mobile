@@ -103,6 +103,8 @@ abstract class  LocaleKeys {
   static const no_place_added = 'no_place_added';
   static const contact_us = 'contact_us';
   static const welcome = 'welcome';
+  static const welcome_msg = 'welcome_msg';
+  static const continue_btn = 'continue_btn';
   static const place_added_succes = 'place_added_succes';
   static const delete = 'delete';
   static const edit = 'edit';
@@ -121,5 +123,25 @@ abstract class  LocaleKeys {
   static const username_info = 'username_info';
   static const found = 'found';
   static const links = 'links';
+  static const link_error = 'link_error';
+  static const existing = 'existing';
+  static const non_existing = 'non_existing';
+  static const commemorative_plaque = 'commemorative_plaque';
+  static const commemorative_monument = 'commemorative_monument';
+  static const war_cemetery = 'war_cemetery';
+  static const civil_cemetery = 'civil_cemetery';
+  static const burial_site = 'burial_site';
+  static const execution_site = 'execution_site';
+  static const battlefield = 'battlefield';
+  static const archaeological_site = 'archaeological_site';
+  static const wayside_shrine = 'wayside_shrine';
+  static const historical_monument = 'historical_monument';
+  static const poland_before_third_partition = 'poland_before_third_partition';
+  static const napoleonic_wars = 'napoleonic_wars';
+  static const poland_after_partitions = 'poland_after_partitions';
+  static const world_war_I = 'world_war_I';
+  static const interwar_period = 'interwar_period';
+  static const world_war_II = 'world_war_II';
+  static const stalinist_period = 'stalinist_period';
 
 }

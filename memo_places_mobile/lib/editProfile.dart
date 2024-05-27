@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'dart:io';
 
@@ -65,12 +66,8 @@ class _EditProfileState extends State<EditProfile> {
       );
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> userMap = jsonDecode(response.body);
-
-        User user = User(
-            id: userMap['id'],
-            username: userMap['username'],
-            email: userMap['email']);
+        var userData = jsonDecode(response.body);
+        User user = User.fromJson(JwtDecoder.decode(userData));
         _incrementCounter("user", jsonEncode(user));
         showSuccesToast(LocaleKeys.changes_succes_sent.tr());
         if (mounted) {

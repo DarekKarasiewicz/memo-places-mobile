@@ -27,6 +27,11 @@
 		<string>pl</string>
 		<string>ru</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+    	<string>http</string>
+    	<string>https</string>
+	</array>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>

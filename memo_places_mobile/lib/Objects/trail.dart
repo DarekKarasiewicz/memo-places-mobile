@@ -16,6 +16,7 @@ class Trail {
   final String periodValue;
   final String topicLink;
   final String wikiLink;
+  final bool verified;
   List<String>? images;
 
   Trail(
@@ -30,6 +31,7 @@ class Trail {
       required this.typeValue,
       required this.period,
       required this.periodValue,
+      required this.verified,
       this.topicLink = '',
       this.wikiLink = '',
       this.images});
@@ -56,6 +58,7 @@ class Trail {
       periodValue: json['period_value'] as String,
       topicLink: json['topic_link'] as String? ?? '',
       wikiLink: json['wiki_link'] as String? ?? '',
+      verified: json['verified'] as bool,
     );
   }
 }

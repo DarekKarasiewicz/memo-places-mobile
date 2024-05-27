@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,13 +25,31 @@ class _TrailDetailsState extends State<TrailDetails> {
     }).toList();
   }
 
-  _launchMaps(BuildContext context) async {
+  Future<void> _launchMaps(BuildContext context) async {
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=${widget.trail.coordinates[0].latitude},${widget.trail.coordinates[0].longitude}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw LocaleKeys.google_maps_error.tr();
+      showErrorToast(LocaleKeys.google_maps_error.tr());
+    }
+  }
+
+  Future<void> _launchWikipedia(BuildContext context) async {
+    final url = Uri.parse(widget.trail.wikiLink);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showErrorToast(LocaleKeys.link_error.tr());
+    }
+  }
+
+  Future<void> _launchTopicPage(BuildContext context) async {
+    final url = Uri.parse(widget.trail.topicLink);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showErrorToast(LocaleKeys.link_error.tr());
     }
   }
 
@@ -65,11 +84,16 @@ class _TrailDetailsState extends State<TrailDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.title.tr()),
+                          child: Text(
+                            LocaleKeys.title.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         Text(
                           widget.trail.trailName,
-                          style: const TextStyle(overflow: TextOverflow.clip),
+                          style: const TextStyle(
+                              fontSize: 18, overflow: TextOverflow.clip),
                         ),
                       ],
                     ),
@@ -99,17 +123,34 @@ class _TrailDetailsState extends State<TrailDetails> {
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.info.tr()),
+                          child: Text(
+                            LocaleKeys.info.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
-                      Text(LocaleKeys.type_info
-                          .tr(namedArgs: {'type': widget.trail.typeValue})),
-                      Text(LocaleKeys.period_info
-                          .tr(namedArgs: {'period': widget.trail.periodValue})),
-                      Text(LocaleKeys.username_info
-                          .tr(namedArgs: {'username': widget.trail.username})),
-                      Text(LocaleKeys.date_info
-                          .tr(namedArgs: {'date': widget.trail.creationDate})),
+                      Text(
+                        LocaleKeys.type_info.tr(
+                            namedArgs: {'type': widget.trail.typeValue.tr()}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.period_info.tr(namedArgs: {
+                          'period': widget.trail.periodValue.tr()
+                        }),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.username_info
+                            .tr(namedArgs: {'username': widget.trail.username}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.date_info
+                            .tr(namedArgs: {'date': widget.trail.creationDate}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ],
                   ),
                 ),
@@ -138,9 +179,14 @@ class _TrailDetailsState extends State<TrailDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.description.tr()),
+                          child: Text(
+                            LocaleKeys.description.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Text(widget.trail.description),
+                        Text(widget.trail.description,
+                            style: const TextStyle(fontSize: 18)),
                       ],
                     ),
                   ),
@@ -168,10 +214,44 @@ class _TrailDetailsState extends State<TrailDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.links.tr()),
+                          child: Text(
+                            LocaleKeys.links.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Text(widget.trail.wikiLink),
-                        Text(widget.trail.topicLink),
+                        widget.trail.wikiLink.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _launchWikipedia(context);
+                                },
+                                child: Text(
+                                  LocaleKeys.wiki_link.tr(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
+                        widget.trail.topicLink.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _launchTopicPage(context);
+                                },
+                                child: Text(
+                                  LocaleKeys.topic_link.tr(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                   ),
@@ -179,7 +259,9 @@ class _TrailDetailsState extends State<TrailDetails> {
               ),
               Center(
                 child: CustomButton(
-                  onPressed: () => _launchMaps,
+                  onPressed: () {
+                    _launchMaps(context);
+                  },
                   text: LocaleKeys.navigate_trail.tr(),
                 ),
               ),

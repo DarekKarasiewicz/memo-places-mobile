@@ -220,6 +220,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Type>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_type.tr(),
                   filled: true,
@@ -267,6 +268,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Sortof>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_sortof.tr(),
                   filled: true,
@@ -314,6 +316,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Period>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_period.tr(),
                   filled: true,
