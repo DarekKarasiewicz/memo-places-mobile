@@ -89,7 +89,7 @@ class _PreviewTrailState extends State<PreviewTrail>
                                   margin:
                                       const EdgeInsets.fromLTRB(10, 5, 10, 5),
                                   child: Image.network(
-                                    'http://localhost:8000${widget.trail.images![0]}',
+                                    'http://10.0.2.2:8000${widget.trail.images![0]}',
                                     width: 150,
                                     height: 150,
                                     fit: BoxFit.cover,

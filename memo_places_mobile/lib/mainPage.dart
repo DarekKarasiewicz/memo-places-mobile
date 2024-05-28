@@ -79,7 +79,7 @@ class _HomeState extends State<Main> {
         };
         try {
           var response = await http.post(
-            Uri.parse('http://localhost:8000/memo_places/places/'),
+            Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
             body: placeData,
           );
 
@@ -92,10 +92,8 @@ class _HomeState extends State<Main> {
             String id = responseData['id'].toString();
             for (final image in images) {
               if (await image.exists()) {
-                var request = http.MultipartRequest(
-                    'POST',
-                    Uri.parse(
-                        'http://localhost:8000/memo_places/place_image/'));
+                var request = http.MultipartRequest('POST',
+                    Uri.parse('http://10.0.2.2:8000/memo_places/place_image/'));
 
                 request.fields['place'] = id;
 

@@ -31,7 +31,7 @@ void main() {
       final signInBtn = find.byType(SignInSignUpButton);
 
       await tester.enterText(emailField, 'miko@wp.pl');
-      await tester.enterText(passwordField, 'Mikimar14.');
+      await tester.enterText(passwordField, '');
       await tester.tap(signInBtn);
       await tester.pumpAndSettle();
 

@@ -96,7 +96,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
       try {
         var response = await http.put(
           Uri.parse(
-              'http://localhost:8000/memo_places/places/${widget.place.id}/'),
+              'http://10.0.2.2:8000/memo_places/places/${widget.place.id}/'),
           body: formData,
         );
 

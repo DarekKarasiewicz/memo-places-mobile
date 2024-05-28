@@ -158,8 +158,8 @@ class _GoogleMapsState extends State {
 
   Future<void> _fetchPlaces() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://localhost:8000/memo_places/places/'));
+      final response =
+          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
@@ -195,7 +195,7 @@ class _GoogleMapsState extends State {
   Future<void> _fetchTrails() async {
     try {
       final response =
-          await http.get(Uri.parse('http://localhost:8000/memo_places/path/'));
+          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/path/'));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);

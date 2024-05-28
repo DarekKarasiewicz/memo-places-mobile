@@ -55,7 +55,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> _login() async {
-    String url = 'http://localhost:8000/memo_places/token/';
+    String url = 'http://10.0.2.2:8000/memo_places/token/';
     String email = _emailController.text;
     String password = _passwordController.text;
 
