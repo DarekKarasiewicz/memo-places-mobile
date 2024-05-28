@@ -21,7 +21,7 @@ class _TrailDetailsState extends State<TrailDetails> {
   void initState() {
     super.initState();
     _updatedImages = widget.trail.images!.map((image) {
-      return 'http://localhost:8000/$image';
+      return 'http://10.0.2.2:8000/$image';
     }).toList();
   }
 

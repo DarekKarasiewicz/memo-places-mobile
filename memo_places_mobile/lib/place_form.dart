@@ -99,7 +99,7 @@ class _PlaceFormState extends State<PlaceForm> {
 
       try {
         var response = await http.post(
-          Uri.parse('http://localhost:8000/memo_places/places/'),
+          Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
           body: formData,
         );
 
@@ -108,7 +108,7 @@ class _PlaceFormState extends State<PlaceForm> {
           String id = responseData['id'].toString();
           for (final image in _selectedImages) {
             var request = http.MultipartRequest('POST',
-                Uri.parse('http://localhost:8000/memo_places/place_image/'));
+                Uri.parse('http://10.0.2.2:8000/memo_places/place_image/'));
 
             request.fields['place'] = id;
 

@@ -59,7 +59,7 @@ class _EditProfileState extends State<EditProfile> {
     try {
       var response = await http.put(
         Uri.parse(
-            'http://localhost:8000/memo_places/users/${widget.user.id.toString()}/'),
+            'http://10.0.2.2:8000/memo_places/users/${widget.user.id.toString()}/'),
         body: {
           'username': _usernameController.text,
         },

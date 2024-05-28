@@ -21,7 +21,7 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   void initState() {
     super.initState();
     _updatedImages = widget.place.images!.map((image) {
-      return 'http://localhost:8000/$image';
+      return 'http://10.0.2.2:8000/$image';
     }).toList();
   }
 

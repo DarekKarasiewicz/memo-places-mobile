@@ -86,7 +86,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
       try {
         var response = await http.put(
           Uri.parse(
-              'http://localhost:8000/memo_places/path/${widget.trail.id}/'),
+              'http://10.0.2.2:8000/memo_places/path/${widget.trail.id}/'),
           body: formData,
         );
 

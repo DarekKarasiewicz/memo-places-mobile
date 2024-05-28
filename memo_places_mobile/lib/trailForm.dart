@@ -125,7 +125,7 @@ class _TrailFormState extends State<TrailForm> {
 
       try {
         var response = await http.post(
-          Uri.parse('http://localhost:8000/memo_places/path/'),
+          Uri.parse('http://10.0.2.2:8000/memo_places/path/'),
           body: formData,
         );
 
@@ -134,7 +134,7 @@ class _TrailFormState extends State<TrailForm> {
           String id = responseData['id'].toString();
           for (final image in _selectedImages) {
             var request = http.MultipartRequest('POST',
-                Uri.parse('http://localhost:8000/memo_places/path_image/'));
+                Uri.parse('http://10.0.2.2:8000/memo_places/path_image/'));
 
             request.fields['path'] = id;
 

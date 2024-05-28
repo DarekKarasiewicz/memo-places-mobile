@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Type>> fetchTypes(BuildContext context) async {
   var response =
-      await http.get(Uri.parse('http://localhost:8000/admin_dashboard/types/'));
+      await http.get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Type.fromJson(data)).toList();
@@ -26,7 +26,7 @@ Future<List<Type>> fetchTypes(BuildContext context) async {
 
 Future<List<Period>> fetchPeriods(BuildContext context) async {
   var response = await http
-      .get(Uri.parse('http://localhost:8000/admin_dashboard/periods/'));
+      .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Period.fromJson(data)).toList();
@@ -37,7 +37,7 @@ Future<List<Period>> fetchPeriods(BuildContext context) async {
 
 Future<List<Sortof>> fetchSortof(BuildContext context) async {
   var response = await http
-      .get(Uri.parse('http://localhost:8000/admin_dashboard/sortofs/'));
+      .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Sortof.fromJson(data)).toList();
@@ -48,8 +48,8 @@ Future<List<Sortof>> fetchSortof(BuildContext context) async {
 
 Future<List<String>> fetchPlaceImages(
     BuildContext context, String placeId) async {
-  final response = await http.get(Uri.parse(
-      'http://localhost:8000/memo_places/place_image/place=$placeId'));
+  final response = await http.get(
+      Uri.parse('http://10.0.2.2:8000/memo_places/place_image/place=$placeId'));
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = jsonDecode(response.body);
     List<String> imageUrls = [];
@@ -65,7 +65,7 @@ Future<List<String>> fetchPlaceImages(
 Future<List<String>> fetchTrailImages(
     BuildContext context, String trailId) async {
   final response = await http.get(
-      Uri.parse('http://localhost:8000/memo_places/path_image/path=$trailId'));
+      Uri.parse('http://10.0.2.2:8000/memo_places/path_image/path=$trailId'));
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = jsonDecode(response.body);
     List<String> imageUrls = [];
@@ -80,7 +80,7 @@ Future<List<String>> fetchTrailImages(
 
 Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/memo_places/path/user=$userId'));
+      .get(Uri.parse('http://10.0.2.2:8000/memo_places/path/user=$userId'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     var fechedTrails = <Trail>[];
@@ -97,7 +97,7 @@ Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
 
 Future<List<Place>> fetchUserPlaces(BuildContext context, String userId) async {
   final response = await http
-      .get(Uri.parse('http://localhost:8000/memo_places/places/user=$userId'));
+      .get(Uri.parse('http://10.0.2.2:8000/memo_places/places/user=$userId'));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     var fechedPlaces = <Place>[];
