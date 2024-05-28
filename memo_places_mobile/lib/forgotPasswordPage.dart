@@ -25,7 +25,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> _resetPassword() async {
-    String url = 'http://localhost:8000/admin_dashboard/reset_password/';
+    String url = 'http://10.0.2.2:8000/admin_dashboard/reset_password/';
     String email = _emailController.text;
     showDialog(
         context: context,

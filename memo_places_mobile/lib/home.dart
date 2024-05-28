@@ -44,10 +44,12 @@ class _GoogleMapsState extends State {
   List<Trail> _trails = [];
   late CurrentObject _selectedObject;
   late StreamSubscription<Position> _positionStreamSubscription;
+  late ThemeProvider _themeProvider;
 
   @override
   void initState() {
     super.initState();
+    _themeProvider = Provider.of<ThemeProvider>(context, listen: false);
     _loadMapStyle();
     loadUserData().then((value) => _user = value);
     _getCurrentLocation().then((location) => {
@@ -61,14 +63,14 @@ class _GoogleMapsState extends State {
             _isLoading = false;
           })
         });
-    Provider.of<ThemeProvider>(context, listen: false)
-        .addListener(_loadMapStyle);
+    _themeProvider.addListener(_loadMapStyle);
   }
 
   @override
   void dispose() {
     _positionStreamSubscription.cancel();
     _mapController.dispose();
+    _themeProvider.removeListener(_loadMapStyle);
     super.dispose();
   }
 
@@ -156,11 +158,13 @@ class _GoogleMapsState extends State {
 
   Future<void> _fetchPlaces() async {
     try {
-      final response = await http
-          .get(Uri.parse('http://localhost:8000/memo_places/places/'));
+      final response =
+          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
+        final Uint8List markerIcon = await _getBytesFromAsset(
+            'lib/assets/markers/unknown_marker.PNG', 150);
         var fechedPlaces = <Place>[];
         for (var data in jsonData) {
           var place = Place.fromJson(data);
@@ -174,8 +178,7 @@ class _GoogleMapsState extends State {
             return Marker(
               markerId: MarkerId(place.id.toString()),
               position: LatLng(place.lat, place.lng),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue),
+              icon: BitmapDescriptor.fromBytes(markerIcon),
               consumeTapEvents: true,
               onTap: () => _setObject(place, null),
             );
@@ -192,7 +195,7 @@ class _GoogleMapsState extends State {
   Future<void> _fetchTrails() async {
     try {
       final response =
-          await http.get(Uri.parse('http://localhost:8000/memo_places/path/'));
+          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/path/'));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);

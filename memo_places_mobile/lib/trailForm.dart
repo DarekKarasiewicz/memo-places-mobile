@@ -125,7 +125,7 @@ class _TrailFormState extends State<TrailForm> {
 
       try {
         var response = await http.post(
-          Uri.parse('http://localhost:8000/memo_places/path/'),
+          Uri.parse('http://10.0.2.2:8000/memo_places/path/'),
           body: formData,
         );
 
@@ -134,7 +134,7 @@ class _TrailFormState extends State<TrailForm> {
           String id = responseData['id'].toString();
           for (final image in _selectedImages) {
             var request = http.MultipartRequest('POST',
-                Uri.parse('http://localhost:8000/memo_places/path_image/'));
+                Uri.parse('http://10.0.2.2:8000/memo_places/path_image/'));
 
             request.fields['path'] = id;
 
@@ -245,6 +245,7 @@ class _TrailFormState extends State<TrailForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Type>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_type.tr(),
                   filled: true,
@@ -292,6 +293,7 @@ class _TrailFormState extends State<TrailForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Period>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_period.tr(),
                   filled: true,

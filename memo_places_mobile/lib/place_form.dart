@@ -99,7 +99,7 @@ class _PlaceFormState extends State<PlaceForm> {
 
       try {
         var response = await http.post(
-          Uri.parse('http://localhost:8000/memo_places/places/'),
+          Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
           body: formData,
         );
 
@@ -108,7 +108,7 @@ class _PlaceFormState extends State<PlaceForm> {
           String id = responseData['id'].toString();
           for (final image in _selectedImages) {
             var request = http.MultipartRequest('POST',
-                Uri.parse('http://localhost:8000/memo_places/place_image/'));
+                Uri.parse('http://10.0.2.2:8000/memo_places/place_image/'));
 
             request.fields['place'] = id;
 
@@ -220,6 +220,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Type>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_type.tr(),
                   filled: true,
@@ -267,6 +268,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Sortof>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_sortof.tr(),
                   filled: true,
@@ -314,6 +316,7 @@ class _PlaceFormState extends State<PlaceForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Period>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_period.tr(),
                   filled: true,

@@ -126,7 +126,7 @@ class _MyPlacesState extends State<MyPlaces> {
   Future<void> _deletePlace(int index) async {
     try {
       final response = await http.delete(Uri.parse(
-          'http://localhost:8000/memo_places/places/${_places[index].id}/'));
+          'http://10.0.2.2:8000/memo_places/places/${_places[index].id}/'));
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.place_deleted.tr());
         setState(() {

@@ -96,13 +96,14 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
       try {
         var response = await http.put(
           Uri.parse(
-              'http://localhost:8000/memo_places/places/${widget.place.id}/'),
+              'http://10.0.2.2:8000/memo_places/places/${widget.place.id}/'),
           body: formData,
         );
 
         if (response.statusCode == 200) {
           showSuccesToast(LocaleKeys.succes_place_edited.tr());
-          Navigator.push(
+          Navigator.pop(context);
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const MyPlaces()),
           );
@@ -192,6 +193,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Type>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_type.tr(),
                   filled: true,
@@ -239,6 +241,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Sortof>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_sortof.tr(),
                   filled: true,
@@ -280,6 +283,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Period>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_period.tr(),
                   filled: true,

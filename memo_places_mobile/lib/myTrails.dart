@@ -126,7 +126,7 @@ class _MyTrailsState extends State<MyTrails> {
   Future<void> _deleteTrail(int index) async {
     try {
       final response = await http.delete(Uri.parse(
-          'http://localhost:8000/memo_places/path/${_trails[index].id}/'));
+          'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}/'));
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.trail_deleted.tr());
         setState(() {

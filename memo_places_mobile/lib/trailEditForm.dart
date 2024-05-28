@@ -86,13 +86,14 @@ class _TrailEditFormState extends State<TrailEditForm> {
       try {
         var response = await http.put(
           Uri.parse(
-              'http://localhost:8000/memo_places/path/${widget.trail.id}/'),
+              'http://10.0.2.2:8000/memo_places/path/${widget.trail.id}/'),
           body: formData,
         );
 
         if (response.statusCode == 200) {
           showSuccesToast(LocaleKeys.succes_added_trail.tr());
-          Navigator.push(
+          Navigator.pop(context);
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const MyTrails()),
           );
@@ -171,6 +172,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Type>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_type.tr(),
                   filled: true,
@@ -218,6 +220,7 @@ class _TrailEditFormState extends State<TrailEditForm> {
                 height: 20,
               ),
               DropdownButtonFormField<Period>(
+                isExpanded: true,
                 decoration: InputDecoration(
                   labelText: LocaleKeys.select_period.tr(),
                   filled: true,

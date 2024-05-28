@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/ObjectDetailsWidgets/sliderWithDots.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
+import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,17 +21,35 @@ class _PlaceDetailsState extends State<PlaceDetails> {
   void initState() {
     super.initState();
     _updatedImages = widget.place.images!.map((image) {
-      return 'http://localhost:8000/$image';
+      return 'http://10.0.2.2:8000/$image';
     }).toList();
   }
 
-  _launchMaps(BuildContext context) async {
+  Future<void> _launchMaps(BuildContext context) async {
     final url = Uri.parse(
         'https://www.google.com/maps/search/?api=1&query=${widget.place.lat},${widget.place.lng}');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     } else {
-      throw LocaleKeys.google_maps_error.tr();
+      showErrorToast(LocaleKeys.google_maps_error.tr());
+    }
+  }
+
+  Future<void> _launchWikipedia(BuildContext context) async {
+    final url = Uri.parse(widget.place.wikiLink);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showErrorToast(LocaleKeys.link_error.tr());
+    }
+  }
+
+  Future<void> _launchTopicPage(BuildContext context) async {
+    final url = Uri.parse(widget.place.topicLink);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      showErrorToast(LocaleKeys.link_error.tr());
     }
   }
 
@@ -65,11 +84,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.title.tr()),
+                          child: Text(
+                            LocaleKeys.title.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         Text(
                           widget.place.placeName,
-                          style: const TextStyle(overflow: TextOverflow.clip),
+                          style: const TextStyle(
+                              fontSize: 18, overflow: TextOverflow.clip),
                         ),
                       ],
                     ),
@@ -99,19 +123,40 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.info.tr()),
+                          child: Text(
+                            LocaleKeys.info.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
-                      Text(LocaleKeys.type_info
-                          .tr(namedArgs: {'type': widget.place.typeValue})),
-                      Text(LocaleKeys.period_info
-                          .tr(namedArgs: {'period': widget.place.periodValue})),
-                      Text(LocaleKeys.sortof_info
-                          .tr(namedArgs: {'sortof': widget.place.sortofValue})),
-                      Text(LocaleKeys.username_info
-                          .tr(namedArgs: {'username': widget.place.username})),
-                      Text(LocaleKeys.date_info
-                          .tr(namedArgs: {'date': widget.place.creationDate})),
+                      Text(
+                        LocaleKeys.type_info.tr(
+                            namedArgs: {'type': widget.place.typeValue.tr()}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.period_info.tr(namedArgs: {
+                          'period': widget.place.periodValue.tr()
+                        }),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.sortof_info.tr(namedArgs: {
+                          'sortof': widget.place.sortofValue.tr()
+                        }),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.username_info
+                            .tr(namedArgs: {'username': widget.place.username}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        LocaleKeys.date_info
+                            .tr(namedArgs: {'date': widget.place.creationDate}),
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ],
                   ),
                 ),
@@ -140,9 +185,16 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.description.tr()),
+                          child: Text(
+                            LocaleKeys.description.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Text(widget.place.description),
+                        Text(
+                          widget.place.description,
+                          style: const TextStyle(fontSize: 18),
+                        ),
                       ],
                     ),
                   ),
@@ -170,10 +222,44 @@ class _PlaceDetailsState extends State<PlaceDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(bottom: 3),
-                          child: Text(LocaleKeys.links.tr()),
+                          child: Text(
+                            LocaleKeys.links.tr(),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        Text(widget.place.wikiLink),
-                        Text(widget.place.topicLink),
+                        widget.place.wikiLink.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _launchWikipedia(context);
+                                },
+                                child: Text(
+                                  LocaleKeys.wiki_link.tr(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
+                        widget.place.topicLink.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () {
+                                  _launchTopicPage(context);
+                                },
+                                child: Text(
+                                  LocaleKeys.topic_link.tr(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.blue,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                   ),
@@ -181,7 +267,9 @@ class _PlaceDetailsState extends State<PlaceDetails> {
               ),
               Center(
                 child: CustomButton(
-                  onPressed: () => _launchMaps,
+                  onPressed: () {
+                    _launchMaps(context);
+                  },
                   text: LocaleKeys.show_google_maps.tr(),
                 ),
               ),

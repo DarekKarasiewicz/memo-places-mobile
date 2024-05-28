@@ -26,11 +26,18 @@ class MyTrailBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Icon(
+                Icons.check_circle,
+                color: !trail.verified ? Colors.grey.shade500 : Colors.green,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
               Expanded(
                 child: Text(
                   trail.trailName,
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.onBackground,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis),

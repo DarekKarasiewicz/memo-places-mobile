@@ -52,7 +52,7 @@ Future<void> _checkGoogleAccountInBackend(
   try {
     var response = await http.get(
       Uri.parse(
-          'http://localhost:8000/memo_places/users/email%3D${googleAccount.email.replaceAll(RegExp(r'\.'), '&')}/'),
+          'http://10.0.2.2:8000/memo_places/users/email%3D${googleAccount.email.replaceAll(RegExp(r'\.'), '&')}/'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -66,7 +66,7 @@ Future<void> _checkGoogleAccountInBackend(
       );
     } else if (response.statusCode == 404) {
       var secondResponse = await http.post(
-        Uri.parse('http://localhost:8000/memo_places/outside_users/'),
+        Uri.parse('http://10.0.2.2:8000/memo_places/outside_users/'),
         body: jsonEncode({
           'email': googleAccount.email,
           'username': googleAccount.displayName

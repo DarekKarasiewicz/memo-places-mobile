@@ -17,8 +17,8 @@ class ProfileInfoBox extends StatelessWidget {
             radius: 58,
             backgroundColor: Colors.transparent,
             child: ClipOval(
-              child: Image.network(
-                'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg',
+              child: Image.asset(
+                'lib/assets/images/user.png',
               ),
             ),
           ),

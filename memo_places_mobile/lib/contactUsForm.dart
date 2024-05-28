@@ -38,6 +38,17 @@ class _ContactUsFormState extends State<ContactUsForm> {
   }
 
   void _sendMessage() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.scrim),
+            ),
+          );
+        });
+
     Map<String, String> formData = {
       'email': _user!.email,
       'title': _titleController.text,
@@ -46,13 +57,16 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://localhost:8000/memo_places/contact_us/'),
+        Uri.parse('http://10.0.2.2:8000/memo_places/contact_us/'),
         body: formData,
       );
 
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.message_sent_succes.tr());
-        if (mounted) Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
       } else {
         throw CustomException(LocaleKeys.alert_error.tr());
       }
