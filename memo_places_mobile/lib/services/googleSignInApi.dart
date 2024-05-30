@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/toasts.dart';
@@ -51,8 +52,7 @@ Future<void> _checkGoogleAccountInBackend(
     BuildContext context, GoogleSignInAccount googleAccount) async {
   try {
     var response = await http.get(
-      Uri.parse(
-          'http://10.0.2.2:8000/memo_places/users/email%3D${googleAccount.email.replaceAll(RegExp(r'\.'), '&')}/'),
+      Uri.parse(ApiConstants.userByEmailEndpoint(googleAccount.email)),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -66,7 +66,7 @@ Future<void> _checkGoogleAccountInBackend(
       );
     } else if (response.statusCode == 404) {
       var secondResponse = await http.post(
-        Uri.parse('http://10.0.2.2:8000/memo_places/outside_users/'),
+        Uri.parse(ApiConstants.outsideUsersEndpoint),
         body: jsonEncode({
           'email': googleAccount.email,
           'username': googleAccount.displayName

@@ -15,6 +15,7 @@ abstract class  LocaleKeys {
   static const change_avatar = 'change_avatar';
   static const change_username = 'change_username';
   static const change_pass = 'change_pass';
+  static const send_link = 'send_link';
   static const add_place = 'add_place';
   static const edit_place = 'edit_place';
   static const confirm = 'confirm';

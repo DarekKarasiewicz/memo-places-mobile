@@ -34,6 +34,7 @@ import 'package:memo_places_mobile/offlinePage.dart';
 import 'package:memo_places_mobile/offlinePlaceAddingPage.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/welcomePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InternetChecker extends StatefulWidget {
   const InternetChecker({super.key});
@@ -45,13 +46,23 @@ class InternetChecker extends StatefulWidget {
 class _InternetCheckerState extends State<InternetChecker> {
   late List<ConnectivityResult> connectivityResult = [];
   late User? user;
+  late bool? welcomePageDisplayed;
+
   @override
   void initState() {
     super.initState();
+    loadBoolLocalData('welcomePageDisplayed').then((value) {
+      welcomePageDisplayed = value;
+    });
     loadUserData().then((value) {
       user = value;
       _checkConnectivity();
     });
+  }
+
+  void _incrementCounter(String key, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(key, value);
   }
 
   Future<void> _checkConnectivity() async {
@@ -77,7 +88,8 @@ class _InternetCheckerState extends State<InternetChecker> {
               !connectivityResult.contains(ConnectivityResult.mobile) &&
               user == null) {
             content = const OfflinePage();
-          } else if (user == null) {
+          } else if (welcomePageDisplayed == null) {
+            _incrementCounter('welcomePageDisplayed', true);
             content = const WelcomePage();
           } else {
             content = const Main();

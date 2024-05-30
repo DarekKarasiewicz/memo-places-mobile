@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
+import 'package:memo_places_mobile/Objects/shortPlace.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
-import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/placeEditForm.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/toasts.dart';
@@ -21,7 +21,7 @@ class MyPlaces extends StatefulWidget {
 }
 
 class _MyPlacesState extends State<MyPlaces> {
-  late List<Place> _places = [];
+  late List<ShortPlace> _places = [];
   late User? _user;
   late bool _isLoading = true;
 
@@ -31,12 +31,16 @@ class _MyPlacesState extends State<MyPlaces> {
     loadUserData().then(
       (user) => setState(() {
         _user = user;
-        fetchUserPlaces(context, _user!.id.toString()).then(
-          (places) => setState(() {
-            _places = places;
-            _isLoading = false;
-          }),
-        );
+        try {
+          fetchUserPlaces(context, _user!.id.toString()).then(
+            (places) => setState(() {
+              _places = places;
+              _isLoading = false;
+            }),
+          );
+        } on CustomException catch (error) {
+          showErrorToast(error.toString());
+        }
       }),
     );
   }
@@ -108,7 +112,8 @@ class _MyPlacesState extends State<MyPlaces> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PlaceEditForm(_places[index]),
+                    builder: (context) =>
+                        PlaceEditForm(_places[index].id.toString()),
                   ),
                 );
               },
@@ -193,7 +198,8 @@ class _MyPlacesState extends State<MyPlaces> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      PlaceDetails(place)),
+                                                      PlaceDetails(
+                                                          place.id.toString())),
                                             );
                                           },
                                           backgroundColor: Colors.blue,
@@ -203,30 +209,32 @@ class _MyPlacesState extends State<MyPlaces> {
                                         )
                                       ],
                                     ),
-                                    endActionPane: ActionPane(
-                                      motion: const ScrollMotion(),
-                                      children: [
-                                        SlidableAction(
-                                          onPressed: (context) {
-                                            _showEditDialog(index);
-                                          },
-                                          backgroundColor: Colors.green,
-                                          foregroundColor: Colors.white,
-                                          icon:
-                                              Icons.edit_location_alt_outlined,
-                                          label: LocaleKeys.edit.tr(),
-                                        ),
-                                        SlidableAction(
-                                          onPressed: (context) {
-                                            _showDeleteDialog(index);
-                                          },
-                                          backgroundColor: Colors.red,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete_outlined,
-                                          label: LocaleKeys.delete.tr(),
-                                        )
-                                      ],
-                                    ),
+                                    endActionPane: place.verified
+                                        ? null
+                                        : ActionPane(
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _showEditDialog(index);
+                                                },
+                                                backgroundColor: Colors.green,
+                                                foregroundColor: Colors.white,
+                                                icon: Icons
+                                                    .edit_location_alt_outlined,
+                                                label: LocaleKeys.edit.tr(),
+                                              ),
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _showDeleteDialog(index);
+                                                },
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white,
+                                                icon: Icons.delete_outlined,
+                                                label: LocaleKeys.delete.tr(),
+                                              )
+                                            ],
+                                          ),
                                     child: MyPlaceBox(place: place));
                               },
                             ),

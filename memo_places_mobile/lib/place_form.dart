@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
@@ -99,7 +100,7 @@ class _PlaceFormState extends State<PlaceForm> {
 
       try {
         var response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
+          Uri.parse(ApiConstants.placesEndpoint),
           body: formData,
         );
 
@@ -107,8 +108,8 @@ class _PlaceFormState extends State<PlaceForm> {
           Map<String, dynamic> responseData = jsonDecode(response.body);
           String id = responseData['id'].toString();
           for (final image in _selectedImages) {
-            var request = http.MultipartRequest('POST',
-                Uri.parse('http://10.0.2.2:8000/memo_places/place_image/'));
+            var request = http.MultipartRequest(
+                'POST', Uri.parse(ApiConstants.placeImageEndpoint));
 
             request.fields['place'] = id;
 

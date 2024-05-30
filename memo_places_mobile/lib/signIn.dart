@@ -8,6 +8,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/forgotPasswordPage.dart';
 import 'package:memo_places_mobile/internetChecker.dart';
@@ -55,8 +56,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> _login() async {
-    String url = 'http://10.0.2.2:8000/memo_places/token/';
-    String email = _emailController.text;
+    String email = _emailController.text.toLowerCase();
     String password = _passwordController.text;
 
     showDialog(
@@ -72,7 +72,7 @@ class _SignInState extends State<SignIn> {
 
     try {
       var response = await http.post(
-        Uri.parse(url),
+        Uri.parse(ApiConstants.tokenEndpoint),
         body: jsonEncode({'email': email, 'password': password}),
         headers: {'Content-Type': 'application/json'},
       );

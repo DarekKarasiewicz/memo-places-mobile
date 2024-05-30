@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/toasts.dart';
-import 'dart:convert';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -25,8 +25,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> _resetPassword() async {
-    String url = 'http://10.0.2.2:8000/admin_dashboard/reset_password/';
     String email = _emailController.text;
+
     showDialog(
         context: context,
         builder: (context) {
@@ -36,11 +36,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         });
 
     try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: jsonEncode({
-          'email': email,
-        }),
+      var response = await http.put(
+        Uri.parse(ApiConstants.resetPasswordByEmailEndpoint(email)),
         headers: {'Content-Type': 'application/json'},
       );
 

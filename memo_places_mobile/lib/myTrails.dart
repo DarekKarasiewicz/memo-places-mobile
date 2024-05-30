@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myTrailBox.dart';
-import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/Objects/shortTrail.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
@@ -21,7 +22,7 @@ class MyTrails extends StatefulWidget {
 }
 
 class _MyTrailsState extends State<MyTrails> {
-  late List<Trail> _trails = [];
+  late List<ShortTrail> _trails = [];
   late User? _user;
   late bool _isLoading = true;
 
@@ -31,12 +32,16 @@ class _MyTrailsState extends State<MyTrails> {
     loadUserData().then(
       (user) => setState(() {
         _user = user;
-        fetchUserTrails(context, _user!.id.toString()).then(
-          (trails) => setState(() {
-            _trails = trails;
-            _isLoading = false;
-          }),
-        );
+        try {
+          fetchUserTrails(context, _user!.id.toString()).then(
+            (trails) => setState(() {
+              _trails = trails;
+              _isLoading = false;
+            }),
+          );
+        } on CustomException catch (error) {
+          showErrorToast(error.toString());
+        }
       }),
     );
   }
@@ -108,7 +113,8 @@ class _MyTrailsState extends State<MyTrails> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TrailEditForm(_trails[index]),
+                    builder: (context) =>
+                        TrailEditForm(_trails[index].id.toString()),
                   ),
                 );
               },
@@ -126,7 +132,7 @@ class _MyTrailsState extends State<MyTrails> {
   Future<void> _deleteTrail(int index) async {
     try {
       final response = await http.delete(Uri.parse(
-          'http://10.0.2.2:8000/memo_places/path/${_trails[index].id}/'));
+          ApiConstants.trailByIdEndpoint(_trails[index].id.toString())));
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.trail_deleted.tr());
         setState(() {
@@ -193,7 +199,8 @@ class _MyTrailsState extends State<MyTrails> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      TrailDetails(trail)),
+                                                      TrailDetails(
+                                                          trail.id.toString())),
                                             );
                                           },
                                           backgroundColor: Colors.blue,
@@ -203,30 +210,32 @@ class _MyTrailsState extends State<MyTrails> {
                                         )
                                       ],
                                     ),
-                                    endActionPane: ActionPane(
-                                      motion: const ScrollMotion(),
-                                      children: [
-                                        SlidableAction(
-                                          onPressed: (context) {
-                                            _showEditDialog(index);
-                                          },
-                                          backgroundColor: Colors.green,
-                                          foregroundColor: Colors.white,
-                                          icon:
-                                              Icons.edit_location_alt_outlined,
-                                          label: LocaleKeys.edit.tr(),
-                                        ),
-                                        SlidableAction(
-                                          onPressed: (context) {
-                                            _showDeleteDialog(index);
-                                          },
-                                          backgroundColor: Colors.red,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.delete_outlined,
-                                          label: LocaleKeys.delete.tr(),
-                                        )
-                                      ],
-                                    ),
+                                    endActionPane: trail.verified
+                                        ? null
+                                        : ActionPane(
+                                            motion: const ScrollMotion(),
+                                            children: [
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _showEditDialog(index);
+                                                },
+                                                backgroundColor: Colors.green,
+                                                foregroundColor: Colors.white,
+                                                icon: Icons
+                                                    .edit_location_alt_outlined,
+                                                label: LocaleKeys.edit.tr(),
+                                              ),
+                                              SlidableAction(
+                                                onPressed: (context) {
+                                                  _showDeleteDialog(index);
+                                                },
+                                                backgroundColor: Colors.red,
+                                                foregroundColor: Colors.white,
+                                                icon: Icons.delete_outlined,
+                                                label: LocaleKeys.delete.tr(),
+                                              )
+                                            ],
+                                          ),
                                     child: MyTrailBox(trail: trail));
                               },
                             ),

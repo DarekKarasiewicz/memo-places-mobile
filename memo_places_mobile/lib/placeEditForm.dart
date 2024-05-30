@@ -6,6 +6,7 @@ import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/formWidgets/customFormInput.dart';
@@ -16,9 +17,9 @@ import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class PlaceEditForm extends StatefulWidget {
-  final Place place;
+  final String placeId;
 
-  const PlaceEditForm(this.place, {super.key});
+  const PlaceEditForm(this.placeId, {super.key});
 
   @override
   State<PlaceEditForm> createState() => _PlaceEditFormState();
@@ -38,6 +39,8 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
   late String _selectedSortof;
   late String _selectedPeriod;
   late String _selectedType;
+  late Place _place;
+  late bool _isLoading = true;
 
   @override
   void initState() {
@@ -45,30 +48,30 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
     loadUserData().then((value) => _user = value);
     try {
       fetchTypes(context).then((value) {
-        setState(() {
-          _types = value;
-        });
+        _types = value;
       });
       fetchPeriods(context).then((value) {
-        setState(() {
-          _periods = value;
-        });
+        _periods = value;
       });
       fetchSortof(context).then((value) {
+        _sortofs = value;
+      });
+      fetchPlace(context, widget.placeId).then((value) {
+        _place = value;
+        _selectedSortof = _place.sortof.toString();
+        _selectedPeriod = _place.period.toString();
+        _selectedType = _place.type.toString();
+        _nameController.text = _place.placeName;
+        _descriptionController.text = _place.description;
+        _wikiLinkController.text = _place.wikiLink;
+        _topicLinkController.text = _place.topicLink;
         setState(() {
-          _sortofs = value;
+          _isLoading = false;
         });
       });
     } on CustomException catch (error) {
       showErrorToast(error.toString());
     }
-    _selectedSortof = widget.place.sortof.toString();
-    _selectedPeriod = widget.place.period.toString();
-    _selectedType = widget.place.type.toString();
-    _nameController.text = widget.place.placeName;
-    _descriptionController.text = widget.place.description;
-    _wikiLinkController.text = widget.place.wikiLink;
-    _topicLinkController.text = widget.place.topicLink;
   }
 
   @override
@@ -95,8 +98,7 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
 
       try {
         var response = await http.put(
-          Uri.parse(
-              'http://10.0.2.2:8000/memo_places/places/${widget.place.id}/'),
+          Uri.parse(ApiConstants.placeByIdEndpoint(_place.id.toString())),
           body: formData,
         );
 
@@ -172,187 +174,196 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Center(
-                child: CustomTitle(
-                  title: LocaleKeys.edit_place.tr(),
+        child: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.scrim),
+                ),
+              )
+            : Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    Center(
+                      child: CustomTitle(
+                        title: LocaleKeys.edit_place.tr(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomFormInput(
+                      controller: _nameController,
+                      label: LocaleKeys.name.tr(),
+                      validator: _nameValidator,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    DropdownButtonFormField<Type>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.select_type.tr(),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.onPrimary,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.scrim,
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            width: 1,
+                          ),
+                        ),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                      value: _getTypeById(_selectedType),
+                      validator: (value) {
+                        if (value == null) {
+                          return LocaleKeys.pls_select_type.tr();
+                        }
+                        return null;
+                      },
+                      onChanged: (Type? newValue) {
+                        setState(() {
+                          _selectedType = newValue!.id.toString();
+                        });
+                      },
+                      items: _types.map<DropdownMenuItem<Type>>((Type type) {
+                        return DropdownMenuItem<Type>(
+                          value: type,
+                          child: Text(
+                            type.value.tr(),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    DropdownButtonFormField<Sortof>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.select_sortof.tr(),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.onPrimary,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            width: 1,
+                          ),
+                        ),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                      value: _getSortofById(_selectedSortof),
+                      validator: (value) {
+                        if (value == null) {
+                          return LocaleKeys.pls_select_sortof.tr();
+                        }
+                        return null;
+                      },
+                      onChanged: (Sortof? newValue) {
+                        setState(() {
+                          _selectedSortof = newValue!.id.toString();
+                        });
+                      },
+                      items: _sortofs
+                          .map<DropdownMenuItem<Sortof>>((Sortof sortof) {
+                        return DropdownMenuItem<Sortof>(
+                          value: sortof,
+                          child: Text(
+                            sortof.value.tr(),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    DropdownButtonFormField<Period>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.select_period.tr(),
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.onPrimary,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.scrim,
+                            width: 1.5,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            width: 1,
+                          ),
+                        ),
+                        labelStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20),
+                      ),
+                      value: _getPeriodById(_selectedPeriod),
+                      validator: (value) {
+                        if (value == null) {
+                          return LocaleKeys.pls_select_period.tr();
+                        }
+                        return null;
+                      },
+                      onChanged: (Period? newValue) {
+                        setState(() {
+                          _selectedPeriod = newValue!.id.toString();
+                        });
+                      },
+                      items: _periods
+                          .map<DropdownMenuItem<Period>>((Period period) {
+                        return DropdownMenuItem<Period>(
+                          value: period,
+                          child: Text(
+                            period.value.tr(),
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+                    CustomFormInput(
+                      maxLength: 1000,
+                      maxLines: 5,
+                      controller: _descriptionController,
+                      label: LocaleKeys.description.tr(),
+                      validator: _descriptionValidator,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomFormInput(
+                      controller: _wikiLinkController,
+                      label: LocaleKeys.wiki_link.tr(),
+                    ),
+                    const SizedBox(height: 20),
+                    CustomFormInput(
+                      controller: _topicLinkController,
+                      label: LocaleKeys.topic_link.tr(),
+                    ),
+                    const SizedBox(height: 35),
+                    CustomButton(
+                      onPressed: () => _submitForm(context),
+                      text: LocaleKeys.save.tr(),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomFormInput(
-                controller: _nameController,
-                label: LocaleKeys.name.tr(),
-                validator: _nameValidator,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButtonFormField<Type>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.select_type.tr(),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.onPrimary,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.scrim,
-                      width: 1.5,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      width: 1,
-                    ),
-                  ),
-                  labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                value: _getTypeById(_selectedType),
-                validator: (value) {
-                  if (value == null) {
-                    return LocaleKeys.pls_select_type.tr();
-                  }
-                  return null;
-                },
-                onChanged: (Type? newValue) {
-                  setState(() {
-                    _selectedType = newValue!.id.toString();
-                  });
-                },
-                items: _types.map<DropdownMenuItem<Type>>((Type type) {
-                  return DropdownMenuItem<Type>(
-                    value: type,
-                    child: Text(
-                      type.value.tr(),
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButtonFormField<Sortof>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.select_sortof.tr(),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.onPrimary,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      width: 1,
-                    ),
-                  ),
-                  labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                value: _getSortofById(_selectedSortof),
-                validator: (value) {
-                  if (value == null) {
-                    return LocaleKeys.pls_select_sortof.tr();
-                  }
-                  return null;
-                },
-                onChanged: (Sortof? newValue) {
-                  setState(() {
-                    _selectedSortof = newValue!.id.toString();
-                  });
-                },
-                items: _sortofs.map<DropdownMenuItem<Sortof>>((Sortof sortof) {
-                  return DropdownMenuItem<Sortof>(
-                    value: sortof,
-                    child: Text(
-                      sortof.value.tr(),
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButtonFormField<Period>(
-                isExpanded: true,
-                decoration: InputDecoration(
-                  labelText: LocaleKeys.select_period.tr(),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.onPrimary,
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.scrim,
-                      width: 1.5,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      width: 1,
-                    ),
-                  ),
-                  labelStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                value: _getPeriodById(_selectedPeriod),
-                validator: (value) {
-                  if (value == null) {
-                    return LocaleKeys.pls_select_period.tr();
-                  }
-                  return null;
-                },
-                onChanged: (Period? newValue) {
-                  setState(() {
-                    _selectedPeriod = newValue!.id.toString();
-                  });
-                },
-                items: _periods.map<DropdownMenuItem<Period>>((Period period) {
-                  return DropdownMenuItem<Period>(
-                    value: period,
-                    child: Text(
-                      period.value.tr(),
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              CustomFormInput(
-                maxLength: 1000,
-                maxLines: 5,
-                controller: _descriptionController,
-                label: LocaleKeys.description.tr(),
-                validator: _descriptionValidator,
-              ),
-              const SizedBox(height: 20),
-              CustomFormInput(
-                controller: _wikiLinkController,
-                label: LocaleKeys.wiki_link.tr(),
-              ),
-              const SizedBox(height: 20),
-              CustomFormInput(
-                controller: _topicLinkController,
-                label: LocaleKeys.topic_link.tr(),
-              ),
-              const SizedBox(height: 35),
-              CustomButton(
-                onPressed: () => _submitForm(context),
-                text: LocaleKeys.save.tr(),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

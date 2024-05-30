@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/trailDetails.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
@@ -61,7 +62,7 @@ class _PreviewTrailState extends State<PreviewTrail>
             context,
             MaterialPageRoute(
               fullscreenDialog: true,
-              builder: (context) => TrailDetails(widget.trail),
+              builder: (context) => TrailDetails(widget.trail.id.toString()),
             ),
           );
         }
@@ -89,7 +90,8 @@ class _PreviewTrailState extends State<PreviewTrail>
                                   margin:
                                       const EdgeInsets.fromLTRB(10, 5, 10, 5),
                                   child: Image.network(
-                                    'http://10.0.2.2:8000${widget.trail.images![0]}',
+                                    ApiConstants.displayImageEndpoint(
+                                        widget.trail.images![0]),
                                     width: 150,
                                     height: 150,
                                     fit: BoxFit.cover,

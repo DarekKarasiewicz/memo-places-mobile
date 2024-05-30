@@ -5,17 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/Objects/offlinePlace.dart';
 import 'package:memo_places_mobile/Objects/period.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/Objects/shortPlace.dart';
+import 'package:memo_places_mobile/Objects/shortTrail.dart';
 import 'package:memo_places_mobile/Objects/sortof.dart';
 import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/type.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Type>> fetchTypes(BuildContext context) async {
-  var response =
-      await http.get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/types/'));
+  var response = await http.get(Uri.parse(ApiConstants.typesEndpoint));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Type.fromJson(data)).toList();
@@ -25,8 +27,7 @@ Future<List<Type>> fetchTypes(BuildContext context) async {
 }
 
 Future<List<Period>> fetchPeriods(BuildContext context) async {
-  var response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/periods/'));
+  var response = await http.get(Uri.parse(ApiConstants.periodEndpoint));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Period.fromJson(data)).toList();
@@ -36,8 +37,7 @@ Future<List<Period>> fetchPeriods(BuildContext context) async {
 }
 
 Future<List<Sortof>> fetchSortof(BuildContext context) async {
-  var response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/admin_dashboard/sortofs/'));
+  var response = await http.get(Uri.parse(ApiConstants.sortofEndpoint));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
     return jsonData.map((data) => Sortof.fromJson(data)).toList();
@@ -48,8 +48,8 @@ Future<List<Sortof>> fetchSortof(BuildContext context) async {
 
 Future<List<String>> fetchPlaceImages(
     BuildContext context, String placeId) async {
-  final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/memo_places/place_image/place=$placeId'));
+  final response =
+      await http.get(Uri.parse(ApiConstants.placeImagesByIdEndpoint(placeId)));
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = jsonDecode(response.body);
     List<String> imageUrls = [];
@@ -64,8 +64,8 @@ Future<List<String>> fetchPlaceImages(
 
 Future<List<String>> fetchTrailImages(
     BuildContext context, String trailId) async {
-  final response = await http.get(
-      Uri.parse('http://10.0.2.2:8000/memo_places/path_image/path=$trailId'));
+  final response =
+      await http.get(Uri.parse(ApiConstants.trailImageByIdEndpoint(trailId)));
   if (response.statusCode == 200) {
     final List<dynamic> jsonData = jsonDecode(response.body);
     List<String> imageUrls = [];
@@ -78,15 +78,29 @@ Future<List<String>> fetchTrailImages(
   }
 }
 
-Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
-  final response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/memo_places/path/user=$userId'));
+Future<Trail> fetchTrail(BuildContext context, String trailId) async {
+  final response =
+      await http.get(Uri.parse(ApiConstants.trailByPkEndpoint(trailId)));
+  if (response.statusCode == 200) {
+    var jsonData = jsonDecode(response.body);
+    var trail = Trail.fromJson(jsonData);
+    trail.images = await fetchTrailImages(context, trail.id.toString());
+
+    return trail;
+  } else {
+    throw CustomException(LocaleKeys.alert_error.tr());
+  }
+}
+
+Future<List<ShortTrail>> fetchUserTrails(
+    BuildContext context, String userId) async {
+  var fechedTrails = <ShortTrail>[];
+  final response =
+      await http.get(Uri.parse(ApiConstants.shortTrailsByUserEndpoint(userId)));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
-    var fechedTrails = <Trail>[];
     for (var data in jsonData) {
-      var trail = Trail.fromJson(data);
-      trail.images = await fetchTrailImages(context, trail.id.toString());
+      var trail = ShortTrail.fromJson(data);
       fechedTrails.add(trail);
     }
     return fechedTrails;
@@ -95,15 +109,30 @@ Future<List<Trail>> fetchUserTrails(BuildContext context, String userId) async {
   }
 }
 
-Future<List<Place>> fetchUserPlaces(BuildContext context, String userId) async {
-  final response = await http
-      .get(Uri.parse('http://10.0.2.2:8000/memo_places/places/user=$userId'));
+Future<Place> fetchPlace(BuildContext context, String placeId) async {
+  final response =
+      await http.get(Uri.parse(ApiConstants.placeByPkEndpoint(placeId)));
+  if (response.statusCode == 200) {
+    var jsonData = jsonDecode(response.body);
+    var place = Place.fromJson(jsonData);
+    place.images = await fetchPlaceImages(context, place.id.toString());
+
+    return place;
+  } else {
+    throw CustomException(LocaleKeys.alert_error.tr());
+  }
+}
+
+Future<List<ShortPlace>> fetchUserPlaces(
+    BuildContext context, String userId) async {
+  var fechedPlaces = <ShortPlace>[];
+
+  final response =
+      await http.get(Uri.parse(ApiConstants.shortPlacesByUserEndpoint(userId)));
   if (response.statusCode == 200) {
     List<dynamic> jsonData = jsonDecode(response.body);
-    var fechedPlaces = <Place>[];
     for (var data in jsonData) {
-      var place = Place.fromJson(data);
-      place.images = await fetchPlaceImages(context, place.id.toString());
+      var place = ShortPlace.fromJson(data);
       fechedPlaces.add(place);
     }
     return fechedPlaces;
@@ -167,6 +196,17 @@ Future<User?> loadUserData() async {
 
   Map<String, dynamic> userMap = jsonDecode(user);
   return User.fromJson(userMap);
+}
+
+Future<bool?> loadBoolLocalData(String key) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var value = prefs.getBool(key);
+
+  if (value == null) {
+    return null;
+  }
+
+  return value;
 }
 
 void deleteLocalData(String key) async {
