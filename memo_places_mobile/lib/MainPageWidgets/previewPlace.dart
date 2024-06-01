@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -61,7 +62,7 @@ class _PreviewPlaceState extends State<PreviewPlace>
             context,
             MaterialPageRoute(
               fullscreenDialog: true,
-              builder: (context) => PlaceDetails(widget.place),
+              builder: (context) => PlaceDetails(widget.place.id.toString()),
             ),
           );
         }
@@ -89,7 +90,8 @@ class _PreviewPlaceState extends State<PreviewPlace>
                                   margin:
                                       const EdgeInsets.fromLTRB(10, 5, 10, 5),
                                   child: Image.network(
-                                    'http://10.0.2.2:8000${widget.place.images![0]}',
+                                    ApiConstants.displayImageEndpoint(
+                                        widget.place.images![0]),
                                     width: 150,
                                     height: 150,
                                     fit: BoxFit.cover,

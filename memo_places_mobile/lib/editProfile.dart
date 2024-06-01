@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
-import 'dart:io';
-
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
@@ -27,8 +25,6 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   final TextEditingController _usernameController = TextEditingController();
   final bool _isUsernameEmpty = false;
-  XFile? imgXFile;
-  final ImagePicker imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -42,24 +38,32 @@ class _EditProfileState extends State<EditProfile> {
     super.dispose();
   }
 
-  void _getImageFromGallery() async {
-    imgXFile = await imagePicker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      imgXFile;
-    });
-  }
-
   void _incrementCounter(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
   }
 
-  void _saveUserData() async {
+  Future<void> _resetPassword() async {
     try {
       var response = await http.put(
-        Uri.parse(
-            'http://10.0.2.2:8000/memo_places/users/${widget.user.id.toString()}/'),
+        Uri.parse(ApiConstants.resetPasswordByEmailEndpoint(widget.user.email)),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        showSuccesToast(LocaleKeys.link_sent.tr());
+      } else {
+        throw CustomException(LocaleKeys.alert_error.tr());
+      }
+    } on CustomException catch (error) {
+      showErrorToast(error.toString());
+    }
+  }
+
+  Future<void> _saveUserData() async {
+    try {
+      var response = await http.put(
+        Uri.parse(ApiConstants.userByIdEndpoint(widget.user.id.toString())),
         body: {
           'username': _usernameController.text,
         },
@@ -96,21 +100,19 @@ class _EditProfileState extends State<EditProfile> {
             const SizedBox(
               height: 40,
             ),
-            CircleAvatar(
-              radius: 58,
-              backgroundColor: Colors.transparent,
-              backgroundImage: imgXFile == null
-                  ? const NetworkImage(
-                          'https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg')
-                      as ImageProvider
-                  : FileImage(File(imgXFile!.path)),
+            Text(
+              LocaleKeys.change_pass.tr(),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onBackground,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 20,
             ),
             CustomButton(
-              onPressed: _getImageFromGallery,
-              text: LocaleKeys.change_avatar.tr(),
+              onPressed: _resetPassword,
+              text: LocaleKeys.send_link.tr(),
             ),
             const SizedBox(
               height: 20,

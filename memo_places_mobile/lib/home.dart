@@ -15,12 +15,12 @@ import 'package:memo_places_mobile/Objects/trail.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
 import 'package:memo_places_mobile/Theme/theme.dart';
 import 'package:memo_places_mobile/Theme/themeProvider.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -158,8 +158,7 @@ class _GoogleMapsState extends State {
 
   Future<void> _fetchPlaces() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/places/'));
+      final response = await http.get(Uri.parse(ApiConstants.placesEndpoint));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
@@ -194,8 +193,7 @@ class _GoogleMapsState extends State {
 
   Future<void> _fetchTrails() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://10.0.2.2:8000/memo_places/path/'));
+      final response = await http.get(Uri.parse(ApiConstants.trailsEndpoint));
 
       if (response.statusCode == 200) {
         List<dynamic> jsonData = jsonDecode(response.body);
@@ -228,11 +226,6 @@ class _GoogleMapsState extends State {
     } on CustomException catch (error) {
       showErrorToast(error.toString());
     }
-  }
-
-  Future<void> _clearAccessKeyAndRefresh() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove("access");
   }
 
   @override

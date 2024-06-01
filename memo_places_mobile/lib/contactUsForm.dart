@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customButton.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
@@ -57,7 +58,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/memo_places/contact_us/'),
+        Uri.parse(ApiConstants.contactUsEndpoint),
         body: formData,
       );
 

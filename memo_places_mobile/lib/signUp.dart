@@ -6,6 +6,7 @@ import 'package:memo_places_mobile/SignInAndSignUpWidgets/authTile.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/hidePassword.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInAndSignUpTextField.dart';
 import 'package:memo_places_mobile/SignInAndSignUpWidgets/signInSignUpButton.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/infoAfterSignUpPage.dart';
 import 'package:memo_places_mobile/services/googleSignInApi.dart';
@@ -55,8 +56,7 @@ class _SignInState extends State<SignUp> {
   }
 
   Future<void> _signUp() async {
-    String url = 'http://10.0.2.2:8000/memo_places/users/';
-    String email = _emailController.text;
+    String email = _emailController.text.toLowerCase();
     String password = _passwordController.text;
     String username = _usernameController.text;
     showDialog(
@@ -69,7 +69,7 @@ class _SignInState extends State<SignUp> {
 
     try {
       var response = await http.post(
-        Uri.parse(url),
+        Uri.parse(ApiConstants.usersEndpoint),
         body: jsonEncode({
           'email': email,
           'password': password,

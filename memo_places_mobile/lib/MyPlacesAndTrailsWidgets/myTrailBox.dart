@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memo_places_mobile/Objects/trail.dart';
+import 'package:memo_places_mobile/Objects/shortTrail.dart';
 
 class MyTrailBox extends StatelessWidget {
-  final Trail trail;
+  final ShortTrail trail;
 
   const MyTrailBox({
     super.key,

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/toasts.dart';
 import 'package:path/path.dart' as path;
@@ -79,7 +80,7 @@ class _HomeState extends State<Main> {
         };
         try {
           var response = await http.post(
-            Uri.parse('http://10.0.2.2:8000/memo_places/places/'),
+            Uri.parse(ApiConstants.placesEndpoint),
             body: placeData,
           );
 
@@ -92,8 +93,8 @@ class _HomeState extends State<Main> {
             String id = responseData['id'].toString();
             for (final image in images) {
               if (await image.exists()) {
-                var request = http.MultipartRequest('POST',
-                    Uri.parse('http://10.0.2.2:8000/memo_places/place_image/'));
+                var request = http.MultipartRequest(
+                    'POST', Uri.parse(ApiConstants.placeImageEndpoint));
 
                 request.fields['place'] = id;
 

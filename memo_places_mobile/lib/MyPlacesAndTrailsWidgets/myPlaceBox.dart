@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/Objects/shortPlace.dart';
 
 class MyPlaceBox extends StatelessWidget {
-  final Place place;
+  final ShortPlace place;
 
   const MyPlaceBox({
     super.key,
