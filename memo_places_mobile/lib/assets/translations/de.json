@@ -141,5 +141,7 @@
   "world_war_I": "Erster Weltkrieg (1914 – 1918)",
   "interwar_period": "Zwischenkriegszeit (1918 – 1939)",
   "world_war_II": "Zweiter Weltkrieg (1939 – 1945)",
-  "stalinist_period": "Stalinistische Ära (1945 – 1953)"
+  "stalinist_period": "Stalinistische Ära (1945 – 1953)",
+  "permissions_denied": "Standortberechtigungen wurden verweigert",
+  "permissions_permanently_denied": "Standortberechtigungen wurden dauerhaft verweigert"
 }
