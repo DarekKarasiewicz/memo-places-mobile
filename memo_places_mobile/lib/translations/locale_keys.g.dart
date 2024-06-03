@@ -144,5 +144,7 @@ abstract class  LocaleKeys {
   static const interwar_period = 'interwar_period';
   static const world_war_II = 'world_war_II';
   static const stalinist_period = 'stalinist_period';
+  static const permissions_denied = 'permissions_denied';
+  static const permissions_permanently_denied = 'permissions_permanently_denied';
 
 }

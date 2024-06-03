@@ -141,5 +141,7 @@
   "world_war_I": "I Wojna Światowa (1914 – 1918)",
   "interwar_period": "Okres Międzywojenny (1918 – 1939)",
   "world_war_II": "II Wojna Światowa (1939 – 1945)",
-  "stalinist_period": "Okres Stalinowski (1945 – 1953)"
+  "stalinist_period": "Okres Stalinowski (1945 – 1953)",
+  "permissions_denied": "Dostęp do uprawnień lokalizacji został odmówiony",
+  "permissions_permanently_denied": "Dostęp do uprawnień lokalizacji został trwale odmówiony"
 }

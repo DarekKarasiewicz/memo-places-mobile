@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
 import 'package:memo_places_mobile/Objects/place.dart';
+import 'package:memo_places_mobile/services/dataService.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
 
 class PreviewPlace extends StatefulWidget {
@@ -19,10 +20,17 @@ class _PreviewPlaceState extends State<PreviewPlace>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
+  late bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    fetchPlaceImages(context, widget.place.id.toString()).then((value) {
+      widget.place.images = value;
+      setState(() {
+        _isLoading = false;
+      });
+    });
     _controller = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -83,61 +91,69 @@ class _PreviewPlaceState extends State<PreviewPlace>
                       child: Icon(Icons.drag_handle),
                     ),
                     Expanded(
-                      child: Row(
-                        children: [
-                          widget.place.images!.isNotEmpty
-                              ? Container(
-                                  margin:
-                                      const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                  child: Image.network(
-                                    ApiConstants.displayImageEndpoint(
-                                        widget.place.images![0]),
-                                    width: 150,
-                                    height: 150,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : const SizedBox(
-                                  width: 10,
-                                ),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      child: _isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.scrim),
+                              ),
+                            )
+                          : Row(
                               children: [
-                                Text(
-                                  widget.place.placeName,
-                                  style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
+                                widget.place.images!.isNotEmpty
+                                    ? Container(
+                                        margin: const EdgeInsets.fromLTRB(
+                                            10, 5, 10, 5),
+                                        child: Image.network(
+                                          ApiConstants.displayImageEndpoint(
+                                              widget.place.images![0]),
+                                          width: 150,
+                                          height: 150,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        width: 10,
+                                      ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.place.placeName,
+                                        style: const TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        LocaleKeys.found_by.tr(namedArgs: {
+                                          'username': widget.place.username
+                                        }),
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        LocaleKeys.found.tr(namedArgs: {
+                                          'date': widget.place.creationDate
+                                        }),
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      )
+                                    ],
                                   ),
-                                ),
-                                Text(
-                                  LocaleKeys.found_by.tr(namedArgs: {
-                                    'username': widget.place.username
-                                  }),
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  LocaleKeys.found.tr(namedArgs: {
-                                    'date': widget.place.creationDate
-                                  }),
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(
-                                  height: 5,
-                                )
+                                  width: 5,
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                        ],
-                      ),
                     ),
                   ],
                 ),

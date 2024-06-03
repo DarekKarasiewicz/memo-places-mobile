@@ -90,12 +90,12 @@ class _GoogleMapsState extends State {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        return Future.error(LocaleKeys.permissions_denied.tr());
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location permissions are permanently denied');
+      return Future.error(LocaleKeys.permissions_permanently_denied.tr());
     }
 
     return await Geolocator.getCurrentPosition(
@@ -167,7 +167,6 @@ class _GoogleMapsState extends State {
         var fechedPlaces = <Place>[];
         for (var data in jsonData) {
           var place = Place.fromJson(data);
-          place.images = await fetchPlaceImages(context, place.id.toString());
           fechedPlaces.add(place);
         }
 
@@ -200,7 +199,6 @@ class _GoogleMapsState extends State {
         var fechedTrails = <Trail>[];
         for (var data in jsonData) {
           var trail = Trail.fromJson(data);
-          trail.images = await fetchTrailImages(context, trail.id.toString());
           fechedTrails.add(trail);
         }
 

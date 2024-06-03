@@ -197,9 +197,10 @@ class _MyPlacesState extends State<MyPlaces> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PlaceDetails(
-                                                          place.id.toString())),
+                                                builder: (context) =>
+                                                    PlaceDetails(
+                                                        place.id.toString()),
+                                              ),
                                             );
                                           },
                                           backgroundColor: Colors.blue,
