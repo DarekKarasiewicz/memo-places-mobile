@@ -82,7 +82,7 @@ Future<Trail> fetchTrail(BuildContext context, String trailId) async {
   final response =
       await http.get(Uri.parse(ApiConstants.trailByPkEndpoint(trailId)));
   if (response.statusCode == 200) {
-    var jsonData = jsonDecode(response.body);
+    var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     var trail = Trail.fromJson(jsonData);
     trail.images = await fetchTrailImages(context, trail.id.toString());
 
@@ -98,7 +98,7 @@ Future<List<ShortTrail>> fetchUserTrails(
   final response =
       await http.get(Uri.parse(ApiConstants.shortTrailsByUserEndpoint(userId)));
   if (response.statusCode == 200) {
-    List<dynamic> jsonData = jsonDecode(response.body);
+    List<dynamic> jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     for (var data in jsonData) {
       var trail = ShortTrail.fromJson(data);
       fechedTrails.add(trail);
@@ -113,7 +113,7 @@ Future<Place> fetchPlace(BuildContext context, String placeId) async {
   final response =
       await http.get(Uri.parse(ApiConstants.placeByPkEndpoint(placeId)));
   if (response.statusCode == 200) {
-    var jsonData = jsonDecode(response.body);
+    var jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     var place = Place.fromJson(jsonData);
     place.images = await fetchPlaceImages(context, place.id.toString());
 
@@ -130,7 +130,7 @@ Future<List<ShortPlace>> fetchUserPlaces(
   final response =
       await http.get(Uri.parse(ApiConstants.shortPlacesByUserEndpoint(userId)));
   if (response.statusCode == 200) {
-    List<dynamic> jsonData = jsonDecode(response.body);
+    List<dynamic> jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     for (var data in jsonData) {
       var place = ShortPlace.fromJson(data);
       fechedPlaces.add(place);

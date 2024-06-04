@@ -159,7 +159,8 @@ class CodegenLoader extends AssetLoader{
   "world_war_II": "Zweiter Weltkrieg (1939 – 1945)",
   "stalinist_period": "Stalinistische Ära (1945 – 1953)",
   "permissions_denied": "Standortberechtigungen wurden verweigert",
-  "permissions_permanently_denied": "Standortberechtigungen wurden dauerhaft verweigert"
+  "permissions_permanently_denied": "Standortberechtigungen wurden dauerhaft verweigert",
+  "refresh": "Aktualisieren"
 };
 static const Map<String,dynamic> ru = {
   "distance": "Расстояние {distance} км",
@@ -306,7 +307,8 @@ static const Map<String,dynamic> ru = {
   "world_war_II": "Вторая мировая война (1939 – 1945)",
   "stalinist_period": "Сталинский период (1945 – 1953)",
   "permissions_denied": "Доступ к разрешениям на местоположение отклонен",
-  "permissions_permanently_denied": "Доступ к разрешениям на местоположение навсегда отклонен"
+  "permissions_permanently_denied": "Доступ к разрешениям на местоположение навсегда отклонен",
+  "refresh": "Обновить"
 };
 static const Map<String,dynamic> pl = {
   "distance": "Dystans {distance} km",
@@ -453,7 +455,8 @@ static const Map<String,dynamic> pl = {
   "world_war_II": "II Wojna Światowa (1939 – 1945)",
   "stalinist_period": "Okres Stalinowski (1945 – 1953)",
   "permissions_denied": "Dostęp do uprawnień lokalizacji został odmówiony",
-  "permissions_permanently_denied": "Dostęp do uprawnień lokalizacji został trwale odmówiony"
+  "permissions_permanently_denied": "Dostęp do uprawnień lokalizacji został trwale odmówiony",
+  "refresh": "Odśwież"
 };
 static const Map<String,dynamic> en = {
   "distance": "Distance {distance} Km",
@@ -600,7 +603,8 @@ static const Map<String,dynamic> en = {
   "world_war_II": "World War II (1939-1945)",
   "stalinist_period": "Stalinist period (1945-1953)",
   "permissions_denied": "Location permissions are denied",
-  "permissions_permanently_denied": "Location permissions are permanently denied"
+  "permissions_permanently_denied": "Location permissions are permanently denied",
+  "refresh": "Refresh"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"de": de, "ru": ru, "pl": pl, "en": en};
 }

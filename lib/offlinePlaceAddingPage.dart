@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:memo_places_mobile/formWidgets/customButtonWithIcon.dart';
+import 'package:memo_places_mobile/internetChecker.dart';
 import 'package:memo_places_mobile/offlinePlaceForm.dart';
 import 'package:memo_places_mobile/offlineWidgets/offlinePlacesList.dart';
 import 'package:memo_places_mobile/translations/locale_keys.g.dart';
@@ -103,7 +104,23 @@ class _OfflinePlaceAddingPageState extends State<OfflinePlaceAddingPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    const Expanded(child: OfflinePlacesList())
+                    const Expanded(child: OfflinePlacesList()),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomButtonWithIcon(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const InternetChecker()),
+                          );
+                        },
+                        icon: Icons.refresh,
+                        text: LocaleKeys.refresh.tr()),
+                    const SizedBox(
+                      height: 20,
+                    )
                   ],
                 ),
         ),

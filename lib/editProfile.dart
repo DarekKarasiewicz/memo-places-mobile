@@ -45,7 +45,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> _resetPassword() async {
     try {
-      var response = await http.put(
+      var response = await http.get(
         Uri.parse(ApiConstants.resetPasswordByEmailEndpoint(widget.user.email)),
         headers: {'Content-Type': 'application/json'},
       );

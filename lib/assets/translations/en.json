@@ -143,5 +143,6 @@
   "world_war_II": "World War II (1939-1945)",
   "stalinist_period": "Stalinist period (1945-1953)",
   "permissions_denied": "Location permissions are denied",
-  "permissions_permanently_denied": "Location permissions are permanently denied"
+  "permissions_permanently_denied": "Location permissions are permanently denied",
+  "refresh": "Refresh"
 }
