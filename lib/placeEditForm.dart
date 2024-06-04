@@ -156,7 +156,8 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
     if (fieldContent!.isEmpty) {
       return LocaleKeys.field_required.tr();
     }
-    final RegExp nameRegex = RegExp(r'^[\w\d\s\(\)\"\:\-]+$');
+    final RegExp nameRegex =
+        RegExp(r'^[\u0000-\uFFFF\-()_:. ]+$', unicode: true);
 
     if (!nameRegex.hasMatch(fieldContent)) {
       return LocaleKeys.invalid_name.tr();

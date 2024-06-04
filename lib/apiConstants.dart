@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'http://10.0.2.2:8000/memo_places/';
+  static const String baseUrl = 'http://localhost:8000/memo_places/';
 
   static String typesEndpoint = '${baseUrl}types/';
   static String sortofEndpoint = '${baseUrl}sortofs/';
@@ -14,7 +14,7 @@ class ApiConstants {
   static String usersEndpoint = '${baseUrl}users/';
 
   static String displayImageEndpoint(String imgPath) {
-    return 'http://10.0.2.2:8000$imgPath';
+    return 'http://localhost:8000$imgPath';
   }
 
   static String placeImagesByIdEndpoint(String placeId) {

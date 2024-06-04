@@ -146,5 +146,6 @@ abstract class  LocaleKeys {
   static const stalinist_period = 'stalinist_period';
   static const permissions_denied = 'permissions_denied';
   static const permissions_permanently_denied = 'permissions_permanently_denied';
+  static const refresh = 'refresh';
 
 }

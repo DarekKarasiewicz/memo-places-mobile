@@ -62,7 +62,9 @@ class _RecordMenuState extends State<RecordMenu> {
             ),
             widget.isRecording
                 ? CustomButton(
-                    onPressed: widget.endRecording,
+                    onPressed: double.parse(widget.distance) == 0.0
+                        ? () {}
+                        : widget.endRecording,
                     text: LocaleKeys.stop_save.tr())
                 : CustomButton(
                     onPressed: widget.startRecording,

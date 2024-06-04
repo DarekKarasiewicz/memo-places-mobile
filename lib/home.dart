@@ -161,7 +161,7 @@ class _GoogleMapsState extends State {
       final response = await http.get(Uri.parse(ApiConstants.placesEndpoint));
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = jsonDecode(response.body);
+        List<dynamic> jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         final Uint8List markerIcon = await _getBytesFromAsset(
             'lib/assets/markers/unknown_marker.PNG', 150);
         var fechedPlaces = <Place>[];
@@ -195,7 +195,7 @@ class _GoogleMapsState extends State {
       final response = await http.get(Uri.parse(ApiConstants.trailsEndpoint));
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = jsonDecode(response.body);
+        List<dynamic> jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         var fechedTrails = <Trail>[];
         for (var data in jsonData) {
           var trail = Trail.fromJson(data);
