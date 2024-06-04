@@ -48,7 +48,7 @@ class Trail {
       id: json['id'] as int,
       trailName: json['path_name'] as String,
       description: json['description'] as String,
-      creationDate: json['creation_date'] as String? ?? '',
+      creationDate: json['creation_date'] as String,
       coordinates: coordinates,
       user: json['user'] as int,
       username: json['username'] as String,
