@@ -98,6 +98,7 @@ class _ContactUsFormState extends State<ContactUsForm> {
                       TextField(
                         controller: _titleController,
                         style: const TextStyle(fontSize: 20),
+                        maxLength: 50,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.onPrimary,
