@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:memo_places_mobile/MyPlacesAndTrailsWidgets/myPlaceBox.dart';
 import 'package:memo_places_mobile/Objects/shortPlace.dart';
 import 'package:memo_places_mobile/Objects/user.dart';
+import 'package:memo_places_mobile/apiConstants.dart';
 import 'package:memo_places_mobile/customExeption.dart';
 import 'package:memo_places_mobile/formWidgets/customTitle.dart';
 import 'package:memo_places_mobile/placeDetails.dart';
@@ -131,7 +132,7 @@ class _MyPlacesState extends State<MyPlaces> {
   Future<void> _deletePlace(int index) async {
     try {
       final response = await http.delete(Uri.parse(
-          'http://10.0.2.2:8000/memo_places/places/${_places[index].id}/'));
+          ApiConstants.placeByIdEndpoint(_places[index].id.toString())));
       if (response.statusCode == 200) {
         showSuccesToast(LocaleKeys.place_deleted.tr());
         setState(() {

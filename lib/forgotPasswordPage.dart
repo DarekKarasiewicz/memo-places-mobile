@@ -36,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         });
 
     try {
-      var response = await http.put(
+      var response = await http.get(
         Uri.parse(ApiConstants.resetPasswordByEmailEndpoint(email)),
         headers: {'Content-Type': 'application/json'},
       );
