@@ -184,185 +184,187 @@ class _PlaceEditFormState extends State<PlaceEditForm> {
               )
             : Form(
                 key: _formKey,
-                child: ListView(
-                  children: [
-                    Center(
-                      child: CustomTitle(
-                        title: LocaleKeys.edit_place.tr(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Center(
+                        child: CustomTitle(
+                          title: LocaleKeys.edit_place.tr(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    CustomFormInput(
-                      controller: _nameController,
-                      label: LocaleKeys.name.tr(),
-                      validator: _nameValidator,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    DropdownButtonFormField<Type>(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: LocaleKeys.select_type.tr(),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.onPrimary,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.scrim,
-                            width: 1.5,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            width: 1,
-                          ),
-                        ),
-                        labelStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+                      const SizedBox(
+                        height: 20,
                       ),
-                      value: _getTypeById(_selectedType),
-                      validator: (value) {
-                        if (value == null) {
-                          return LocaleKeys.pls_select_type.tr();
-                        }
-                        return null;
-                      },
-                      onChanged: (Type? newValue) {
-                        setState(() {
-                          _selectedType = newValue!.id.toString();
-                        });
-                      },
-                      items: _types.map<DropdownMenuItem<Type>>((Type type) {
-                        return DropdownMenuItem<Type>(
-                          value: type,
-                          child: Text(
-                            type.value.tr(),
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    DropdownButtonFormField<Sortof>(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: LocaleKeys.select_sortof.tr(),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.onPrimary,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            width: 1,
-                          ),
-                        ),
-                        labelStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+                      CustomFormInput(
+                        controller: _nameController,
+                        label: LocaleKeys.name.tr(),
+                        validator: _nameValidator,
                       ),
-                      value: _getSortofById(_selectedSortof),
-                      validator: (value) {
-                        if (value == null) {
-                          return LocaleKeys.pls_select_sortof.tr();
-                        }
-                        return null;
-                      },
-                      onChanged: (Sortof? newValue) {
-                        setState(() {
-                          _selectedSortof = newValue!.id.toString();
-                        });
-                      },
-                      items: _sortofs
-                          .map<DropdownMenuItem<Sortof>>((Sortof sortof) {
-                        return DropdownMenuItem<Sortof>(
-                          value: sortof,
-                          child: Text(
-                            sortof.value.tr(),
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    DropdownButtonFormField<Period>(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        labelText: LocaleKeys.select_period.tr(),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.onPrimary,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.scrim,
-                            width: 1.5,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.tertiary,
-                            width: 1,
-                          ),
-                        ),
-                        labelStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onBackground,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+                      const SizedBox(
+                        height: 20,
                       ),
-                      value: _getPeriodById(_selectedPeriod),
-                      validator: (value) {
-                        if (value == null) {
-                          return LocaleKeys.pls_select_period.tr();
-                        }
-                        return null;
-                      },
-                      onChanged: (Period? newValue) {
-                        setState(() {
-                          _selectedPeriod = newValue!.id.toString();
-                        });
-                      },
-                      items: _periods
-                          .map<DropdownMenuItem<Period>>((Period period) {
-                        return DropdownMenuItem<Period>(
-                          value: period,
-                          child: Text(
-                            period.value.tr(),
-                            style: const TextStyle(fontSize: 20),
+                      DropdownButtonFormField<Type>(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: LocaleKeys.select_type.tr(),
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.onPrimary,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.scrim,
+                              width: 1.5,
+                            ),
                           ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    CustomFormInput(
-                      maxLength: 1000,
-                      maxLines: 5,
-                      controller: _descriptionController,
-                      label: LocaleKeys.description.tr(),
-                      validator: _descriptionValidator,
-                    ),
-                    const SizedBox(height: 20),
-                    CustomFormInput(
-                      controller: _wikiLinkController,
-                      label: LocaleKeys.wiki_link.tr(),
-                    ),
-                    const SizedBox(height: 20),
-                    CustomFormInput(
-                      controller: _topicLinkController,
-                      label: LocaleKeys.topic_link.tr(),
-                    ),
-                    const SizedBox(height: 35),
-                    CustomButton(
-                      onPressed: () => _submitForm(context),
-                      text: LocaleKeys.save.tr(),
-                    ),
-                  ],
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              width: 1,
+                            ),
+                          ),
+                          labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                        value: _getTypeById(_selectedType),
+                        validator: (value) {
+                          if (value == null) {
+                            return LocaleKeys.pls_select_type.tr();
+                          }
+                          return null;
+                        },
+                        onChanged: (Type? newValue) {
+                          setState(() {
+                            _selectedType = newValue!.id.toString();
+                          });
+                        },
+                        items: _types.map<DropdownMenuItem<Type>>((Type type) {
+                          return DropdownMenuItem<Type>(
+                            value: type,
+                            child: Text(
+                              type.value.tr(),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      DropdownButtonFormField<Sortof>(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: LocaleKeys.select_sortof.tr(),
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.onPrimary,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              width: 1,
+                            ),
+                          ),
+                          labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                        value: _getSortofById(_selectedSortof),
+                        validator: (value) {
+                          if (value == null) {
+                            return LocaleKeys.pls_select_sortof.tr();
+                          }
+                          return null;
+                        },
+                        onChanged: (Sortof? newValue) {
+                          setState(() {
+                            _selectedSortof = newValue!.id.toString();
+                          });
+                        },
+                        items: _sortofs
+                            .map<DropdownMenuItem<Sortof>>((Sortof sortof) {
+                          return DropdownMenuItem<Sortof>(
+                            value: sortof,
+                            child: Text(
+                              sortof.value.tr(),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      DropdownButtonFormField<Period>(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: LocaleKeys.select_period.tr(),
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.onPrimary,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.scrim,
+                              width: 1.5,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              width: 1,
+                            ),
+                          ),
+                          labelStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onBackground,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ),
+                        value: _getPeriodById(_selectedPeriod),
+                        validator: (value) {
+                          if (value == null) {
+                            return LocaleKeys.pls_select_period.tr();
+                          }
+                          return null;
+                        },
+                        onChanged: (Period? newValue) {
+                          setState(() {
+                            _selectedPeriod = newValue!.id.toString();
+                          });
+                        },
+                        items: _periods
+                            .map<DropdownMenuItem<Period>>((Period period) {
+                          return DropdownMenuItem<Period>(
+                            value: period,
+                            child: Text(
+                              period.value.tr(),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                      CustomFormInput(
+                        maxLength: 1000,
+                        maxLines: 5,
+                        controller: _descriptionController,
+                        label: LocaleKeys.description.tr(),
+                        validator: _descriptionValidator,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomFormInput(
+                        controller: _wikiLinkController,
+                        label: LocaleKeys.wiki_link.tr(),
+                      ),
+                      const SizedBox(height: 20),
+                      CustomFormInput(
+                        controller: _topicLinkController,
+                        label: LocaleKeys.topic_link.tr(),
+                      ),
+                      const SizedBox(height: 35),
+                      CustomButton(
+                        onPressed: () => _submitForm(context),
+                        text: LocaleKeys.save.tr(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
       ),

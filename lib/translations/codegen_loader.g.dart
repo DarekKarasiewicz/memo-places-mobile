@@ -312,7 +312,7 @@ static const Map<String,dynamic> ru = {
 };
 static const Map<String,dynamic> pl = {
   "distance": "Dystans {distance} km",
-  "stop_save": "Zatrzymaj i Zapisz",
+  "stop_save": "Zatrzymaj i zapisz",
   "start": "Start",
   "message_sent_succes": "Wiadomość wysłana pomyślnie",
   "message": "Wiadomość",
@@ -398,9 +398,9 @@ static const Map<String,dynamic> pl = {
   "show_pass": "Pokaż hasło",
   "field_required": "Pole jest wymagane",
   "invalid_name": "Nieprawidłowy format nazwy",
-  "select_type": "Wybierz Typ",
-  "select_period": "Wybierz Okres",
-  "select_sortof": "Wybierz Rodzaj",
+  "select_type": "Wybierz typ",
+  "select_period": "Wybierz okres",
+  "select_sortof": "Wybierz rodzaj",
   "pls_select_type": "Wybierz typ",
   "pls_select_period": "Wybierz okres",
   "pls_select_sortof": "Wybierz rodzaj",
