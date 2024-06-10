@@ -89,6 +89,7 @@ class _TrailRecordState extends State<TrailRecordPage> {
         markerId: const MarkerId("user_location"),
         position: _currentPosition,
         icon: BitmapDescriptor.fromBytes(markerIcon),
+        anchor: const Offset(0.5, 0.5),
         consumeTapEvents: true,
       ),
     });
