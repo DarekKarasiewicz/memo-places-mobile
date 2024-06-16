@@ -63,7 +63,7 @@ Future<void> _checkGoogleAccountInBackend(
       var responseDecoded = json.decode(response.body);
       String refresh = responseDecoded["refresh"];
       User user = User.fromJson(JwtDecoder.decode(refresh));
-      User userWithToken = user.copyWith(accessToken: refresh);
+      User userWithToken = user.copyWith(jwtToken: refresh);
       _incrementCounter("user", jsonEncode(userWithToken));
       showSuccesToast(LocaleKeys.succes_signed_in.tr());
       Navigator.pushReplacement(
@@ -83,7 +83,7 @@ Future<void> _checkGoogleAccountInBackend(
       if (secondResponse.statusCode == 200) {
         User user = User.fromJson(JwtDecoder.decode(secondResponse.body));
         User userWithToken =
-            user.copyWith(accessToken: jsonDecode(secondResponse.body));
+            user.copyWith(jwtToken: jsonDecode(secondResponse.body));
         _incrementCounter("user", jsonEncode(userWithToken));
         showSuccesToast(LocaleKeys.succes_signed_in.tr());
         Navigator.pushReplacement(
