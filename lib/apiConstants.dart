@@ -53,7 +53,7 @@ class ApiConstants {
     return '${baseUrl}users/email%3D${email.replaceAll(RegExp(r'\.'), '&')}/';
   }
 
-  static String userByIdEndpoint(String userId) {
+  static String userByIdEndpoint(int userId) {
     return '${baseUrl}users/$userId/';
   }
 
