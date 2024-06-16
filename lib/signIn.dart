@@ -81,7 +81,7 @@ class _SignInState extends State<SignIn> {
         var responseDecoded = json.decode(response.body);
         String access = responseDecoded["access"];
         User user = User.fromJson(JwtDecoder.decode(access));
-        User userWithToken = user.copyWith(accessToken: access);
+        User userWithToken = user.copyWith(jwtToken: access);
         setState(() {
           _incrementCounter("user", jsonEncode(userWithToken));
           Navigator.pop(context);

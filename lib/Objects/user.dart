@@ -29,12 +29,12 @@ class User {
     };
   }
 
-  User copyWith({required String accessToken}) {
+  User copyWith({required String jwtToken}) {
     return User(
       id: id,
       username: username,
       email: email,
-      token: accessToken,
+      token: jwtToken,
     );
   }
 }

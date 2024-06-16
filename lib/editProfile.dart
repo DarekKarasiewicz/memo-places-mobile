@@ -85,7 +85,7 @@ class _EditProfileState extends State<EditProfile> {
         var userData = jsonDecode(response.body);
         String refresh = userData["refresh"];
         User user = User.fromJson(JwtDecoder.decode(refresh));
-        User userWithToken = user.copyWith(accessToken: refresh);
+        User userWithToken = user.copyWith(jwtToken: refresh);
         _incrementCounter("user", jsonEncode(userWithToken));
         showSuccesToast(LocaleKeys.changes_succes_sent.tr());
         if (mounted) {
