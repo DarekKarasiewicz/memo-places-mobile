@@ -51,14 +51,20 @@ void _incrementCounter(String key, String value) async {
 Future<void> _checkGoogleAccountInBackend(
     BuildContext context, GoogleSignInAccount googleAccount) async {
   try {
+    final googleAuth = await googleAccount.authentication;
+    final googleToken = googleAuth.idToken!;
+
     var response = await http.get(
       Uri.parse(ApiConstants.userByEmailEndpoint(googleAccount.email)),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', "JWT": googleToken},
     );
 
     if (response.statusCode == 200) {
-      User user = User.fromJson(JwtDecoder.decode(response.body));
-      _incrementCounter("user", jsonEncode(user));
+      var responseDecoded = json.decode(response.body);
+      String refresh = responseDecoded["refresh"];
+      User user = User.fromJson(JwtDecoder.decode(refresh));
+      User userWithToken = user.copyWith(accessToken: refresh);
+      _incrementCounter("user", jsonEncode(userWithToken));
       showSuccesToast(LocaleKeys.succes_signed_in.tr());
       Navigator.pushReplacement(
         context,
@@ -76,7 +82,9 @@ Future<void> _checkGoogleAccountInBackend(
 
       if (secondResponse.statusCode == 200) {
         User user = User.fromJson(JwtDecoder.decode(secondResponse.body));
-        _incrementCounter("user", jsonEncode(user));
+        User userWithToken =
+            user.copyWith(accessToken: jsonDecode(secondResponse.body));
+        _incrementCounter("user", jsonEncode(userWithToken));
         showSuccesToast(LocaleKeys.succes_signed_in.tr());
         Navigator.pushReplacement(
           context,

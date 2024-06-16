@@ -51,7 +51,15 @@ class _EditProfileState extends State<EditProfile> {
       );
 
       if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove("user");
         showSuccesToast(LocaleKeys.link_sent.tr());
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const InternetChecker()),
+          );
+        }
       } else {
         throw CustomException(LocaleKeys.alert_error.tr());
       }
@@ -63,16 +71,22 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> _saveUserData() async {
     try {
       var response = await http.put(
-        Uri.parse(ApiConstants.userByIdEndpoint(widget.user.id.toString())),
-        body: {
+        Uri.parse(ApiConstants.userByIdEndpoint(widget.user.id)),
+        body: jsonEncode({
           'username': _usernameController.text,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          "JWT": widget.user.token!,
         },
       );
 
       if (response.statusCode == 200) {
         var userData = jsonDecode(response.body);
-        User user = User.fromJson(JwtDecoder.decode(userData));
-        _incrementCounter("user", jsonEncode(user));
+        String refresh = userData["refresh"];
+        User user = User.fromJson(JwtDecoder.decode(refresh));
+        User userWithToken = user.copyWith(accessToken: refresh);
+        _incrementCounter("user", jsonEncode(userWithToken));
         showSuccesToast(LocaleKeys.changes_succes_sent.tr());
         if (mounted) {
           Navigator.pushReplacement(

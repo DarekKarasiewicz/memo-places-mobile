@@ -2,11 +2,13 @@ class User {
   final int id;
   final String username;
   final String email;
+  final String? token;
 
   User({
     required this.id,
     required this.username,
     required this.email,
+    this.token,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class User {
       id: json['user_id'] as int,
       username: json['username'] as String,
       email: json['email'] as String,
+      token: json['token'] as String?,
     );
   }
 
@@ -22,6 +25,16 @@ class User {
       'user_id': id,
       'username': username,
       'email': email,
+      'token': token,
     };
+  }
+
+  User copyWith({required String accessToken}) {
+    return User(
+      id: id,
+      username: username,
+      email: email,
+      token: accessToken,
+    );
   }
 }
