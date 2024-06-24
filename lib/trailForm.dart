@@ -155,7 +155,7 @@ class _TrailFormState extends State<TrailForm> {
               responses.every((response) => response.statusCode == 200);
 
           if (allSuccessful) {
-            showSuccesToast(LocaleKeys.place_added_succes.tr());
+            showSuccesToast(LocaleKeys.succes_trail_added.tr());
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const InternetChecker()),
